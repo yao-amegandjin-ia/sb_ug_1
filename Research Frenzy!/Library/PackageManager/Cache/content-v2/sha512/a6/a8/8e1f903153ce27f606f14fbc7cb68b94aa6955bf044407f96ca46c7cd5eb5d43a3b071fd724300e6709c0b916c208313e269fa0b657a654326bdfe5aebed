@@ -1,0 +1,1 @@
+{"status":"Valid","reason":"Signature is ok","isLegacy":false,"attestation":{"version":1,"format":"archive","integrity":"sha256-S7hl24tD36UNL+mZstkO2IcQcV+d01zJwPFx6Ibbin8=","packageName":"com.unity.2d.tooling","packageVersion":"4.0.0","publishingChannel":"unity","entitlementKeys":[],"artifactType":"upmPackage"}}
