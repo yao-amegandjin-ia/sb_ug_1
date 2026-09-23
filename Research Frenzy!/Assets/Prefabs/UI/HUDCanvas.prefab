@@ -7002,7 +7002,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2066014371111627010}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8604239240463346233}
+        m_TargetAssemblyTypeName: PanelController, Assembly-CSharp
+        m_MethodName: CloseAll
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2683960306295024080
 GameObject:
   m_ObjectHideFlags: 0
@@ -9989,7 +10001,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1424158021249525292}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8604239240463346233}
+        m_TargetAssemblyTypeName: PanelController, Assembly-CSharp
+        m_MethodName: CloseAll
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4300133325150049572
 GameObject:
   m_ObjectHideFlags: 0
@@ -14035,6 +14059,7 @@ GameObject:
   - component: {fileID: 4570149422223876607}
   - component: {fileID: 8756096498994125473}
   - component: {fileID: 2113047126021866726}
+  - component: {fileID: 8604239240463346233}
   m_Layer: 5
   m_Name: HUDCanvas
   m_TagString: Untagged
@@ -14130,6 +14155,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8604239240463346233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5750203404130616824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d3654ff8c8cafc4f88af80684d624f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PanelController
+  dim: {fileID: 7928962894834575101}
+  assignPanel: {fileID: 926650587831954120}
+  upgradesPanel: {fileID: 5665969124090778896}
 --- !u!1 &5853562846228535775
 GameObject:
   m_ObjectHideFlags: 0
@@ -14553,7 +14593,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3957027583158231275}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8604239240463346233}
+        m_TargetAssemblyTypeName: PanelController, Assembly-CSharp
+        m_MethodName: CloseAll
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6064200319620166544
 GameObject:
   m_ObjectHideFlags: 0
@@ -15401,7 +15453,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 468740766552187694}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8604239240463346233}
+        m_TargetAssemblyTypeName: PanelController, Assembly-CSharp
+        m_MethodName: CloseAll
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &5543751635772197149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21853,7 +21917,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2577981255766422173}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 8604239240463346233}
+        m_TargetAssemblyTypeName: PanelController, Assembly-CSharp
+        m_MethodName: CloseAll
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &3233000574242108856
 MonoBehaviour:
   m_ObjectHideFlags: 0
