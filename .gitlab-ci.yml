@@ -1,0 +1,33 @@
+sync-from-github:
+  stage: sync
+  # Only run this job when triggered by a schedule, not on normal
+  # pushes/merges to this GitLab repo (avoids infinite loops/conflicts)
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+
+  variables:
+    GITHUB_URL: "https://github.com/brand624isu/ResearchFrenzy.git"
+    GITHUB_BRANCH: "main"        # branch on GitHub to pull from
+    GITLAB_BRANCH: "production"        # branch on GitLab to push to
+
+  script:
+    # Make sure we have full history to push, not a shallow clone
+    - git fetch --unshallow || true
+    - git remote add github "$GITHUB_URL" || git remote set-url github "$GITHUB_URL"
+    - git fetch github "$GITHUB_BRANCH"
+
+    # Push GitHub's branch onto the GitLab branch.
+    # CI_JOB_TOKEN authenticates automatically as this pipeline's job user.
+    - git push "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "github/${GITHUB_BRANCH}:refs/heads/${GITLAB_BRANCH}"
+    # If GitLab branch history can diverge and you want GitHub to always win, add --force:
+    # - git push "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "github/${GITHUB_BRANCH}:refs/heads/${GITLAB_BRANCH}" --force
+
+   #If your repo uses Git LFS (common for Unity), uncomment:
+  variables:
+     GIT_LFS_SKIP_SMUDGE: "0"
+  after_script:
+     - git lfs fetch github "$GITHUB_BRANCH"
+     - git lfs push "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "$GITLAB_BRANCH"
+
+stages:
+  - sync
