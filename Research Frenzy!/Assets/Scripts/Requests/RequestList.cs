@@ -4,12 +4,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class RequestList
+namespace Assets.Scripts.Requests
 {
-    public List<Request> Requests;
+    [Serializable]
+    public class RequestList
+    {
+
+        public List<Request> Requests;
 
 
 
-        
+    }
+
 }
+
