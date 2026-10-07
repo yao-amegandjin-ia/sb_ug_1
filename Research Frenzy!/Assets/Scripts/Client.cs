@@ -8,7 +8,7 @@ public enum ClientState
     Assisted,         
     Returning,        
     Completed,        
-    LeLeftDissatisfiedft  
+    LeftDissatisfied  
 }
 
 public class Client : MonoBehaviour
