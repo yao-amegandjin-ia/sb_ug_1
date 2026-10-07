@@ -1,20 +1,27 @@
 using System.Collections.Generic;
-
+using System;
 using UnityEngine;
 
+
+//This defines Unity's built in JSON serialization to and from JSON
+[Serializable]
 public class Request
 {
 
-    public string ProblemText { get; }
+    public string ProblemText;
 
-    //Probably best to create an enum for these instead of ids 
-    public MethodologiesEnum BestMethodology { get; }
+    public MethodologiesEnum BestMethodology;
 
-    public bool IsResearchable { get; }
+    public bool IsResearchable;
 
-    public int RequestId{ get; }
+    public int RequestId;
 
-    //This is an immutable list so okay to have a getter
-    public List<MethodologiesEnum> GoodMethodologyIds { get; }
+    //Usually two but could be more so using a List not an array
+    public List<MethodologiesEnum> GoodMethodologies; 
+
+
+
+
+
     
 }

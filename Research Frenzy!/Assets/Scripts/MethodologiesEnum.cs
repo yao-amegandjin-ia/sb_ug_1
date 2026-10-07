@@ -2,6 +2,7 @@ using UnityEngine;
 
 public enum MethodologiesEnum
 {
+    None,
     Basic, 
     Applied, 
     Exploratory, 
