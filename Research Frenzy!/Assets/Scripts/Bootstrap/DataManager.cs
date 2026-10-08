@@ -14,36 +14,23 @@ using UnityEngine;
 public class DataManager
 {
 
-
-    public static DataManager Instance { get; private set; } = new DataManager();
-
     public RequestList RequestList { get; private set; } 
 
 
-    private DataManager() 
+    public DataManager() 
     {
         RequestList = new RequestList();
+        InitializeDataObjects();
     }
 
 
-    //This tells unity to run this method before any scene is loaded, so on game startup. 
-
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private static void Initialize()
-    {
-        //If debugger not attached yet wait
-        if (!System.Diagnostics.Debugger.IsAttached)
-        {
-            System.Diagnostics.Debugger.Launch();
-        }
-        Instance.InitializeDataObjects();
-    }
+ 
 
 
     
     // Could make a create a service to have data objects register for the DataManager but seems like adding abstraction
     //Could also make an interface service and a delegate or callback registering with the manager
-    public void InitializeDataObjects()
+    private void InitializeDataObjects()
     {
         string filePath = Path.Combine(Application.streamingAssetsPath, "Config", "requests.json");
         filePath = filePath.Replace('\\', '/');

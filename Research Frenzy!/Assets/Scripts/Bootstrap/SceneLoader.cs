@@ -2,6 +2,9 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// This gameobject handles additively loading scenes on startup. 
+/// </summary>
 public class SceneLoader : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -32,6 +35,8 @@ public class SceneLoader : MonoBehaviour
         SceneManager.SetActiveScene(labScene);
 
     }
+
+    //This class should also load other scenes!
   
 
    
