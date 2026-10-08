@@ -1,25 +1,29 @@
 using Assets.Scripts.Bootstrap;
 using UnityEngine;
-
+using Assets.Scripts.Interfaces;
+using System.Collections.Generic;
+using System;
 public class GameInitializer : MonoBehaviour
 {
 
     
 
-    //Not a singleton but this is the reference to the systems and you should never make another one of these. Use dependency injection instead in this scene. 
-    //If working on other scenes I would create an intializer script for your scene and access this statically but still use dependency injection so that we do not 
-    //just flippantly use the global access all the time. 
-    public static GameSystems Systems;
+    
+    private GameSystems systems;
 
     private void Awake()
     {
-        Systems = new GameSystems();
+        systems = new GameSystems();
         
     }
 
     private async Awaitable Start()
     {
-        await Systems.SceneLoader.AddScenes();
+        
+        var components = await systems.SceneLoader.AddScenes();
+        //This is where persistent systems accessor is sent to the other scenes. 
+        components.first.InitializeScene(systems);
+        components.second.InitializeScene(systems);
 
     }
 
