@@ -1,3 +1,4 @@
+using Assets.Scripts.Bootstrap;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -5,26 +6,36 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// This gameobject handles additively loading scenes on startup. 
 /// </summary>
-public class SceneLoader : MonoBehaviour
+public class SceneLoader 
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+   
 
     //Loading the unity scene takes time so we use async to let thread work on other things while waiting. 
     //Add logging to this
 
     //Note will need to figure out fix for the no camera rendering later. 
-    private async Awaitable Start()
-    {
 
+    /// <summary>
+    /// Add scenes primary job is to Load scenes additively and initialize those scenes. 
+    /// </summary>
+    /// <returns></returns>
+    public async Awaitable AddScenes()
+    {
+        
+        string name = "Research_Lab";
         await SceneManager.LoadSceneAsync
             (
-            "Research_Lab",
+            name,
             LoadSceneMode.Additive
             );
 
+     
+
+        name = "UI";
         await SceneManager.LoadSceneAsync
             (
-            "UI",
+            name,
             LoadSceneMode.Additive
             );
 
@@ -33,11 +44,11 @@ public class SceneLoader : MonoBehaviour
             SceneManager.GetSceneByName("Research_Lab");
 
         SceneManager.SetActiveScene(labScene);
-
     }
 
-    //This class should also load other scenes!
-  
+
+
+   
 
    
 }
