@@ -61,6 +61,7 @@ public class SceneLoader
         
 
         SceneManager.SetActiveScene(labScene);
+        return (componentList[0], componentList[1]);
     }
 
     private ISceneInitializable findInterfaceInScene(Scene scene)
