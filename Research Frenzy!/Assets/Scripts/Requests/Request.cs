@@ -12,13 +12,16 @@ namespace Assets.Scripts.Requests
         public string ProblemText;
 
         public MethodologiesEnum BestMethodology;
-
+        
         public bool IsResearchable;
 
         public int RequestId;
 
         //Usually two but could be more so using a List not an array
         public List<MethodologiesEnum> GoodMethodologies;
+        
+        //name of the client for the request
+        public string Name;
 
 
     }
