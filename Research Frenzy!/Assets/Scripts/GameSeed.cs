@@ -7,6 +7,14 @@ public static class GameSeed
 {
     public static bool IsSet { get; private set; }
     public static int Seed { get; private set; }
+    
+    [UnityEngine.RuntimeInitializeOnLoadMethod(UnityEngine.RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStaticState()
+    {
+        IsSet = false;
+        Seed = 0;
+    }
+
 
     /// <summary>Sets the seed explicitly (new game with a chosen seed, or loading a save).</summary>
     public static void Set(int seed)
@@ -27,11 +35,11 @@ public static class GameSeed
     /// Creates an independent, deterministic random stream. Give each system its own
     /// streamId so changing how much one system draws doesn't shift another's results.
     /// </summary>
-    public static Random CreateRandom(int streamId)
+    public static System.Random CreateRandom(int streamId)
     {
         EnsureInitialized();
         //Unchecked exists for overflows. Instead of overflowing, it just wraps around
         //Using a streamId helps maintain consistency and keeps everything deterministic.
-        return new Random(unchecked(Seed * 397) ^ streamId);
+        return new System.Random(unchecked(Seed * 397) ^ streamId);
     }
 }

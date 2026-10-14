@@ -38,8 +38,6 @@ public class ResearcherGenerator : MonoBehaviour
     [Header("Methodologies")]
     [Tooltip("IDs of every methodology in the game.")]
     [SerializeField] private List<int> methodologyIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
-    [Tooltip("How many methodologies (levels) each researcher starts with (inclusive).")]
-    [SerializeField] private Vector2Int methodologiesPerResearcher = new Vector2Int(1, 4);
 
     [Header("Name pools")]
     [SerializeField] private string[] firstNames =
@@ -72,6 +70,7 @@ public class ResearcherGenerator : MonoBehaviour
         if (overrideSeed)
             GameSeed.Set(seedOverride);
         Random rng = GameSeed.CreateRandom(RandomStreamId);
+        Debug.Log($"ResearcherGenerator: generating with seed {GameSeed.Seed} (override {(overrideSeed ? "ON" : "OFF")}).");
 
         //Unique heads: shuffle all head indices, then deal one to each researcher.
         List<int> heads = new List<int>();
@@ -92,9 +91,8 @@ public class ResearcherGenerator : MonoBehaviour
             int experience = 0;
             int speed = NextInclusive(rng, speedRange);
             int quality = NextInclusive(rng, qualityRange);
-
-            int methodCount = NextInclusive(rng, methodologiesPerResearcher);
-            List<int> methods = DrawMethodologies(methodCount, unused, rng);
+            
+            List<int> methods = DrawMethodologies(unused, rng);
 
             // Sequential IDs: 1 through researcherCount.
             int id = i + 1;
@@ -113,12 +111,12 @@ public class ResearcherGenerator : MonoBehaviour
     /// Uses the "unused" pool so every methodology is handed out once before any repeats,
     /// giving an even spread across researchers. A researcher never gets the same one twice.
     /// </summary>
-    private List<int> DrawMethodologies(int count, List<int> unused, Random rng)
+    private List<int> DrawMethodologies(List<int> unused, Random rng)
     {
-        count = Mathf.Min(count, methodologyIds.Count);
+
         List<int> unlocked = new List<int>();
 
-        while (unlocked.Count < count)
+        while (unlocked.Count < 4)
         {
             // Start a new cycle (every methodology has now been used equally often).
             if (unused.Count == 0)
