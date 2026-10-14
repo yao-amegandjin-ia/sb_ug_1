@@ -12,7 +12,7 @@ public enum ClientState
     Assisted,         // in a consultation with a researcher
     Returning,        // told to come back tomorrow
     Completed,        // done (consultation finished or request rejected)
-    LeftDissatisfied  // patience ran out
+    LeftDissatisfied,  // patience ran out
 }
 
 // Request / Researcher objects aren't merged yet so those are placeholders for now
@@ -20,15 +20,16 @@ public class Client : MonoBehaviour
 {
     [Header("Info")]
     public string company;
-    public int reward;
-
+    public int reward; 
+    [SerializeField] private int id = 0;
     // TODO: swap for the Request object once 3-requests_object is merged
     [TextArea] public string requestText;
 
-    [Header("Skin (5 options each)")]
-    public int headIndex;
-    public int bodyIndex;
-    public int legIndex;
+    [SerializeField] public int requestId;
+    
+    [Header("Skin")]
+    [SerializeField] private Vector3Int appearance = Vector3Int.zero;
+    
 
     [Header("Patience")]
     public float maxPatience = 30f;
@@ -45,8 +46,7 @@ public class Client : MonoBehaviour
     // the game manager can listen to these
     public event Action<Client> OnStateChanged;
     public event Action<Client> OnLeftDissatisfied;
-
-    const int SKIN_OPTIONS = 5;
+    
 
     void Awake()
     {
@@ -71,26 +71,22 @@ public class Client : MonoBehaviour
     }
 
     // called when the client is spawned
-    public void Init(string company, string requestText, int reward, float patience)
+    public void Init(int id, string company, int requestId, int reward, float patience, Vector3Int appearance, string request)
     {
+        this.id = id;
         this.company = company;
-        this.requestText = requestText;
+        this.requestId = requestId;
         this.reward = reward;
         maxPatience = patience;
         currentPatience = patience;
         assignedResearcherId = -1;
         assignedMethodologyId = -1;
+        this.appearance = appearance;
+        this.requestText = request;
 
-        RandomizeSkin();
         SetState(ClientState.InProcess);
     }
-
-    public void RandomizeSkin()
-    {
-        headIndex = UnityEngine.Random.Range(0, SKIN_OPTIONS);
-        bodyIndex = UnityEngine.Random.Range(0, SKIN_OPTIONS);
-        legIndex = UnityEngine.Random.Range(0, SKIN_OPTIONS);
-    }
+    
 
     // for the patience bar UI (0 to 1)
     public float GetPatiencePercent()
