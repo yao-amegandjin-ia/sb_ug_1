@@ -13,9 +13,6 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class SceneLoader 
 {
-
-   
-
     //Loading the unity scene takes time so we use async to let thread work on other things while waiting. 
     //Add logging to this
 
@@ -43,8 +40,6 @@ public class SceneLoader
 
             
         }
-        
-     
 
         name = "UI";
         await SceneManager.LoadSceneAsync
