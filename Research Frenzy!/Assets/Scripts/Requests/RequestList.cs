@@ -15,6 +15,11 @@ namespace Assets.Scripts.Requests
 
 
     }
+    
+    public Request getRequestById(){
+    
+        
+    }
 
 }
 

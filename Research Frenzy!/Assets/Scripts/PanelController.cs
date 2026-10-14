@@ -5,6 +5,9 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
+using Assets.Scripts.Requests;
+using System.Collections.Generic;
 
 public class PanelController : MonoBehaviour
 {
@@ -12,10 +15,12 @@ public class PanelController : MonoBehaviour
     public GameObject assignPanel;
     public GameObject upgradesPanel;
 
-    [Header("Assign panel text (optional)")]
-    public TMP_Text companyText;
+    [FormerlySerializedAs("companyText")] [Header("Assign panel text (optional)")]
+    public TMP_Text nameText;
     public TMP_Text requestText;
-    public TMP_Text rewardText;
+    
+    public RequestList reqList;
+    
 
     // client whose request is open right now
     Client currentClient;
@@ -41,10 +46,14 @@ public class PanelController : MonoBehaviour
     public void OpenAssignFor(Client client)
     {
         currentClient = client;
+        
+        int requestId = currentClient.requestId;
 
-        if (companyText) companyText.text = client.company;
+        int index = reqList.FindIndex(x => x.RequestId == requestId);
+
+        if (nameText) nameText.text = reqList.;
         if (requestText) requestText.text = "\"" + client.requestText + "\"";
-        if (rewardText) rewardText.text = client.reward + " prestige";
+
 
         OpenAssign();
     }

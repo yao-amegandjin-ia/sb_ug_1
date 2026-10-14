@@ -19,8 +19,7 @@ public enum ClientState
 public class Client : MonoBehaviour
 {
     [Header("Info")]
-    public string company;
-    public int reward; 
+
     [SerializeField] private int id = 0;
     // TODO: swap for the Request object once 3-requests_object is merged
     [TextArea] public string requestText;
@@ -71,12 +70,10 @@ public class Client : MonoBehaviour
     }
 
     // called when the client is spawned
-    public void Init(int id, string company, int requestId, int reward, float patience, Vector3Int appearance, string request)
+    public void Init(int id, int requestId, float patience, Vector3Int appearance, string request)
     {
         this.id = id;
-        this.company = company;
         this.requestId = requestId;
-        this.reward = reward;
         maxPatience = patience;
         currentPatience = patience;
         assignedResearcherId = -1;
