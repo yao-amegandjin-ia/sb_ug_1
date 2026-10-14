@@ -39,7 +39,7 @@ public class Researcher : MonoBehaviour
     [Tooltip("Multiplier applied to the resulting money.")] [SerializeField, Min(1)]
     private int quality = 1;
 
-    [Header("Knowledge")] [SerializeField] private List<string> knownMethodologyIds = new List<string>();
+    [Header("Knowledge")] [SerializeField] private List<int> knownMethodologyIds = new List<int>();
 
     [Header("Placement & State")] [Tooltip("Cubicle number. 0 = not purchased.")] [SerializeField, Min(0)]
     private int position = 0;
@@ -55,14 +55,14 @@ public class Researcher : MonoBehaviour
     public event Action<Researcher, int> AssignmentFinished; // (researcher, clientId)
     public event Action<Researcher, int> Purchased; // (researcher, cubicle)
 
-    // ----- Properties -----
+    // Properties 
     public string Name => researcherName;
     public int Id => id;
     public Vector3Int Appearance => appearance;
     public int Experience => experience;
     public int Speed => speed;
     public int Quality => quality;
-    public IReadOnlyList<string> KnownMethodologyIds => knownMethodologyIds;
+    public IReadOnlyList<int> KnownMethodologyIds => knownMethodologyIds;
     public int Position => position;
     public ResearcherState CurrentState => currentState;
     public int CurrentClientId => currentClientId;
@@ -74,7 +74,7 @@ public class Researcher : MonoBehaviour
     /// Sets up a researcher's data in code (e.g. when generating from a hiring pool).
     /// </summary>
     public void Init(int newId, string newName, Vector3Int newAppearance, int newExperience,
-        int newSpeed, int newQuality, IEnumerable<string> methodologies = null)
+        int newSpeed, int newQuality, IEnumerable<int> methodologies = null)
     {
         id = newId;
 
@@ -105,24 +105,21 @@ public class Researcher : MonoBehaviour
     
     //Methodologies
 
-    public bool KnowsMethodology(string methodologyId) => knownMethodologyIds.Contains(methodologyId);
-
-    public bool LearnMethodology(string methodologyId)
+    public bool KnowsMethodology(int methodologyId) => knownMethodologyIds.Contains(methodologyId);
+    public bool LearnMethodology(int methodologyId)
     {
-        if (string.IsNullOrEmpty(methodologyId) || KnowsMethodology(methodologyId)) return false;
+        if (methodologyId==0 || KnowsMethodology(methodologyId)) return false;
         knownMethodologyIds.Add(methodologyId);
         return true;
     }
 
     // Experience
-
     public void AddExperience(int amount)
     {
         if (amount > 0) experience += amount;
     }
 
-    //Client assignment
-
+    //Client interactions
     /// <summary>Begins assisting a client. Fails if not purchased or already busy.</summary>
     public bool AssignClient(int clientId)
     {
@@ -132,7 +129,6 @@ public class Researcher : MonoBehaviour
         AssignmentStarted?.Invoke(this, clientId);
         return true;
     }
-
     /// <summary>Finishes the current assignment and returns the researcher to Available.</summary>
     public void FinishAssignment(int experienceGained = 0)
     {

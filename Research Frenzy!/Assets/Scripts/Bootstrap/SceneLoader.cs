@@ -40,8 +40,6 @@ public class SceneLoader
 
             
         }
-        
-     
 
         name = "UI";
         await SceneManager.LoadSceneAsync
@@ -58,6 +56,9 @@ public class SceneLoader
         
 
         SceneManager.SetActiveScene(labScene);
+        
+        //TODO: unsure about this? needed a quick fix for testing
+        return(componentList[0], componentList[1]);
     }
 
     private ISceneInitializable findInterfaceInScene(Scene scene)
