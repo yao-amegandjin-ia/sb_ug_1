@@ -27,7 +27,7 @@ public class PanelController : MonoBehaviour
             OpenUpgrades();
 
         // client ran out of patience while the panel was open
-        if (currentClient != null && currentClient.state == ClientState.LeftDissatisfied)
+        if (currentClient && currentClient.state == ClientState.LeftDissatisfied)
             CloseAll();
     }
 
@@ -42,9 +42,9 @@ public class PanelController : MonoBehaviour
     {
         currentClient = client;
 
-        if (companyText != null) companyText.text = client.company;
-        if (requestText != null) requestText.text = "\"" + client.requestText + "\"";
-        if (rewardText != null) rewardText.text = client.reward + " prestige";
+        if (companyText) companyText.text = client.company;
+        if (requestText) requestText.text = "\"" + client.requestText + "\"";
+        if (rewardText) rewardText.text = client.reward + " prestige";
 
         OpenAssign();
     }
