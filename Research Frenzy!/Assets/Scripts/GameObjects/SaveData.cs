@@ -7,6 +7,8 @@ namespace Assets.Scripts.GameObjects
     public class SaveData
     {
         public string PlayerId { get; set; }
+
+        public string SessionId { get; set; }
         
         public int CurrentMoney { get; set; }
 

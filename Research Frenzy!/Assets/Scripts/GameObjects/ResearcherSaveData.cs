@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +7,7 @@ namespace Assets.Scripts.GameObjects
 {
     public class ResearcherSaveData
     {
+        [JsonProperty("researcher_uuid")]
 
         public string ResearcherId { get; set; }
         public string Name { get; set; }
@@ -22,7 +24,11 @@ namespace Assets.Scripts.GameObjects
     }
     public class ClientSaveData
     {
+        [JsonProperty("client_uuid")]
+
         public string ClientId { get; set; }
+        [JsonProperty("request_id")]
+
         public int RequestId { get; set; }
 
         public string Name { get; set; }
