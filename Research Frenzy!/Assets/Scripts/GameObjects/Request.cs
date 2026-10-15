@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-namespace Assets.Scripts.Requests
+namespace Assets.Scripts.GameObjects
 {
     //This defines Unity's built in JSON serialization to and from JSON
     [Serializable]
@@ -19,6 +19,15 @@ namespace Assets.Scripts.Requests
 
         //Usually two but could be more so using a List not an array
         public List<MethodologiesEnum> GoodMethodologies;
+
+
+    }
+    [Serializable]
+    public class RequestList
+    {
+
+        public List<Request> Requests;
+
 
 
     }
