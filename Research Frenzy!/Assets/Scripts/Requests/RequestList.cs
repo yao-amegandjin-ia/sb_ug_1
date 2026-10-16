@@ -9,17 +9,8 @@ namespace Assets.Scripts.Requests
     [Serializable]
     public class RequestList
     {
-
         public List<Request> Requests;
-
-
-
     }
     
-    public Request getRequestById(){
-    
-        
-    }
-
 }
 

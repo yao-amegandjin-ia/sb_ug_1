@@ -241,12 +241,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59b84e14376e7f44e951880417e00e45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Client
-  company: 
-  reward: 0
+  id: 0
   requestText: 
-  headIndex: 0
-  bodyIndex: 0
-  legIndex: 0
+  requestId: 0
+  appearance: {x: 0, y: 0, z: 0}
   maxPatience: 999
   currentPatience: 0
   assignedResearcherId: -1

@@ -49,10 +49,10 @@ public class PanelController : MonoBehaviour
         
         int requestId = currentClient.requestId;
 
-        int index = reqList.FindIndex(x => x.RequestId == requestId);
+        Request req = reqList.Requests.Find(x => x.RequestId == requestId);
 
-        if (nameText) nameText.text = reqList.;
-        if (requestText) requestText.text = "\"" + client.requestText + "\"";
+        if (nameText) nameText.text = req.Name;
+        if (requestText) requestText.text = "\"" + req.ProblemText + "\"";
 
 
         OpenAssign();
