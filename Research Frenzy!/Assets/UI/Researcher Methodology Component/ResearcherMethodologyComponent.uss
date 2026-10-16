@@ -1,0 +1,14 @@
+#methodologies {
+    background-color: transparent;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+#methodologies Button {
+    border-radius: 15px;
+    border-color: black;
+    border-width: 5px;
+    background-color: white;
+}
