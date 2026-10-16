@@ -1,14 +1,15 @@
 using Assets.Scripts.Bootstrap;
 using UnityEngine;
+using Assets.Scripts.GameDataObjects;
 using Assets.Scripts.Interfaces;
 using System.Collections.Generic;
 using System;
+using Unity.Loading;
 public class GameInitializer : MonoBehaviour
 {
 
 
-    //For testing this is going to be referenced in the savesystem.
-    public static readonly string playerId = "a1b2c3d4-0000-4000-8000-000000000001";
+    
     
     private GameSystems systems;
 
@@ -20,12 +21,25 @@ public class GameInitializer : MonoBehaviour
 
     private async Awaitable Start()
     {
-        
+        //var data = await LoadData();
+
         var components = await systems.SceneLoader.AddScenes();
         //This is where persistent systems accessor is sent to the other scenes. 
         components.first.InitializeScene(systems);
         components.second.InitializeScene(systems);
 
     }
+
+    private async Awaitable<SaveData> LoadData()
+    {
+        SaveData saveData = await systems.SaveSystem.LoadGame();
+        //systems.DataManager
+        string hello = "hello";
+        hello += 1;
+        return saveData;
+
+    }
+
+    
 
 }

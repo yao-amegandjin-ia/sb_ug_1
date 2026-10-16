@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-namespace Assets.Scripts.GameObjects
+namespace Assets.Scripts.GameDataObjects
 {
     //This defines Unity's built in JSON serialization to and from JSON
     [Serializable]
-    public class Request
+    public class RequestData
     {
 
         public string ProblemText;
@@ -26,11 +26,30 @@ namespace Assets.Scripts.GameObjects
     public class RequestList
     {
 
-        public List<Request> Requests;
+        public List<RequestData> Requests;
 
 
 
     }
+    public enum MethodologiesEnum
+    {
+        None,
+        Basic,
+        Applied,
+        Exploratory,
+        Field,
+        Market,
+        Qualitative,
+        Quantitative,
+        Mixed_Methods,
+        RCT,
+        Policy,
+        Systematic,
+        Product,
+        Longitudinal
+
+    }
+
 
 }
 

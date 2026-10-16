@@ -3,15 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Assets.Scripts.GameObjects
+namespace Assets.Scripts.GameDataObjects
 {
-    public class ResearcherSaveData
+    public class ResearcherData
     {
         [JsonProperty("researcher_uuid")]
 
         public string ResearcherId { get; set; }
         public string Name { get; set; }
-
+        public int Postion { get; set; }
         public int Experience { get; set; }
         public int Speed { get; set; }
         public int Quality { get; set; }
@@ -22,7 +22,7 @@ namespace Assets.Scripts.GameObjects
         public List<int> Skin { get; set; } = new();
 
     }
-    public class ClientSaveData
+    public class ClientData
     {
         [JsonProperty("client_uuid")]
 
@@ -33,5 +33,20 @@ namespace Assets.Scripts.GameObjects
 
         public string Name { get; set; }
         public List<int> Skin { get; set; } = new();
+    }
+    public class PlayerData
+    {
+        
+        public int CurrentMoney { get; set; }
+
+        public int TotalMoneyEarned { get; set; }
+        public int CurrentDay { get; set; }
+
+        public Dictionary<int, int> StudyResults { get; set; } = new();
+
+        public Dictionary<string, int> OwnedUpgrades{ get; set; } = new();
+
+        //ResearcherIds
+        public List<string> HiredResearchers { get; set; } = new(); 
     }
 }

@@ -1,4 +1,4 @@
-﻿using Assets.Scripts.GameObjects;
+﻿using Assets.Scripts.GameDataObjects;
 using System;
 using System.Collections.Generic;
 using System.IO;

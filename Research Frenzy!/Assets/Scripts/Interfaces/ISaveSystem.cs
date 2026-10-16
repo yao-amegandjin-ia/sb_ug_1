@@ -1,5 +1,5 @@
 ﻿using Assets.Scripts.Bootstrap;
-using Assets.Scripts.GameObjects;
+using Assets.Scripts.GameDataObjects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,8 +19,8 @@ namespace Assets.Scripts.Interfaces
         /// Asynchronous method to save game data in the database. 
         /// </summary>
         /// <param name="saveData"></param>
-        /// <returns></returns>
-        public Awaitable<bool> SaveGame(SaveData saveData);
+        /// 
+        public Awaitable SaveGame(SaveData saveData);
 
         /// <summary>
         /// Asynchronous method to load game data from the database. 
