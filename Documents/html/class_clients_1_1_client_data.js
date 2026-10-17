@@ -1,0 +1,26 @@
+var class_clients_1_1_client_data =
+[
+    [ "AskToReturnTomorrow", "class_clients_1_1_client_data.html#a3a92c33c00f3d68a27d59ce019be1a75", null ],
+    [ "AssignTo", "class_clients_1_1_client_data.html#aa49b1908379112e6ed96887f1e23be34", null ],
+    [ "Clone", "class_clients_1_1_client_data.html#aae3acaa5018b5d93901c5d73dc54f8a6", null ],
+    [ "Complete", "class_clients_1_1_client_data.html#afa4c5518c742a0c4edbd5f877f06ab1b", null ],
+    [ "GetPatiencePercent", "class_clients_1_1_client_data.html#adef5de4625794c2897956e6fe24cbac9", null ],
+    [ "Init", "class_clients_1_1_client_data.html#a24524c8456c46998b2e6c418fd90d045", null ],
+    [ "Init", "class_clients_1_1_client_data.html#a5489326ac2cff0aaa9240e9400293cee", null ],
+    [ "Reenter", "class_clients_1_1_client_data.html#acf14f5166b337013a618bb75da2e5d69", null ],
+    [ "SendToWaitingRoom", "class_clients_1_1_client_data.html#a1ea5085df23ad4391b982e86facd04bd", null ],
+    [ "Tick", "class_clients_1_1_client_data.html#ad061607c935c73edd1aa7c5aa03199b0", null ],
+    [ "Appearance", "class_clients_1_1_client_data.html#a4ff5608b116aa9c8de6436aeb1fa8d48", null ],
+    [ "AssignedMethodologyId", "class_clients_1_1_client_data.html#a645dab47bf97702728a65e9270369432", null ],
+    [ "AssignedResearcherId", "class_clients_1_1_client_data.html#adc3dd5d85efac22dbf54f8a534449e2e", null ],
+    [ "Id", "class_clients_1_1_client_data.html#a6e9c52a0cef24215cacff058e20ab369", null ],
+    [ "MaxPatience", "class_clients_1_1_client_data.html#ab229eba200582149cfc943d9b1ac85ed", null ],
+    [ "Name", "class_clients_1_1_client_data.html#a08c629da9b2c1d3b8d8ed48d8520f021", null ],
+    [ "Patience", "class_clients_1_1_client_data.html#ac60bf024e8a12e92e94dce3a99f39417", null ],
+    [ "Request", "class_clients_1_1_client_data.html#ad345284f030f8a688e7637753fba0fe6", null ],
+    [ "RequestId", "class_clients_1_1_client_data.html#a9273488e98fbe50226230fbd9d0bb30d", null ],
+    [ "RequestText", "class_clients_1_1_client_data.html#a321ae190f8d9cbd0372be0808870eae5", null ],
+    [ "State", "class_clients_1_1_client_data.html#a67c1ca48f9bb7d50aa36957317c29981", null ],
+    [ "OnLeftDissatisfied", "class_clients_1_1_client_data.html#a389f480cfcfbbc2cf2831b4750014bb3", null ],
+    [ "OnStateChanged", "class_clients_1_1_client_data.html#af311532fcaf73dc7187c286594a8f7c7", null ]
+];

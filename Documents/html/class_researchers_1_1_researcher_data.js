@@ -1,0 +1,28 @@
+var class_researchers_1_1_researcher_data =
+[
+    [ "AddExperience", "class_researchers_1_1_researcher_data.html#a6728e2014aae7f21ee18578888082632", null ],
+    [ "AssignClient", "class_researchers_1_1_researcher_data.html#ad6cd9e43fcfc3b36a0b393ea238c4f2a", null ],
+    [ "Clone", "class_researchers_1_1_researcher_data.html#afea0fd3c46138833db234419cbc5c659", null ],
+    [ "FinishAssignment", "class_researchers_1_1_researcher_data.html#a755abafb88a386ac50b024e9ab9ef7a2", null ],
+    [ "GetAdjustedDuration", "class_researchers_1_1_researcher_data.html#a1e33b528c81a10388c3e95dbfda5afd8", null ],
+    [ "GetAdjustedPayout", "class_researchers_1_1_researcher_data.html#a550fcf5b6defcace86043686b4f275b4", null ],
+    [ "Init", "class_researchers_1_1_researcher_data.html#a14b12e85a760b9619718cb08d63f000f", null ],
+    [ "KnowsMethodology", "class_researchers_1_1_researcher_data.html#aa561b60723794dbbd2c6aef6ca768274", null ],
+    [ "LearnMethodology", "class_researchers_1_1_researcher_data.html#ac13bfd8fd30624984d02fc656d399dad", null ],
+    [ "Purchase", "class_researchers_1_1_researcher_data.html#a53035742d7fb14fe28e8aaf6012d1c62", null ],
+    [ "Appearance", "class_researchers_1_1_researcher_data.html#aadfc72b52a2c1b2bf2b4b7047216f0fe", null ],
+    [ "CurrentClientId", "class_researchers_1_1_researcher_data.html#a62e0c965f2bfc18353a57e7eb106184b", null ],
+    [ "CurrentState", "class_researchers_1_1_researcher_data.html#a8432157d6e8d34910cac3f9ab4959a69", null ],
+    [ "Experience", "class_researchers_1_1_researcher_data.html#a5e7a438ad49bc344d1b9e2ed91b36ee2", null ],
+    [ "Id", "class_researchers_1_1_researcher_data.html#ad0260625c9998ed419f146b770760605", null ],
+    [ "IsAvailable", "class_researchers_1_1_researcher_data.html#a04e1d9a4b2bd5fbf03837ecf95bc9a26", null ],
+    [ "IsPurchased", "class_researchers_1_1_researcher_data.html#aa4122d4c1576fe784496f259adc08309", null ],
+    [ "KnownMethodologyIds", "class_researchers_1_1_researcher_data.html#a99dfaa9a992270aae5094846c10229bb", null ],
+    [ "Name", "class_researchers_1_1_researcher_data.html#aab289a07afcae0724aca08c7a5c67f97", null ],
+    [ "Position", "class_researchers_1_1_researcher_data.html#ac50c64361f3c9528003f1ea3b9805654", null ],
+    [ "Quality", "class_researchers_1_1_researcher_data.html#a35a163ff579f181055db24010d259073", null ],
+    [ "Speed", "class_researchers_1_1_researcher_data.html#a2d4aacb1b0c91b89e0d8220358d8a09c", null ],
+    [ "AssignmentFinished", "class_researchers_1_1_researcher_data.html#a7d991f70f3fe593802f7830b7ae71661", null ],
+    [ "AssignmentStarted", "class_researchers_1_1_researcher_data.html#a3ccbc4c1dd33d7375e3f398b0364f194", null ],
+    [ "Purchased", "class_researchers_1_1_researcher_data.html#a43c45bff2d88f273eb8159aae39e81d3", null ]
+];

@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['activeclients_0',['ActiveClients',['../class_client_spawner.html#a75a57c390e9a383bdfdd10dc49c86111',1,'ClientSpawner']]],
+  ['addexperience_1',['AddExperience',['../class_researcher.html#a494b1d3f8265a39598c648d8b8fc4d55',1,'Researcher.AddExperience()'],['../class_researchers_1_1_researcher_data.html#a6728e2014aae7f21ee18578888082632',1,'Researchers.ResearcherData.AddExperience()']]],
+  ['addscenes_2',['AddScenes',['../class_scene_loader.html#ab2f55ebe6b50735fc4ad5b6f0173fad5',1,'SceneLoader']]],
+  ['appearance_3',['Appearance',['../class_clients_1_1_client_data.html#a4ff5608b116aa9c8de6436aeb1fa8d48',1,'Clients.ClientData.Appearance'],['../class_researcher.html#a5558c03268ccdf77385a5620e53930d6',1,'Researcher.Appearance'],['../class_researchers_1_1_researcher_data.html#aadfc72b52a2c1b2bf2b4b7047216f0fe',1,'Researchers.ResearcherData.Appearance']]],
+  ['applied_4',['Applied',['../_methodologies_enum_8cs.html#af0d3369a3071cb234a81ded65e70a6a2a733d43480c8589b1368e5def6b480415',1,'MethodologiesEnum.cs']]],
+  ['asktoreturntomorrow_5',['AskToReturnTomorrow',['../class_clients_1_1_client_data.html#a3a92c33c00f3d68a27d59ce019be1a75',1,'Clients::ClientData']]],
+  ['assets_6',['Assets',['../namespace_assets.html',1,'']]],
+  ['assets_3a_3ascripts_7',['Scripts',['../namespace_assets_1_1_scripts.html',1,'Assets']]],
+  ['assets_3a_3ascripts_3a_3abootstrap_8',['Bootstrap',['../namespace_assets_1_1_scripts_1_1_bootstrap.html',1,'Assets::Scripts']]],
+  ['assets_3a_3ascripts_3a_3ainterfaces_9',['Interfaces',['../namespace_assets_1_1_scripts_1_1_interfaces.html',1,'Assets::Scripts']]],
+  ['assets_3a_3ascripts_3a_3arequests_10',['Requests',['../namespace_assets_1_1_scripts_1_1_requests.html',1,'Assets::Scripts']]],
+  ['assignclient_11',['AssignClient',['../class_researcher.html#a22f9335cccee5d7bb1b97eed70383517',1,'Researcher.AssignClient()'],['../class_researchers_1_1_researcher_data.html#ad6cd9e43fcfc3b36a0b393ea238c4f2a',1,'Researchers.ResearcherData.AssignClient()']]],
+  ['assignedmethodologyid_12',['AssignedMethodologyId',['../class_clients_1_1_client_data.html#a645dab47bf97702728a65e9270369432',1,'Clients::ClientData']]],
+  ['assignedresearcherid_13',['AssignedResearcherId',['../class_clients_1_1_client_data.html#adc3dd5d85efac22dbf54f8a534449e2e',1,'Clients::ClientData']]],
+  ['assignmentfinished_14',['AssignmentFinished',['../class_researcher.html#a790e11acdf7b8972bc3ffcfc4ca59798',1,'Researcher.AssignmentFinished'],['../class_researchers_1_1_researcher_data.html#a7d991f70f3fe593802f7830b7ae71661',1,'Researchers.ResearcherData.AssignmentFinished']]],
+  ['assignmentstarted_15',['AssignmentStarted',['../class_researcher.html#aca204ffa217d11f9b49678d34599c215',1,'Researcher.AssignmentStarted'],['../class_researchers_1_1_researcher_data.html#a3ccbc4c1dd33d7375e3f398b0364f194',1,'Researchers.ResearcherData.AssignmentStarted']]],
+  ['assignpanel_16',['assignPanel',['../class_panel_controller.html#acb817632a30ca23bcb0d0942765a6bc1',1,'PanelController']]],
+  ['assignto_17',['AssignTo',['../class_clients_1_1_client_data.html#aa49b1908379112e6ed96887f1e23be34',1,'Clients::ClientData']]],
+  ['assisted_18',['Assisted',['../namespace_clients.html#ab3c126b40fd95ec4625fc6141a988ff1abd97b11d280eed1ba2d71ff0f163024a',1,'Clients']]],
+  ['available_19',['Available',['../_researcher_8cs.html#a5f28ad0a293a50a88fd0eb3db2323097a78945de8de090e90045d299651a68a9b',1,'Available:&#160;Researcher.cs'],['../namespace_researchers.html#a3545d6ecac51cd464f018b1985d096f4a78945de8de090e90045d299651a68a9b',1,'Researchers.Available']]]
+];
