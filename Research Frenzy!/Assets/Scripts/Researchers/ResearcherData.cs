@@ -19,11 +19,8 @@ namespace Researchers
     ///     This contains the basic data points and some game logic, but does NOT have the game object.
     ///     This is needed so that we can track what researchers exist, but they don't need to be
     ///     instantiated yet.
-    ///
     ///     The Researcher.cs script houses a ResearcherData object, and that script will be associated with a prefab.
     ///     This way, we can generate the Data for researchers, but don't have to spawn them in until they are purchased.
-    ///    
-    ///     
     /// </summary>
     [Serializable]
     public class ResearcherData

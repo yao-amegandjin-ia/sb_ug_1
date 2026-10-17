@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using Assets.Scripts.Requests;
 using System.Collections.Generic;
+using Clients;
 
 public class PanelController : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class PanelController : MonoBehaviour
     
 
     // client whose request is open right now
-    Client currentClient;
+    ClientData _currentClientData;
 
     void Update()
     {
@@ -32,7 +33,7 @@ public class PanelController : MonoBehaviour
             OpenUpgrades();
 
         // client ran out of patience while the panel was open
-        if (currentClient && currentClient.state == ClientState.LeftDissatisfied)
+        if (_currentClientData != null && _currentClientData.State == ClientState.LeftDissatisfied)
             CloseAll();
     }
 
@@ -43,11 +44,11 @@ public class PanelController : MonoBehaviour
     }
 
     // opens the assign panel with this client's info
-    public void OpenAssignFor(Client client)
+    public void OpenAssignFor(ClientData clientData)
     {
-        currentClient = client;
+        _currentClientData = clientData;
         
-        int requestId = currentClient.requestId;
+        int requestId = _currentClientData.RequestId;
 
         Request req = reqList.Requests.Find(x => x.RequestId == requestId);
 
@@ -68,19 +69,19 @@ public class PanelController : MonoBehaviour
 
     public void WaitClicked()
     {
-        if (currentClient != null) currentClient.SendToWaitingRoom();
+        if (_currentClientData != null) _currentClientData.SendToWaitingRoom();
         CloseAll();
     }
 
     public void TomorrowClicked()
     {
-        if (currentClient != null) currentClient.AskToReturnTomorrow();
+        if (_currentClientData != null) _currentClientData.AskToReturnTomorrow();
         CloseAll();
     }
 
     public void RejectClicked()
     {
-        if (currentClient != null) currentClient.Complete();
+        if (_currentClientData != null) _currentClientData.Complete();
         CloseAll();
     }
 
@@ -89,6 +90,6 @@ public class PanelController : MonoBehaviour
         dim.SetActive(false);
         assignPanel.SetActive(false);
         upgradesPanel.SetActive(false);
-        currentClient = null;
+        _currentClientData = null;
     }
 }
