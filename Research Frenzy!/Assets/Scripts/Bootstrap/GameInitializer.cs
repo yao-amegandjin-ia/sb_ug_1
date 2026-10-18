@@ -7,8 +7,6 @@ public class GameInitializer : MonoBehaviour
 {
 
     
-
-    
     private GameSystems systems;
 
     private void Awake()

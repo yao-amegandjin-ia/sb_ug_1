@@ -5,6 +5,10 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
+using Assets.Scripts.Requests;
+using System.Collections.Generic;
+using Clients;
 
 public class PanelController : MonoBehaviour
 {
@@ -12,13 +16,15 @@ public class PanelController : MonoBehaviour
     public GameObject assignPanel;
     public GameObject upgradesPanel;
 
-    [Header("Assign panel text (optional)")]
-    public TMP_Text companyText;
+    [FormerlySerializedAs("companyText")] [Header("Assign panel text (optional)")]
+    public TMP_Text nameText;
     public TMP_Text requestText;
-    public TMP_Text rewardText;
+    
+    public RequestList reqList;
+    
 
     // client whose request is open right now
-    Client currentClient;
+    ClientData _currentClientData;
 
     void Update()
     {
@@ -27,7 +33,7 @@ public class PanelController : MonoBehaviour
             OpenUpgrades();
 
         // client ran out of patience while the panel was open
-        if (currentClient && currentClient.state == ClientState.LeftDissatisfied)
+        if (_currentClientData != null && _currentClientData.State == ClientState.LeftDissatisfied)
             CloseAll();
     }
 
@@ -38,13 +44,17 @@ public class PanelController : MonoBehaviour
     }
 
     // opens the assign panel with this client's info
-    public void OpenAssignFor(Client client)
+    public void OpenAssignFor(ClientData clientData)
     {
-        currentClient = client;
+        _currentClientData = clientData;
+        
+        int requestId = _currentClientData.RequestId;
 
-        if (companyText) companyText.text = client.company;
-        if (requestText) requestText.text = "\"" + client.requestText + "\"";
-        if (rewardText) rewardText.text = client.reward + " prestige";
+        Request req = reqList.Requests.Find(x => x.RequestId == requestId);
+
+        if (nameText) nameText.text = req.Name;
+        if (requestText) requestText.text = "\"" + req.ProblemText + "\"";
+
 
         OpenAssign();
     }
@@ -59,19 +69,19 @@ public class PanelController : MonoBehaviour
 
     public void WaitClicked()
     {
-        if (currentClient != null) currentClient.SendToWaitingRoom();
+        if (_currentClientData != null) _currentClientData.SendToWaitingRoom();
         CloseAll();
     }
 
     public void TomorrowClicked()
     {
-        if (currentClient != null) currentClient.AskToReturnTomorrow();
+        if (_currentClientData != null) _currentClientData.AskToReturnTomorrow();
         CloseAll();
     }
 
     public void RejectClicked()
     {
-        if (currentClient != null) currentClient.Complete();
+        if (_currentClientData != null) _currentClientData.Complete();
         CloseAll();
     }
 
@@ -80,6 +90,6 @@ public class PanelController : MonoBehaviour
         dim.SetActive(false);
         assignPanel.SetActive(false);
         upgradesPanel.SetActive(false);
-        currentClient = null;
+        _currentClientData = null;
     }
 }

@@ -1,384 +1,419 @@
-
-
-    
+{
+  "Requests": [
     {
-        "Requests": [
-          {
-            "ProblemText": "We want to understand why some college students choose not to attend professor office hours.",
+      "ProblemText": "We want to understand why some college students choose not to attend professor office hours.",
       "BestMethodology": "QualitativeResearch",
       "IsResearchable": true,
       "RequestId": 1,
       "GoodMethodologies": [
         "ExploratoryResearch",
         "FieldResearch"
-      ]
-          },
+      ],
+      "Name": "Sofia Patel"
+    },
     {
-            "ProblemText": "Our company wants to know what percentage of customers prefer online shopping over shopping in person.",
+      "ProblemText": "Our company wants to know what percentage of customers prefer online shopping over shopping in person.",
       "BestMethodology": "QuantitativeResearch",
       "IsResearchable": true,
       "RequestId": 2,
       "GoodMethodologies": [
         "MarketResearch"
-      ]
+      ],
+      "Name": "Ingrid Andersson"
     },
     {
-            "ProblemText": "We want to determine whether a new tutoring program improves students' exam scores compared with students who do not use it.",
+      "ProblemText": "We want to determine whether a new tutoring program improves students' exam scores compared with students who do not use it.",
       "BestMethodology": "RandomizedControlTrials",
       "IsResearchable": true,
       "RequestId": 3,
       "GoodMethodologies": [
         "AppliedResearch",
         "QuantitativeResearch"
-      ]
+      ],
+      "Name": "Isabella Ortiz"
     },
     {
-            "ProblemText": "We want to understand how people's attitudes toward remote work change over a five-year period.",
+      "ProblemText": "We want to understand how people's attitudes toward remote work change over a five-year period.",
       "BestMethodology": "LongitudinalResearch",
       "IsResearchable": true,
       "RequestId": 4,
       "GoodMethodologies": [
         "QuantitativeResearch",
         "QualitativeResearch"
-      ]
+      ],
+      "Name": "Fatima Cohen"
     },
     {
-            "ProblemText": "Our city is considering a ban on single-use plastic bags. We want to understand how similar policies have affected waste in other cities.",
+      "ProblemText": "Our city is considering a ban on single-use plastic bags. We want to understand how similar policies have affected waste in other cities.",
       "BestMethodology": "PolicyResearch",
       "IsResearchable": true,
       "RequestId": 5,
       "GoodMethodologies": [
         "SystematicReviews",
         "AppliedResearch"
-      ]
+      ],
+      "Name": "Mateo Silva"
     },
     {
-            "ProblemText": "We want to learn what teenagers think makes a social media app enjoyable to use.",
+      "ProblemText": "We want to learn what teenagers think makes a social media app enjoyable to use.",
       "BestMethodology": "QualitativeResearch",
       "IsResearchable": true,
       "RequestId": 6,
       "GoodMethodologies": [
         "MarketResearch",
         "ExploratoryResearch"
-      ]
+      ],
+      "Name": "Jackson Nguyen"
     },
     {
-            "ProblemText": "We have developed a prototype water bottle and want to test different lid designs to determine which is easiest to use.",
+      "ProblemText": "We have developed a prototype water bottle and want to test different lid designs to determine which is easiest to use.",
       "BestMethodology": "ProductResearchAndDevelopment",
       "IsResearchable": true,
       "RequestId": 7,
       "GoodMethodologies": [
         "AppliedResearch",
         "QuantitativeResearch"
-      ]
+      ],
+      "Name": "Ingrid Rossi"
     },
     {
-            "ProblemText": "Scientists want to better understand how a newly discovered protein interacts with human cells without developing an immediate commercial application.",
+      "ProblemText": "Scientists want to better understand how a newly discovered protein interacts with human cells without developing an immediate commercial application.",
       "BestMethodology": "BasicResearch",
       "IsResearchable": true,
       "RequestId": 8,
       "GoodMethodologies": [
         "ExploratoryResearch"
-      ]
+      ],
+      "Name": "Ethan Cohen"
     },
     {
-            "ProblemText": "We want to observe how customers actually move through our grocery store and which displays they stop at.",
+      "ProblemText": "We want to observe how customers actually move through our grocery store and which displays they stop at.",
       "BestMethodology": "FieldResearch",
       "IsResearchable": true,
       "RequestId": 9,
       "GoodMethodologies": [
         "MarketResearch",
         "QualitativeResearch"
-      ]
+      ],
+      "Name": "Yuki Nguyen"
     },
     {
-            "ProblemText": "We want to determine whether students who sleep at least eight hours tend to have higher GPAs.",
+      "ProblemText": "We want to determine whether students who sleep at least eight hours tend to have higher GPAs.",
       "BestMethodology": "QuantitativeResearch",
       "IsResearchable": true,
       "RequestId": 10,
       "GoodMethodologies": [
         "LongitudinalResearch"
-      ]
+      ],
+      "Name": "Emma Kowalski"
     },
     {
-            "ProblemText": "Our hospital wants to combine patient surveys with interviews to understand why patients miss scheduled appointments.",
+      "ProblemText": "Our hospital wants to combine patient surveys with interviews to understand why patients miss scheduled appointments.",
       "BestMethodology": "MixedMethodsResearch",
       "IsResearchable": true,
       "RequestId": 11,
       "GoodMethodologies": [
         "QualitativeResearch",
         "QuantitativeResearch"
-      ]
+      ],
+      "Name": "Jackson Rossi"
     },
     {
-            "ProblemText": "We want to combine the results of existing published studies to determine whether meditation reduces stress.",
+      "ProblemText": "We want to combine the results of existing published studies to determine whether meditation reduces stress.",
       "BestMethodology": "SystematicReviews",
       "IsResearchable": true,
       "RequestId": 12,
       "GoodMethodologies": [
         "QuantitativeResearch"
-      ]
+      ],
+      "Name": "Mia Nguyen"
     },
     {
-            "ProblemText": "We don't know why users are abandoning our mobile application during account creation and want to investigate possible reasons.",
+      "ProblemText": "We don't know why users are abandoning our mobile application during account creation and want to investigate possible reasons.",
       "BestMethodology": "ExploratoryResearch",
       "IsResearchable": true,
       "RequestId": 13,
       "GoodMethodologies": [
         "QualitativeResearch",
         "ProductResearchAndDevelopment"
-      ]
+      ],
+      "Name": "Liam Cohen"
     },
     {
-            "ProblemText": "A school wants to determine whether providing free breakfast improves student attendance.",
+      "ProblemText": "A school wants to determine whether providing free breakfast improves student attendance.",
       "BestMethodology": "AppliedResearch",
       "IsResearchable": true,
       "RequestId": 14,
       "GoodMethodologies": [
         "QuantitativeResearch",
         "RandomizedControlTrials"
-      ]
+      ],
+      "Name": "Ingrid Patel"
     },
     {
-            "ProblemText": "Our company wants to know whether customers would be interested in buying a cheaper version of our current product.",
+      "ProblemText": "Our company wants to know whether customers would be interested in buying a cheaper version of our current product.",
       "BestMethodology": "MarketResearch",
       "IsResearchable": true,
       "RequestId": 15,
       "GoodMethodologies": [
         "QuantitativeResearch",
         "QualitativeResearch"
-      ]
+      ],
+      "Name": "Jackson Ortiz"
     },
     {
-            "ProblemText": "We want to interview first-generation college students about the challenges they experience during their first semester.",
+      "ProblemText": "We want to interview first-generation college students about the challenges they experience during their first semester.",
       "BestMethodology": "QualitativeResearch",
       "IsResearchable": true,
       "RequestId": 16,
       "GoodMethodologies": [
         "ExploratoryResearch",
         "FieldResearch"
-      ]
+      ],
+      "Name": "Emma Smith"
     },
     {
-            "ProblemText": "We want to track the same group of graduates for ten years to see how their careers develop.",
+      "ProblemText": "We want to track the same group of graduates for ten years to see how their careers develop.",
       "BestMethodology": "LongitudinalResearch",
       "IsResearchable": true,
       "RequestId": 17,
       "GoodMethodologies": [
         "QuantitativeResearch",
         "QualitativeResearch"
-      ]
+      ],
+      "Name": "Liam Silva"
     },
     {
-            "ProblemText": "A state recently changed its minimum wage. We want to examine how the change affected employment and local businesses.",
+      "ProblemText": "A state recently changed its minimum wage. We want to examine how the change affected employment and local businesses.",
       "BestMethodology": "PolicyResearch",
       "IsResearchable": true,
       "RequestId": 18,
       "GoodMethodologies": [
         "QuantitativeResearch",
         "AppliedResearch"
-      ]
+      ],
+      "Name": "Amelia Müller"
     },
     {
-            "ProblemText": "We want to test whether changing the color of a website's checkout button increases the percentage of visitors who complete a purchase.",
+      "ProblemText": "We want to test whether changing the color of a website's checkout button increases the percentage of visitors who complete a purchase.",
       "BestMethodology": "RandomizedControlTrials",
       "IsResearchable": true,
       "RequestId": 19,
       "GoodMethodologies": [
         "QuantitativeResearch",
         "MarketResearch"
-      ]
+      ],
+      "Name": "Yuki Kowalski"
     },
     {
-            "ProblemText": "Engineers want to investigate the fundamental properties of a new material before deciding what products it might be useful for.",
+      "ProblemText": "Engineers want to investigate the fundamental properties of a new material before deciding what products it might be useful for.",
       "BestMethodology": "BasicResearch",
       "IsResearchable": true,
       "RequestId": 20,
       "GoodMethodologies": [
         "ExploratoryResearch"
-      ]
+      ],
+      "Name": "Noah Singh"
     },
     {
-            "ProblemText": "We want researchers to spend time inside several classrooms observing how teachers and students use tablets during normal lessons.",
+      "ProblemText": "We want researchers to spend time inside several classrooms observing how teachers and students use tablets during normal lessons.",
       "BestMethodology": "FieldResearch",
       "IsResearchable": true,
       "RequestId": 21,
       "GoodMethodologies": [
         "QualitativeResearch",
         "ExploratoryResearch"
-      ]
+      ],
+      "Name": "Kofi Bennett"
     },
     {
-            "ProblemText": "We want to measure customer satisfaction numerically using a survey sent to 5,000 customers.",
+      "ProblemText": "We want to measure customer satisfaction numerically using a survey sent to 5,000 customers.",
       "BestMethodology": "QuantitativeResearch",
       "IsResearchable": true,
       "RequestId": 22,
       "GoodMethodologies": [
         "MarketResearch"
-      ]
+      ],
+      "Name": "James Chaudhry"
     },
     {
-            "ProblemText": "We want to understand both how many students use campus mental-health resources and what experiences students have when using them.",
+      "ProblemText": "We want to understand both how many students use campus mental-health resources and what experiences students have when using them.",
       "BestMethodology": "MixedMethodsResearch",
       "IsResearchable": true,
       "RequestId": 23,
       "GoodMethodologies": [
         "QuantitativeResearch",
         "QualitativeResearch"
-      ]
+      ],
+      "Name": "Isabella Walker"
     },
     {
-            "ProblemText": "We are designing a new mobile application and want to repeatedly build and test prototypes with potential users.",
+      "ProblemText": "We are designing a new mobile application and want to repeatedly build and test prototypes with potential users.",
       "BestMethodology": "ProductResearchAndDevelopment",
       "IsResearchable": true,
       "RequestId": 24,
       "GoodMethodologies": [
         "AppliedResearch",
         "QualitativeResearch"
-      ]
+      ],
+      "Name": "Fatima Ortiz"
     },
     {
-            "ProblemText": "We want to examine all high-quality published research comparing remote learning with classroom learning.",
+      "ProblemText": "We want to examine all high-quality published research comparing remote learning with classroom learning.",
       "BestMethodology": "SystematicReviews",
       "IsResearchable": true,
       "RequestId": 25,
       "GoodMethodologies": [
         "QuantitativeResearch"
-      ]
+      ],
+      "Name": "Liam Kowalski"
     },
     {
-            "ProblemText": "A restaurant wants to understand which new menu items its target customers would be most likely to purchase.",
+      "ProblemText": "A restaurant wants to understand which new menu items its target customers would be most likely to purchase.",
       "BestMethodology": "MarketResearch",
       "IsResearchable": true,
       "RequestId": 26,
       "GoodMethodologies": [
         "QuantitativeResearch",
         "QualitativeResearch"
-      ]
+      ],
+      "Name": "Kofi Reyes"
     },
     {
-            "ProblemText": "We have noticed employees leaving our company more frequently, but we don't know why and want to identify possible explanations.",
+      "ProblemText": "We have noticed employees leaving our company more frequently, but we don't know why and want to identify possible explanations.",
       "BestMethodology": "ExploratoryResearch",
       "IsResearchable": true,
       "RequestId": 27,
       "GoodMethodologies": [
         "QualitativeResearch",
         "MixedMethodsResearch"
-      ]
+      ],
+      "Name": "Ethan Larsen"
     },
     {
-            "ProblemText": "A factory wants to determine whether a new workflow can reduce the average time required to assemble a product.",
+      "ProblemText": "A factory wants to determine whether a new workflow can reduce the average time required to assemble a product.",
       "BestMethodology": "AppliedResearch",
       "IsResearchable": true,
       "RequestId": 28,
       "GoodMethodologies": [
         "QuantitativeResearch",
         "RandomizedControlTrials"
-      ]
+      ],
+      "Name": "Jackson Silva"
     },
     {
-            "ProblemText": "We want to study how residents actually use a newly constructed public park during different times of day.",
+      "ProblemText": "We want to study how residents actually use a newly constructed public park during different times of day.",
       "BestMethodology": "FieldResearch",
       "IsResearchable": true,
       "RequestId": 29,
       "GoodMethodologies": [
         "QualitativeResearch",
         "QuantitativeResearch"
-      ]
+      ],
+      "Name": "Evelyn Johnson"
     },
     {
-            "ProblemText": "We want to follow children from elementary school through high school to study how reading habits develop as they age.",
+      "ProblemText": "We want to follow children from elementary school through high school to study how reading habits develop as they age.",
       "BestMethodology": "LongitudinalResearch",
       "IsResearchable": true,
       "RequestId": 30,
       "GoodMethodologies": [
         "QuantitativeResearch",
         "QualitativeResearch"
-      ]
+      ],
+      "Name": "Mateo Kim"
     },
     {
-            "ProblemText": "The university is considering changing its parking rules. We want to investigate how the proposed policy could affect students and employees.",
+      "ProblemText": "The university is considering changing its parking rules. We want to investigate how the proposed policy could affect students and employees.",
       "BestMethodology": "PolicyResearch",
       "IsResearchable": true,
       "RequestId": 31,
       "GoodMethodologies": [
         "MixedMethodsResearch",
         "AppliedResearch"
-      ]
+      ],
+      "Name": "Evelyn Patel"
     },
     {
-            "ProblemText": "We want to collect numerical pollution measurements and interview residents to understand both pollution levels and how residents believe pollution affects their neighborhood.",
+      "ProblemText": "We want to collect numerical pollution measurements and interview residents to understand both pollution levels and how residents believe pollution affects their neighborhood.",
       "BestMethodology": "MixedMethodsResearch",
       "IsResearchable": true,
       "RequestId": 32,
       "GoodMethodologies": [
         "QuantitativeResearch",
         "QualitativeResearch"
-      ]
+      ],
+      "Name": "Yuki Ortiz"
     },
     {
-            "ProblemText": "We want to determine whether people assigned to use a new study technique perform better on a memory test than people assigned to use their normal technique.",
+      "ProblemText": "We want to determine whether people assigned to use a new study technique perform better on a memory test than people assigned to use their normal technique.",
       "BestMethodology": "RandomizedControlTrials",
       "IsResearchable": true,
       "RequestId": 33,
       "GoodMethodologies": [
         "QuantitativeResearch",
         "AppliedResearch"
-      ]
+      ],
+      "Name": "James Nguyen"
     },
     {
-            "ProblemText": "Our engineering team wants to create and test several versions of a low-cost air-quality sensor before choosing a final design.",
+      "ProblemText": "Our engineering team wants to create and test several versions of a low-cost air-quality sensor before choosing a final design.",
       "BestMethodology": "ProductResearchAndDevelopment",
       "IsResearchable": true,
       "RequestId": 34,
       "GoodMethodologies": [
         "AppliedResearch",
         "QuantitativeResearch"
-      ]
+      ],
+      "Name": "Kofi Okafor"
     },
     {
-            "ProblemText": "Which video game is objectively the greatest video game ever made?",
+      "ProblemText": "Which video game is objectively the greatest video game ever made?",
       "BestMethodology": "None",
       "IsResearchable": false,
       "RequestId": 35,
-      "GoodMethodologies": []
+      "GoodMethodologies": [],
+      "Name": "Jackson Kowalski"
     },
     {
-            "ProblemText": "We need researchers to prove that our company's product is better than every competitor's product, regardless of what the evidence shows.",
+      "ProblemText": "We need researchers to prove that our company's product is better than every competitor's product, regardless of what the evidence shows.",
       "BestMethodology": "None",
       "IsResearchable": false,
       "RequestId": 36,
-      "GoodMethodologies": []
+      "GoodMethodologies": [],
+      "Name": "Mia Garcia"
     },
     {
-            "ProblemText": "Can you tell us exactly what the stock market will be worth twenty years from today?",
+      "ProblemText": "Can you tell us exactly what the stock market will be worth twenty years from today?",
       "BestMethodology": "None",
       "IsResearchable": false,
       "RequestId": 37,
-      "GoodMethodologies": []
+      "GoodMethodologies": [],
+      "Name": "Noah Nguyen"
     },
     {
-            "ProblemText": "We want a study proving that our CEO is the best CEO in the country, regardless of what the evidence shows.",
+      "ProblemText": "We want a study proving that our CEO is the best CEO in the country, regardless of what the evidence shows.",
       "BestMethodology": "None",
       "IsResearchable": false,
       "RequestId": 38,
-      "GoodMethodologies": []
+      "GoodMethodologies": [],
+      "Name": "Priya Nguyen"
     },
     {
-            "ProblemText": "Can researchers determine whether pineapple belongs on pizza once and for all?",
+      "ProblemText": "Can researchers determine whether pineapple belongs on pizza once and for all?",
       "BestMethodology": "None",
       "IsResearchable": false,
       "RequestId": 39,
-      "GoodMethodologies": []
+      "GoodMethodologies": [],
+      "Name": "Sophia Patel"
     },
     {
-            "ProblemText": "We want to know the exact thoughts every American will have about artificial intelligence ten years from now.",
+      "ProblemText": "We want to know the exact thoughts every American will have about artificial intelligence ten years from now.",
       "BestMethodology": "None",
       "IsResearchable": false,
       "RequestId": 40,
-      "GoodMethodologies": []
+      "GoodMethodologies": [],
+      "Name": "Elijah Novak"
     }
   ]
 }
-
-
