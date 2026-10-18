@@ -119,96 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1454957595
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1454957597}
-  - component: {fileID: 1454957596}
-  m_Layer: 0
-  m_Name: ResearcherGenerator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1454957596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1454957595}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3cba292123a46a4a66acaca8ec91d1f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ResearcherGenerator
-  overrideSeed: 0
-  seedOverride: 12345
-  generateOnStart: 1
-  researcherCount: 10
-  researcherPrefab: {fileID: 0}
-  spawnParent: {fileID: 0}
-  headCount: 12
-  bodyCount: 6
-  legCount: 8
-  experienceRange: {x: 0, y: 10}
-  speedRange: {x: 1, y: 3}
-  qualityRange: {x: 1, y: 3}
-  methodologyIds: 0100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d000000i
-  firstNames:
-  - Jim
-  - Stephen
-  - Brandon
-  - Yao
-  - Minwoo
-  - Ashten
-  - Ruby
-  - Phineas
-  - Ferb
-  - Dwight
-  - Sam
-  - John
-  - Kim
-  - Chloe
-  - Michelle
-  - Laufey
-  - Lara
-  - Erica
-  lastNames:
-  - Lathrop
-  - Gilbert
-  - D'Costa
-  - Amegandjin
-  - Kim
-  - Finders
-  - King
-  - Flynn
-  - Smith
-  - Johnson
-  - Anderson
-  - Gonzalez
-  - Garcia
---- !u!4 &1454957597
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1454957595}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.85645, y: -0.21194, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1547386712
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,9 +163,99 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2037553205
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2037553207}
+  - component: {fileID: 2037553206}
+  m_Layer: 0
+  m_Name: Researcher Generator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2037553206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037553205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3cba292123a46a4a66acaca8ec91d1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ResearcherGenerator
+  overrideSeed: 0
+  seedOverride: 12345
+  generateOnStart: 1
+  researcherCount: 10
+  researcherPrefab: {fileID: 0}
+  spawnParent: {fileID: 0}
+  headCount: 12
+  bodyCount: 6
+  legCount: 8
+  speedRange: {x: 1, y: 3}
+  qualityRange: {x: 1, y: 3}
+  methodologyIds: 0100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d000000i
+  methodologiesPerResearcher: 4
+  firstNames:
+  - Jim
+  - Stephen
+  - Brandon
+  - Yao
+  - Minwoo
+  - Ashten
+  - Ruby
+  - Phineas
+  - Ferb
+  - Dwight
+  - Sam
+  - John
+  - Kim
+  - Chloe
+  - Michelle
+  - Laufey
+  - Lara
+  - Erica
+  lastNames:
+  - Lathrop
+  - Gilbert
+  - D'Costa
+  - Amegandjin
+  - Kim
+  - Finders
+  - King
+  - Flynn
+  - Smith
+  - Johnson
+  - Anderson
+  - Gonzalez
+  - Garcia
+--- !u!4 &2037553207
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037553205}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1547386714}
-  - {fileID: 1454957597}
+  - {fileID: 2037553207}

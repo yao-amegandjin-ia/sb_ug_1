@@ -48,7 +48,7 @@ public class PlayerMover : MonoBehaviour
         if (following)
         {
             // the thing we were walking to got removed (client left)
-            if (follow == null) { Stop(); return; }
+            if (!follow) { Stop(); return; }
             target = follow.position;   // keep up if it's still moving
         }
 
