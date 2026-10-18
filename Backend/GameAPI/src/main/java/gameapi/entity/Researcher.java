@@ -5,34 +5,47 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.type.SqlTypes;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Researcher Entity for reserach frenzy.
+ * We generate all researchers at the start of the game, so we need to keep track of the data
+ * for all researchers
+ *
+ * We index session ID so we can pull all returning clients this way.
+ * Clients will be deleted at the end of a game, or when the session is deleted.
+ */
 @Entity
-@Table(name = "researchers", indexes = @Index(name = "idx_researchers_session", columnList = "session_id"))
+@Table(name = "researchers")
 @Getter @Setter @NoArgsConstructor
 public class Researcher {
 
-    @Id
-    @Column(name = "researcher_uuid", length = 36)
-    private String researcherUuid;
+    /** Composite primary key (session_id, researcher_id). */
+    @EmbeddedId
+    private ResearcherId id;
 
+    /**
+     * Owning session. {@code @MapsId("sessionId")} makes the {@code session_id} column of the composite key
+     * double as this foreign key. Lazy because the game never needs the session when loading researchers.
+     */
+    @MapsId("sessionId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "session_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Session session;
 
-    //Skins will have IDs, so we go in the list from top to bottom on skins
+    @Column(name = "name", length = 100, nullable = false)
+    private String name;
+
+    /** Appearance part IDs, read in order ( head, torso, legs). */
     @JdbcTypeCode(SqlTypes.JSON)
     private List<Integer> skin = new ArrayList<>();
 
     private int experience;
 
-    //Methodologies will also have IDs, so we go in the list from top to bottom
+    /** Ordered methodology IDs; the index is the level the methodology unlocks at. */
     @JdbcTypeCode(SqlTypes.JSON)
     private List<Integer> methodologies = new ArrayList<>();
 
@@ -40,5 +53,7 @@ public class Researcher {
 
     private int quality;
 
-    private String name;
+    /** Cubicle number. 0 = not purchased. */
+    @Column(name = "cubicle_position", nullable = false)
+    private int position;
 }
