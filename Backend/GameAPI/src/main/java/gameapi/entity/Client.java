@@ -12,33 +12,36 @@ import org.hibernate.type.SqlTypes;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * This provides the Entity Client. This will store the necessary information for a client for the save/load
  * feature of Research Frenzy!
+ * These are ONLY returning clients of the game. The game is able to generate the other clients based on the
+ * seed and requests completed.
+ *
  * We index session ID so we can pull all returning clients this way.
- * Don't need to save ALL clients, only returning ones.
+ * Clients will be deleted at the end of a game, or when the session is deleted.
  */
 
 @Entity
-@Table(name = "clients", indexes = @Index(name = "idx_clients_session", columnList = "session_id"))
+@Table(name = "clients")
 @Getter @Setter @NoArgsConstructor
 public class Client {
 
-    @Id
-    @Column(name = "client_uuid", length = 36)
-    private String clientUuid;
+    /** Composite primary key (session_id, client_id). */
+    @EmbeddedId
+    private ClientId id;
 
-    //May be multiple returning clients per session. We fetch this lazily, as session ID is not needed by game
+    /** Owning session; the foreign key shares the {@code session_id} column of the composite key. */
+    @MapsId("sessionId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "session_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private Session session;
 
     @Column(name = "request_id", nullable = false)
     private int requestId;
 
+    /** Appearance part IDs, read in order (for example head, torso, legs). */
     @JdbcTypeCode(SqlTypes.JSON)
     private List<Integer> skin = new ArrayList<>();
-
-    private String name;
 }

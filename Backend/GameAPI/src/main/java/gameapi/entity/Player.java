@@ -22,15 +22,23 @@ import java.util.Map;
 @Getter @Setter @NoArgsConstructor
 public class Player {
 
+    /** Primary key = foreign key to sessions. Filled in by Hibernate via {@link MapsId}; do not set manually. */
     @Id
-    @Column(name = "player_uuid", length = 36)
+    @Column(name = "session_id", length = 36)
+    private String sessionId;
+
+    /**
+     * The owning session. Loaded lazily because most reads only need the data in this row, not the session.
+     */
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "session_id")
+    private Session session;
+
+    /** Backend-generated for now; will come from the Cyclones API later. */
+    @Column(name = "player_uuid", length = 36, nullable = false)
     private String playerUuid;
 
-    //May be multiple returning clients per session. We fetch this lazily, as session ID is not needed by game
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "session_id", nullable = false, unique = true)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Session session;
 
     @Column(name = "current_money", nullable = false)
     private int currentMoney;
