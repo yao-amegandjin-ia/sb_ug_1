@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+>
+
+<!-- Templates must sit directly under <ui:UXML>, above the layout -->
+    <ui:Template src="/Assets/UI/Researcher Methodology Component/ResearcherMethodologyComponent.uxml" name="ResearcherMethodologyComponent"/>
+
+    <ui:VisualElement name="method-match-screen">
+
+        <ui:VisualElement name="header">
+            <ui:Label name="client-name" text="Alice Smith"/>
+            <ui:Button name="close-btn" text="CLOSE"/>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="problem-statement">
+            <ui:Label name="problem-text" text="We want to understand why some college students choose not to attend professor office hours."/>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="method-prompt">
+            <ui:TextElement name="prompt-speaker" text="YOUR LAB"/>
+            <ui:TextElement name="prompt-question" text="WHICH METHOD FITS?"/>
+        </ui:VisualElement>
+
+        <ui:Instance template="ResearcherMethodologyComponent" name="method-tray-slot"/>
+
+        <ui:VisualElement name="method-detail">
+            <ui:VisualElement name="method-banner">
+                <ui:TextElement name="method-banner-text" text="QUALITATIVE RESEARCH: LEARN THE WHY"/>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="method-info">
+                <ui:Label name="method-description" text="Want to know why? Qualitative research explores people's reasons, feelings, and experiences through interviews and open-ended questions, in their own words."/>
+                <ui:VisualElement name="decision-buttons">
+                    <ui:Button name="match-btn" text="MATCH"/>
+                    <ui:Button name="no-match-btn" text="NO MATCH"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

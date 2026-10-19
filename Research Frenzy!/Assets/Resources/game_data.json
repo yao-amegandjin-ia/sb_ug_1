@@ -1,0 +1,126 @@
+{
+  "methods": [
+    {
+      "key": "CaseStudy",
+      "number": 1,
+      "displayName": "Case Study",
+      "color": "#383838",
+      "topic": "one specific company, person, or event studied in depth",
+      "guideDescription": "An in-depth look at one person, group, or situation in its real-world setting."
+    },
+    {
+      "key": "FocusGroup",
+      "number": 2,
+      "displayName": "Focus Group",
+      "color": "#3373B3",
+      "topic": "reactions to a product, idea, or design before launch",
+      "guideDescription": "A guided discussion with a small group to learn opinions, reactions, and ideas."
+    },
+    {
+      "key": "Interview",
+      "number": 3,
+      "displayName": "Interview",
+      "color": "#8C4DA6",
+      "topic": "personal stories, experiences, or expert opinions",
+      "guideDescription": "One-on-one conversations that explore personal experiences in depth."
+    },
+    {
+      "key": "Survey",
+      "number": 4,
+      "displayName": "Survey",
+      "color": "#D98033",
+      "topic": "measurable opinions or habits from a large number of people",
+      "guideDescription": "A standard set of questions given to many people to measure trends in numbers."
+    },
+    {
+      "key": "DocumentAnalysis",
+      "number": 5,
+      "displayName": "Document Analysis",
+      "color": "#4D734D",
+      "topic": "answers hidden in existing records, reports, or archives",
+      "guideDescription": "Studying existing records, texts, and data to find patterns or history."
+    }
+  ],
+  "researchers": [
+    {
+      "name": "Maya Chen",
+      "fame": 2, "speed": 3, "hireCost": 300,
+      "bio": "Maya is the life of every lab meeting. She can get a room full of strangers talking within five minutes, and arguing within ten.",
+      "specialtyBlurb": "Chen will help clients who want to test reactions to a product or idea before launching it.",
+      "startingMethods": ["FocusGroup"],
+      "learnableMethods": ["Interview", "Survey", "CaseStudy"]
+    },
+    {
+      "name": "Sofia Rossi",
+      "fame": 3, "speed": 2, "hireCost": 300,
+      "bio": "Sofia thinks the best conversations happen with a clipboard and a snack table. Her focus groups have a waiting list.",
+      "specialtyBlurb": "Rossi will help clients who need honest reactions to a new design, logo, or advertisement.",
+      "startingMethods": ["FocusGroup"],
+      "learnableMethods": ["Survey", "CaseStudy", "DocumentAnalysis"]
+    },
+    {
+      "name": "Priya Nair",
+      "fame": 1, "speed": 2, "hireCost": 250,
+      "bio": "Priya loves a good spreadsheet. If it can be counted, she has already counted it twice and color-coded the results.",
+      "specialtyBlurb": "Nair will help clients who want to measure what a large number of people think or do.",
+      "startingMethods": ["Survey"],
+      "learnableMethods": ["FocusGroup", "DocumentAnalysis", "Interview"]
+    },
+    {
+      "name": "Miguel Morales",
+      "fame": 2, "speed": 3, "hireCost": 250,
+      "bio": "Miguel is a model citizen, regular lab-meeting attendee, and all around swell guy. In fact, the only bad thing about him is that no one can think of anything bad to say about him.",
+      "specialtyBlurb": "Morales will help clients who need to track habits and opinions across a whole campus or town.",
+      "startingMethods": ["Survey"],
+      "learnableMethods": ["CaseStudy", "FocusGroup", "DocumentAnalysis"]
+    },
+    {
+      "name": "Dev Patel",
+      "fame": 3, "speed": 1, "hireCost": 350,
+      "bio": "Dev drinks too much coffee and has never met a question he couldn't turn into a three-hour conversation. Somehow, people leave happier.",
+      "specialtyBlurb": "Patel will help clients who need expert opinions from people with years of experience.",
+      "startingMethods": ["Interview"],
+      "learnableMethods": ["DocumentAnalysis", "CaseStudy", "FocusGroup"]
+    },
+    {
+      "name": "Marcus Lee",
+      "fame": 1, "speed": 3, "hireCost": 250,
+      "bio": "Marcus is a natural listener who remembers everyone's name, and their dog's name, and what the dog is allergic to.",
+      "specialtyBlurb": "Lee will help clients who want to understand personal experiences, like why someone made a big life choice.",
+      "startingMethods": ["Interview"],
+      "learnableMethods": ["FocusGroup", "CaseStudy", "Survey"]
+    },
+    {
+      "name": "Hana Tanaka",
+      "fame": 1, "speed": 2, "hireCost": 250,
+      "bio": "Hana once spent an entire summer studying a single coffee shop. She still knows the barista's favorite song.",
+      "specialtyBlurb": "Tanaka will help clients who want to understand why one particular business or event succeeded or failed.",
+      "startingMethods": ["CaseStudy"],
+      "learnableMethods": ["Interview", "DocumentAnalysis", "Survey"]
+    },
+    {
+      "name": "Omar Haddad",
+      "fame": 2, "speed": 2, "hireCost": 300,
+      "bio": "Omar believes every problem is a story with a beginning, a middle, and a suspiciously long appendix.",
+      "specialtyBlurb": "Haddad will help clients who need a close look at one person, team, or community and how it works.",
+      "startingMethods": ["CaseStudy"],
+      "learnableMethods": ["FocusGroup", "Interview", "DocumentAnalysis"]
+    },
+    {
+      "name": "Charles Ville",
+      "fame": 3, "speed": 3, "hireCost": 350,
+      "bio": "Charles Ville isn't afraid to pick a fight with a bad dataset. He specializes in digging through dusty archives, old reports, and forgotten footnotes.",
+      "specialtyBlurb": "Ville will help clients whose answers are hidden in old reports, records, or archives.",
+      "startingMethods": ["DocumentAnalysis"],
+      "learnableMethods": ["Interview", "Survey", "CaseStudy"]
+    },
+    {
+      "name": "Elena Novak",
+      "fame": 2, "speed": 1, "hireCost": 250,
+      "bio": "Elena once found a missing grant report in a 1987 filing cabinet and has been insufferable about it ever since.",
+      "specialtyBlurb": "Novak will help clients who want to know how something has changed over time, using records that already exist.",
+      "startingMethods": ["DocumentAnalysis"],
+      "learnableMethods": ["CaseStudy", "Survey", "FocusGroup"]
+    }
+  ]
+}
