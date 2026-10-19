@@ -21,7 +21,7 @@ public class researcher
 }
 
 [Serializable]
-public class ResearcherData
+public class researcherData
 {
     public List<researcher> researchers;
 }
@@ -79,7 +79,7 @@ public class ResearcherHireScreen : MonoBehaviour
         }
 
         TextAsset jsonFile = Resources.Load<TextAsset>("game_data");
-        ResearcherData data = JsonUtility.FromJson<ResearcherData>(jsonFile.text);
+        researcherData data = JsonUtility.FromJson<researcherData>(jsonFile.text);
         List<researcher> allResearchers = data.researchers;
 
         foreach (researcher r in allResearchers)
