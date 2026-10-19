@@ -1,0 +1,17 @@
+{
+    "methods": [
+        { "id": 1, "name": "Basic Research", "description": "Research done to understand how something works, without a specific practical problem to solve. It builds general knowledge that other research can use later." },
+        { "id": 2, "name": "Applied Research", "description": "Research aimed at solving a specific, real-world problem. The goal is a practical answer someone can act on." },
+        { "id": 3, "name": "Exploratory Research", "description": "Early research on a topic that isn't well understood yet. It helps figure out what questions to ask and what to look at more closely." },
+        { "id": 4, "name": "Field Research", "description": "Collecting data by watching or talking to people in their real setting, like a workplace, classroom or neighborhood, instead of a lab." },
+        { "id": 5, "name": "Market Research", "description": "Research about customers and markets: what people want, what they would buy, and how they see a product or its competitors." },
+        { "id": 6, "name": "Qualitative Research", "description": "Explores people's reasons, feelings and experiences through interviews, focus groups and open-ended questions. Good for learning the why." },
+        { "id": 7, "name": "Quantitative Research", "description": "Uses numbers and measurements, like rating-scale surveys or counts, and looks at them with statistics. Good for how many or how much." },
+        { "id": 8, "name": "Mixed Methods", "description": "Combines qualitative and quantitative research in one study, so you get both the numbers and the reasons behind them." },
+        { "id": 9, "name": "Randomized Controlled Trial", "description": "Randomly splits people into groups, changes something for one group, and compares the results. The strongest way to test if something actually causes an effect." },
+        { "id": 10, "name": "Policy Research", "description": "Studies how laws, rules or programs work and what effects they have, to help decision makers choose or improve a policy." },
+        { "id": 11, "name": "Systematic Review", "description": "Gathers and evaluates all the existing studies on a question with a clear, repeatable process, to sum up what the evidence says overall." },
+        { "id": 12, "name": "Product R&D", "description": "Research and development to design, build and test a new product, or improve an existing one, before it launches." },
+        { "id": 13, "name": "Longitudinal Research", "description": "Studies the same people or things again and again over a long time to see how they change." }
+    ]
+}
