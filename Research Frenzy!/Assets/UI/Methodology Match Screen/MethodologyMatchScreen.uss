@@ -1,0 +1,149 @@
+#method-match-screen {
+    background-color: #F4F3FB;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 90%;
+    min-height: 85%;
+    padding-bottom: 24px;
+    border-radius: 10px;
+}
+
+
+#header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    background-color: #7300FF;
+    padding: 12px 24px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+#client-name {
+    font-size: 20px;
+    color: #FFFFFF;
+    -unity-font-style: bold;
+}
+
+#close-btn {
+    background-color: #8683CC;
+    color: #FFFFFF;
+    border-width: 0;
+    border-radius: 10px;
+    -unity-font-style: bold;
+}
+
+#close-btn:hover {
+    background-color: #9C99DB;
+}
+
+#problem-statement {
+    flex-shrink: 0;
+    padding: 24px 24px 16px 24px;
+}
+
+#problem-text {
+    color: #2A1B4D;
+    font-size: 16px;
+    white-space: normal;
+}
+
+#method-tray-slot {
+    background-color: #E4E2F5;
+    padding: 10px;
+    border-radius: 10px
+}
+
+#method-prompt {
+    flex-shrink: 0;
+    padding: 0 24px 8px 24px;
+}
+
+#prompt-speaker {
+    color: #8683CC;
+    font-size: 13px;
+    -unity-font-style: bold;
+}
+
+#prompt-question {
+    color: #2A1B4D;
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+#method-tray-slot {
+    flex-shrink: 0;
+    margin: 0 24px 16px 24px;
+    flex-wrap: wrap;
+}
+
+#method-detail {
+    flex-shrink: 0;
+}
+
+#method-banner {
+    background-color: #8683CC;
+    padding: 8px 24px;
+}
+
+#method-banner-text {
+    color: #FFFFFF;
+    font-size: 15px;
+    -unity-font-style: bold;
+}
+
+#method-info {
+    flex-shrink: 0;
+    padding: 14px 24px 0 24px;
+}
+
+#method-description {
+    color: #2A1B4D;
+    font-size: 16px;
+    white-space: normal;           
+    -unity-font-style: normal;
+    margin-bottom: 14px;
+}
+
+#decision-buttons {
+    flex-direction: row;
+    justify-content: center;
+}
+
+#decision-buttons Button {
+    flex-grow: 1;
+    flex-basis: 15%;
+    min-height: 48px;
+    margin: 0 6px;
+    border-width: 0;
+    border-radius: 12px;
+    font-size: 17px;
+    -unity-font-style: bold;
+}
+
+#decision-buttons #match-btn    { 
+    margin-left: 0; 
+}
+#decision-buttons #no-match-btn { 
+    margin-right: 0; 
+}
+
+
+#match-btn {
+    background-color: #0099FF;
+    color: #FFFFFF;
+}
+
+#match-btn:hover {
+    background-color: #33ADFF;
+}
+
+#no-match-btn {
+    background-color: #FFA500;
+    color: #2A1B4D;
+}
+
+#no-match-btn:hover {
+    background-color: #FFB733;
+}

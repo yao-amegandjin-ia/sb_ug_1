@@ -8,14 +8,10 @@
 
 <Style src="/Assets/UI/Researcher Methodology Component/ResearcherMethodologyComponent.uss"/>
 <ui:VisualElement name="methodologies">
-    <ui:Button name="methodology-one" text="1">
-    </ui:Button>
-    <ui:Button name="methodology-two" text="2">
-    </ui:Button>
-    <ui:Button name="methodology-three" text="3">
-    </ui:Button>
-    <ui:Button name="methodology-four" text="4">
-    </ui:Button>
+    <ui:Button name="methodology-one" text="Qualitative"/>
+    <ui:Button name="methodology-two" text="Systematic"/>
+    <ui:Button name="methodology-three" text="Qualitative"/>
+    <ui:Button name="methodology-four" text="Applied"/>
 </ui:VisualElement>
     
 </ui:UXML>
