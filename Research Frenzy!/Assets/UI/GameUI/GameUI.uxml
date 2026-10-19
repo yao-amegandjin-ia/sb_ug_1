@@ -1,0 +1,143 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="GameUI.uss" />
+
+    <ui:VisualElement name="game-ui" picking-mode="Ignore">
+
+        <!-- top left buttons -->
+        <ui:VisualElement name="top-buttons" picking-mode="Ignore">
+            <ui:Button name="sound-button" text="SOUND" class="small-button" />
+            <ui:Button name="settings-button" text="SETTINGS" class="small-button" />
+            <ui:Button name="help-button" text="HELP" class="small-button" />
+        </ui:VisualElement>
+
+        <!-- codex (left side) -->
+        <ui:VisualElement name="codex" class="side-panel hidden">
+            <ui:VisualElement class="panel-header">
+                <ui:Label text="RESEARCH CODEX" class="panel-title" />
+                <ui:Button name="codex-close" text="CLOSE" class="close-button" />
+            </ui:VisualElement>
+            <ui:Label text="Click a method to read about it." class="panel-hint" />
+            <ui:ScrollView name="codex-list" class="panel-scroll" />
+        </ui:VisualElement>
+
+        <!-- manage firm (left side) -->
+        <ui:VisualElement name="manage-firm" class="side-panel hidden">
+            <ui:VisualElement class="panel-header">
+                <ui:Label text="MANAGE FIRM" class="panel-title" />
+                <ui:Button name="firm-close" text="CLOSE" class="close-button" />
+            </ui:VisualElement>
+            <ui:ScrollView class="panel-scroll">
+                <ui:Label text="RESEARCHERS" class="section-title" />
+                <ui:VisualElement name="firm-researchers" />
+                <ui:Label text="UPGRADES" class="section-title" />
+                <ui:VisualElement name="firm-upgrades" />
+                <ui:Label text="THIS SESSION" class="section-title" />
+                <ui:VisualElement name="firm-stats" class="stats-grid" />
+            </ui:ScrollView>
+        </ui:VisualElement>
+
+        <!-- bottom bar -->
+        <ui:VisualElement name="hud">
+            <ui:Button name="codex-button" class="hud-button main">
+                <ui:Label text="CODEX" class="hud-button-title" picking-mode="Ignore" />
+                <ui:Label text="research methods" class="hud-button-sub" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:Button name="manage-button" class="hud-button main">
+                <ui:Label text="MANAGE FIRM" class="hud-button-title" picking-mode="Ignore" />
+                <ui:Label text="your team" class="hud-button-sub" picking-mode="Ignore" />
+            </ui:Button>
+            <ui:VisualElement name="studies" class="hud-card white">
+                <ui:Label text="STUDIES" class="card-label" />
+                <ui:VisualElement class="studies-row">
+                    <ui:VisualElement class="study">
+                        <ui:Label text="BEST" class="study-label" />
+                        <ui:Label name="best-count" text="0" class="study-count" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="study">
+                        <ui:Label text="PARTIAL" class="study-label" />
+                        <ui:Label name="partial-count" text="0" class="study-count" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="study">
+                        <ui:Label text="WRONG" class="study-label" />
+                        <ui:Label name="wrong-count" text="0" class="study-count" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="study">
+                        <ui:Label text="ONGOING" class="study-label" />
+                        <ui:Label name="ongoing-count" text="0" class="study-count" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="hud-card orange">
+                <ui:Label text="MONEY" class="card-label" />
+                <ui:Label name="money-text" text="$0" class="card-value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="spacer" />
+            <ui:VisualElement class="hud-card main small-card">
+                <ui:Label text="DAY" class="card-label" />
+                <ui:Label name="day-text" text="1/7" class="card-value" />
+            </ui:VisualElement>
+            <ui:VisualElement class="hud-card dark small-card">
+                <ui:Label text="TIME LEFT" class="card-label" />
+                <ui:Label name="timer-text" text="3:00" class="card-value" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- day summary (middle of the screen) -->
+        <ui:VisualElement name="day-summary" class="modal-bg hidden">
+            <ui:VisualElement class="modal">
+                <ui:VisualElement class="panel-header">
+                    <ui:Label name="summary-title" text="DAY 1 COMPLETE" class="panel-title" />
+                </ui:VisualElement>
+                <ui:VisualElement class="modal-body">
+                    <ui:VisualElement name="summary-rows" />
+                    <ui:VisualElement class="summary-money">
+                        <ui:VisualElement class="money-box">
+                            <ui:Label text="EARNED TODAY" class="card-label" />
+                            <ui:Label name="summary-earned" text="$0" class="money-value" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="money-box">
+                            <ui:Label text="CURRENT MONEY" class="card-label" />
+                            <ui:Label name="summary-total" text="$0" class="money-value" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Button name="summary-continue" text="CONTINUE" class="big-button primary" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- start screen (covers everything until the game starts) -->
+        <ui:VisualElement name="start-screen">
+            <ui:VisualElement name="intro-page" class="start-page">
+                <ui:VisualElement class="start-card">
+                    <ui:VisualElement class="panel-header start-header">
+                        <ui:Label text="RESEARCH FRENZY" class="start-title" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="start-body">
+                        <ui:Label text="You run the lab. Figure out what kind of research each client needs." class="start-tagline" />
+                        <ui:Label class="start-text" text="Clients walk into your research firm with a problem they need solved. Read each request, decide which research method fits, and send them to a researcher who knows that method.&#10;&#10;You have 7 days. Good matches earn money, which you can spend between days to hire researchers and upgrade the lab. Along the way you'll learn what 13 different kinds of research are used for." />
+                        <ui:VisualElement class="button-row">
+                            <ui:Button name="leave-button" text="LEAVE" class="big-button secondary" />
+                            <ui:Button name="continue-button" text="CONTINUE" class="big-button primary" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="pick-page" class="start-page hidden">
+                <ui:VisualElement class="start-card">
+                    <ui:VisualElement class="panel-header start-header">
+                        <ui:Label text="CHOOSE YOUR FIRST RESEARCHER" class="start-title" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="start-body">
+                        <ui:Label text="One is picked for you already. You can hire more between days." class="start-tagline" />
+                        <ui:VisualElement name="starter-cards" class="starter-row" />
+                        <ui:VisualElement class="button-row">
+                            <ui:Button name="start-button" text="START DAY 1" class="big-button primary" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>
