@@ -2,13 +2,28 @@
     background-color: transparent;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    flex-shrink: 0;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    -unity-font-style: bold;
 }
 
 #methodologies Button {
     border-radius: 15px;
-    border-color: black;
-    border-width: 5px;
-    background-color: white;
+    border-width: 0;
+    background-color: #8683CC;
+    color: white;
 }
+
+#methodologies #methodology-one:hover, #methodologies #methodology-two:hover {
+    background-color: white;
+    border-color: #7300FF;
+    color: #7300FF;
+    border-width: 3px;
+}
+
+
+#methodologies #methodology-three, #methodologies #methodology-four {
+    background-color: #CFCDE6;
+    color: #5E5AA8;
+}
+

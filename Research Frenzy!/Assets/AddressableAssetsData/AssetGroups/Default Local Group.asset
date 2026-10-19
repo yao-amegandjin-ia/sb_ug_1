@@ -15,8 +15,48 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: dd313ef8ca732e74680404fe03ebbe16
   m_SerializeEntries:
+  - m_GUID: 3f7d196e853e8a54086121c70015e8c5
+    m_Address: Assets/UI/Methodology Match Screen/MethodologyMatchScreen.uss
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 44b6e33838f59264bb6a9ecda2f5138f
     m_Address: Assets/UI/Researcher Hire Screen/ResearcherHireScreen.uss
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6cffbbba9ba7687439ad82f214b591d5
+    m_Address: Assets/UI/Researcher Methodology Component/ResearcherMethodologyComponent.uxml
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 76e217a6ba8e0db449087d02abaae080
+    m_Address: Assets/UI/Researcher Methodology Component/ResearcherMethodologyComponent.uss
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a1052773ee9ac014d8b6553c2c7d8a8b
+    m_Address: Assets/UI/Researcher Referral Screen/ResearcherReferralScreen.uss
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf21063501cdda948a2a2ed5d93a2980
+    m_Address: Assets/UI/Methodology Match Screen/MethodologyMatchScreen.uxml
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1313eda44fa3434387d1dbef9cb5e4a
+    m_Address: Assets/UI/Researcher Referral Screen/ResearcherReferralScreen.uxml
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d26a2ead1ef1fcf4189d0b5db8da273f
+    m_Address: Assets/UI/Researcher Request Screen/ResearcherRequestScreen.uss
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eb9433873a45a9849aaa25a7ae7c9272
+    m_Address: Assets/UI/Researcher Request Screen/ResearcherRequestScreen.uxml
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

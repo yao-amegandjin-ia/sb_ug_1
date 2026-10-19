@@ -1,0 +1,107 @@
+#researcher-referral-screen {
+    background-color: #F4F3FB;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 90%;
+    min-height: 85%;            
+    padding-bottom: 12px;
+    border-radius: 10px;
+    -unity-font-style: bold;
+}
+
+#header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    background-color: #7300FF;
+    padding: 12px 16px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+#client-name {
+    font-size: 20px;
+    color: #FFFFFF;
+}
+
+#close-btn {
+    background-color: #8683CC;
+    color: #FFFFFF;
+    border-width: 0;
+    border-radius: 10px;
+}
+
+#close-btn:hover {
+    background-color: #9C99DB;
+}
+
+
+#problem-statement {
+    flex-shrink: 0;
+    padding: 24px 24px 12px 24px;
+}
+
+#problem-text {
+    color: #2A1B4D;
+    font-size: 18px;
+    white-space: normal;
+    -unity-text-align: middle-left;
+}
+
+#referral-options {
+    flex-direction: column;
+    flex-shrink: 0;
+    padding: 0 20px;
+}
+
+.option {
+    flex-shrink: 0;              
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+}
+
+.option-title {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: #FFFFFF;
+    white-space: normal;
+}
+
+.option-desc {
+    font-size: 14px;
+    -unity-font-style: normal;
+    color: #FFFFFF;
+    white-space: normal;
+}
+
+#help-option    { 
+    background-color: #0099FF; 
+}
+
+#wait-option    { 
+    background-color: #8683CC; 
+}
+
+#tomorrow-option { 
+    background-color: #FFA500; 
+}
+
+#help-option:hover {
+    background-color: #33ADFF;
+}
+
+#tomorrow-option:hover {
+    background-color: #FFB733;
+}
+
+
+#wait-option:hover {
+    background-color: #9C99DB;
+}
+
+#tomorrow-option .option-title,
+#tomorrow-option .option-desc {
+    color: #2A1B4D;
+}
