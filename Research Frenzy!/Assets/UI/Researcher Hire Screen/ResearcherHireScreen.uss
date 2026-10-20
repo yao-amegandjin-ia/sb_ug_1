@@ -3,11 +3,12 @@
     height: 100%;
     background-color: #e5e5e5;
     font-size: 100%;
-    color: black;
+    color: #2A1B4D;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     -unity-font-style: bold;
+    font-size: 16px;
 }
 
 #researchers {
@@ -20,7 +21,7 @@
     flex-shrink: 0;
 }
 
-#cost-info, #researcher-overview {
+#researcher-overview {
     background-color: #FFA500;
 }
 
@@ -39,8 +40,8 @@
 #name-and-stats {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
+    justify-content: center;
+    align-items: center;
     flex-shrink: 0; 
     margin-right: 24px;
 }
@@ -53,8 +54,8 @@
 
 #speciality-blurb {
     padding: 10px 16px;
-    margin-right: 16px;
-    white-space: normal
+    white-space: normal;
+    color: white;
 }
 #bio-text {
     padding: 10px 16px;
@@ -80,36 +81,40 @@
     white-space: nowrap; 
     padding: 10px 16px;       
     background-color: white;
-    border-top-right-radius: 10px;
-    border-top-left-radius: 10px;
+    border-radius: 10px;
 }
 
 #researcher {
     width: 90%;
     background-color: white;
-    padding-bottom: 12px;
     margin-bottom: 16px;
     overflow: hidden;
+    padding-bottom: 12px;
 }
 
 #cost-info, #researcher, #speciality-blurb, #back-to-upgrades, #researcher-hire-screen {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
+  border-radius: 10px;
 }
 
+ScrollView {
+    display: flex;
+    justify-content: center;
+}
 
 #hire-researcher, #back-to-upgrades-button {
     border-color: transparent;
-    background-color: #14248a;
+    background-color: #0099FF;
     width: 25%;
     border-radius: 10px;
 }
 
 #back-to-upgrades-button {
-    background-color: #4d00aa;
-    width: 120px;
-    min-height: 32px;
-    margin: 0;
+
+    background-color: #8683CC;
+    color: #FFFFFF;
+    border-width: 0;
+    border-radius: 10px;
+    -unity-font-style: bold;
 }
 
 
@@ -121,9 +126,14 @@
 #hiring-info {
     display: flex;
     flex-direction: row;
+    background-color: #CFCDE6;
     align-items: stretch;
-    margin-right: 16px;  
+    padding: 5px;
+    border-radius: 10px;
+}
 
+#hiring-info, #speciality-blurb {
+    margin: 0px 15px 0px 15px;
 }
 
 #researcher-stats {
@@ -143,4 +153,65 @@
 
 #researcher-overview {
     flex-wrap: wrap;  
+}
+
+
+ScrollView .unity-scroller--vertical {
+    width: 26px;
+    margin-left: 10px;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+}
+
+
+ScrollView .unity-scroller__low-button,
+ScrollView .unity-scroller__high-button {
+    width: 26px;
+    height: 26px;
+    background-color: #8683CC;
+    border-width: 0;
+    border-radius: 8px;
+    -unity-background-image-tint-color: #FFFFFF;
+}
+
+ScrollView .unity-scroller__low-button:hover,
+ScrollView .unity-scroller__high-button:hover {
+    background-color: #9C99DB;
+}
+
+ScrollView .unity-scroller__low-button:active,
+ScrollView .unity-scroller__high-button:active {
+    background-color: #7300FF;
+}
+
+ScrollView .unity-base-slider__tracker {
+    width: 8px;
+    background-color: #E4E2F5;
+    border-width: 0;
+    border-radius: 4px;
+}
+
+
+ScrollView .unity-base-slider__dragger {
+    width: 8px;
+    background-color: #8683CC;
+    border-width: 0;
+    border-radius: 4px;
+    margin-left: 6px;
+}
+
+ScrollView .unity-base-slider__dragger:hover {
+    background-color: #9C99DB;
+}
+
+ScrollView .unity-base-slider__dragger:active {
+    background-color: #7300FF;
+}
+
+ScrollView .unity-base-slider__dragger-border {
+    display: none;
+}
+
+ScrollView .unity-scroll-view__content-container {
+    align-items: center;
 }
