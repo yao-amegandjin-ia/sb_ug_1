@@ -2,32 +2,46 @@
 // clicking the client makes the player walk over, and the assign panel opens once they're close enough.
 // needs a Collider2D on the object + Physics 2D Raycaster on the camera to work.
 
+using System.Net.Http;
 using Clients;
+using UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Game object for client. This is the component to be placed on the client prefab.
 /// Data and game logic are in client data, which this holds.
 /// Bind() connects client data to a client object
 /// </summary>
+[RequireComponent(typeof(Rigidbody2D))]
 public class Client : MonoBehaviour, IPointerClickHandler
 {
-    public PanelController panels;
+    public RequestScreen requestScreen;
     public PlayerMover player;
     public float talkDistance = 1.2f;   // how close the player has to get before the panel opens
+    
+    [Header("Following")]
+    public float followSpeed = 2.5f;
+    public float followDistance = 1f;   // stays this far behind the player
 
     // Shown in the Inspector so you can watch patience and state at runtime. It points at the same
     // object the generator's callers and the panels use, so changes made in code show up here.
     [SerializeField] ClientData clientData;
 
     public ClientData Data => clientData;
+    
+    Rigidbody2D rb;
+    Transform followTarget;
 
     void Awake()
     {
         // prefabs can't keep links to scene objects, so find them if they're empty
-        if (panels == null) panels = FindAnyObjectByType<PanelController>();
+        if (requestScreen == null) requestScreen = FindAnyObjectByType<RequestScreen>();
         if (player == null) player = FindAnyObjectByType<PlayerMover>();
+        
+        rb = GetComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Kinematic; //Kinematic makes sure that the object is only moved by code
     }
 
     /// <summary>Makes this object represent the given client. Call right after instantiating.</summary>
@@ -43,31 +57,70 @@ public class Client : MonoBehaviour, IPointerClickHandler
     /// </summary>
     void Update()
     {
-        // the patience timer lives in ClientData, this just drives it
-        if (clientData != null) clientData.Tick(Time.deltaTime);
+        // the patience timer lives in ClientData, this updates that timer
+        clientData?.Tick(Time.deltaTime);
     }
+    /// <summary>
+    /// This is what is updated every tick. 
+    /// </summary>
+    
+    void FixedUpdate()
+    {
+        if (!followTarget) return;
+        // walk toward the player until we're close enough, then wait
+        Vector2 toTarget = (Vector2)followTarget.position - rb.position;
+        if (toTarget.magnitude <= followDistance) return;
+
+        Vector2 next = Vector2.MoveTowards(rb.position, followTarget.position, followSpeed * Time.fixedDeltaTime);
+        rb.MovePosition(next);
+    }
+
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (panels == null || !CanTalk()) return;
+        if (requestScreen == null || !CanTalk()) return;
 
         // no player in the scene, just open it
         if (player == null)
         {
-            OpenPanel();
+            OpenRequest();
             return;
         }
 
-        player.WalkUpTo(transform, talkDistance, OpenPanel);
+        player.WalkUpTo(transform, talkDistance, OpenRequest);
     }
 
-    void OpenPanel()
+/// <summary>
+/// Open Request Screen if client is able to be talked to
+/// </summary>
+    void OpenRequest()
     {
         // client might have left while the player was walking over
         if (!this || !CanTalk()) return;
 
-        if (clientData != null) panels.OpenAssignFor(clientData);
-        else panels.OpenAssign();
+        requestScreen.Open(this);
+    }
+
+    /// <summary>
+    /// Starts to follow player, see StartFollowing()
+    /// </summary>
+    public void FollowPlayer()
+    {
+        if (clientData != null) clientData.StartFollowing();
+        if (player != null) followTarget = player.transform;
+    }
+    
+    /// <summary>
+    /// Removes the client game object from the scene. This does not affect client state, so set before calling this.
+    /// </summary>
+    public void Leave()
+    {
+        followTarget = null;
+
+        // go through the spawner so its ActiveClients list stays right
+        ClientSpawner spawner = FindAnyObjectByType<ClientSpawner>();
+        if (spawner != null) spawner.Remove(this);
+        else Destroy(gameObject);
     }
 
     // only clients that haven't been helped yet

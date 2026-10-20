@@ -5,6 +5,7 @@
     xmlns:uie="UnityEditor.UIElements"
     xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
 >
+    <Style src="ResearcherReferralScreen.uss"/>
     <ui:VisualElement name="researcher-referral-screen">
         <ui:VisualElement name="header">
             <ui:Label name="client-name" text="Alice Smith"/>
@@ -16,18 +17,18 @@
         </ui:VisualElement>
 
         <ui:VisualElement name="referral-options">
-            <ui:VisualElement name="help-option" class="option">
-                <ui:Label class="option-title" text="WE CAN HELP WITH THAT"/>
-                <ui:Label class="option-desc" text="A researcher is free to take your request now."/>
-            </ui:VisualElement>
-            <ui:VisualElement name="wait-option" class="option">
-                <ui:Label class="option-title" text="PLEASE WAIT"/>
-                <ui:Label class="option-desc" text="Our researcher is with another visitor right now."/>
-            </ui:VisualElement>
-            <ui:VisualElement name="tomorrow-option" class="option">
-                <ui:Label class="option-title" text="COME BACK TOMORROW"/>
-                <ui:Label class="option-desc" text="Good question, but we don't have a researcher free yet."/>
-            </ui:VisualElement>
+            <ui:Button name="help-option" class="option">
+                <ui:Label picking-mode="Ignore" class="option-title" text="WE CAN HELP WITH THAT"/>
+                <ui:Label picking-mode="Ignore" class="option-desc" text="A researcher is free to take your request now."/>
+            </ui:Button>
+            <ui:Button name="wait-option" class="option">
+                <ui:Label picking-mode="Ignore" class="option-title" text="PLEASE WAIT"/>
+                <ui:Label picking-mode="Ignore" class="option-desc" text="Our researcher is with another visitor right now."/>
+            </ui:Button>
+            <ui:Button name="tomorrow-option" class="option">
+                <ui:Label picking-mode="Ignore" class="option-title" text="COME BACK TOMORROW"/>
+                <ui:Label picking-mode="Ignore" class="option-desc" text="Good question, but we don't have a researcher free yet."/>
+            </ui:Button>
         </ui:VisualElement>
 
     </ui:VisualElement>
