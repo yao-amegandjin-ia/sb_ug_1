@@ -127,16 +127,6 @@ public class ResearcherHireScreen : MonoBehaviour
         VisualTreeAsset uiAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/UI/Researcher Methodology Component/ResearcherMethodologyComponent.uxml");
         VisualElement researcherMethologies = uiAsset.Instantiate();
         List<Button> methodologies = researcherMethologies.Query<Button>().ToList();
-        foreach (Button b in methodologies) {
-            Color c = RandomColor();
-            b.style.borderTopColor = c;
-            b.style.borderRightColor = c;
-            b.style.borderBottomColor = c;
-            b.style.borderLeftColor = c;
-            b.style.backgroundColor = Lighten(c, 0.2f);
-        }
-
-
         researcherOverview.Add(nameAndStats);
         researcherOverview.Add(researcherMethologies);
 
