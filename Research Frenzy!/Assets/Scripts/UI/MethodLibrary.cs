@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+//TODO: May need to change and make more efficient
 [Serializable]
 public class MethodEntry
 {
@@ -24,12 +26,13 @@ public static class MethodLibrary
 {
     static List<MethodEntry> methods;
 
+    // ReSharper disable Unity.PerformanceAnalysis
     public static List<MethodEntry> GetAll()
     {
         if (methods == null)
         {
             TextAsset file = Resources.Load<TextAsset>("methodologies");
-            if (file == null)
+            if (!file)
             {
                 Debug.LogError("methodologies.json not found in Resources");
                 methods = new List<MethodEntry>();

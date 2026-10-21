@@ -52,7 +52,7 @@
 #method-tray-slot {
     background-color: #E4E2F5;
     padding: 10px;
-    border-radius: 10px
+    border-radius: 10px;
 }
 
 #method-prompt {
