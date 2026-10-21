@@ -40,9 +40,7 @@ public class ResearcherGenerator : MonoBehaviour
     [Tooltip("IDs of every methodology in the game.")]
     [SerializeField] private List<int> methodologyIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
     
-    [Tooltip("How many methodologies (levels) each researcher starts with. " +
-             "Capped at the number of methodologies in the game.")]
-    [SerializeField, Min(1)] private int methodologiesPerResearcher = 4;
+
 
 
     [Header("Name pools")]
@@ -220,19 +218,7 @@ public class ResearcherGenerator : MonoBehaviour
         return fallback;
     }
 
-    private Researcher CreateResearcherObject(string objectName)
-    {
-        if (researcherPrefab != null)
-        {
-            Researcher instance = Instantiate(researcherPrefab, spawnParent);
-            instance.gameObject.name = objectName;
-            return instance;
-        }
 
-        GameObject go = new GameObject(objectName);
-        if (spawnParent != null) go.transform.SetParent(spawnParent);
-        return go.AddComponent<Researcher>();
-    }
     
 
     //Inclusive min/max; tolerates a reversed range.

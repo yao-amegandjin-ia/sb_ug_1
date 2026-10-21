@@ -2,28 +2,45 @@
     background-color: transparent;
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: flex-start;  
+    align-items: center;
+    align-content: flex-start; 
     flex-wrap: wrap;
     -unity-font-style: bold;
 }
 
 #methodologies Button {
+    height: 32px;                  
+    margin: 4px;
+    padding: 0 12px;
     border-radius: 15px;
-    border-width: 0;
+    border-width: 3px;             
+    border-color: #8683CC;         
     background-color: #8683CC;
     color: white;
+    white-space: nowrap;
+    -unity-text-align: middle-center;
 }
 
 #methodologies #methodology-one:hover, #methodologies #methodology-two:hover {
     background-color: white;
     border-color: #7300FF;
     color: #7300FF;
-    border-width: 3px;
 }
 
 
 #methodologies #methodology-three, #methodologies #methodology-four {
     background-color: #CFCDE6;
+    border-color: #CFCDE6;
     color: #5E5AA8;
 }
 
+/* the method picked on the match screen. listed by id so it beats the locked colours above */
+#methodologies #methodology-one.selected,
+#methodologies #methodology-two.selected,
+#methodologies #methodology-three.selected,
+#methodologies #methodology-four.selected {
+    background-color: white;
+    border-color: #7300FF;
+    color: #7300FF;
+}

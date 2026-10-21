@@ -11,6 +11,7 @@ namespace UI
     /// This is SOLELY for demonstration purposes, and will not be used in game
     /// This goes on the GameUI object (which is the HUD)
     /// Creates a temporary "Spawn Client" button for demonstration purposes
+    /// Also creates a temporary "Spawn Researcher" button for demo
     /// 
     /// </summary>
 
@@ -27,6 +28,13 @@ namespace UI
             button.style.top = 16;
             button.style.right = 16;
             root.Add(button);
+            
+            Button researcherButton = new Button(SpawnResearcherClicked);
+            researcherButton.text = "Spawn Researcher";
+            researcherButton.style.position = Position.Absolute;
+            researcherButton.style.top = 52;   // just under Spawn Client
+            researcherButton.style.right = 16;
+            root.Add(researcherButton);
         }
 
         void SpawnClicked()
@@ -38,6 +46,17 @@ namespace UI
                 return;
             }
             lab.SpawnNextClient();
+        }
+        
+        void SpawnResearcherClicked()
+        {
+            ResearcherHireScreen hireScreen = FindAnyObjectByType<ResearcherHireScreen>();
+            if (hireScreen == null)
+            {
+                Debug.LogWarning("DemoSpawnButton: no ResearcherHireScreen found. Is it under UIRoot in the UI scene?");
+                return;
+            }
+            hireScreen.Toggle();
         }
     }
 }

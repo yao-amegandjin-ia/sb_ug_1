@@ -22,7 +22,7 @@ public class Client : MonoBehaviour, IPointerClickHandler
     public float talkDistance = 1.2f;   // how close the player has to get before the panel opens
     
     [Header("Following")]
-    public float followSpeed = 2.5f;
+    public float followSpeed = 4f;
     public float followDistance = 1f;   // stays this far behind the player
 
     // Shown in the Inspector so you can watch patience and state at runtime. It points at the same
@@ -31,8 +31,21 @@ public class Client : MonoBehaviour, IPointerClickHandler
 
     public ClientData Data => clientData;
     
+    // Optional: sprite layers for the look. Arrays are indexed by ClientData.Appearance
+    // (x: head, y: torso, z: legs). Leave empty if you set the look some other way.
+    [Header("Appearance (optional)")]
+    [SerializeField] private SpriteRenderer headRenderer;
+    [SerializeField] private SpriteRenderer torsoRenderer;
+    [SerializeField] private SpriteRenderer legsRenderer;
+    [SerializeField] private Sprite[] headSprites;
+    [SerializeField] private Sprite[] torsoSprites;
+    [SerializeField] private Sprite[] legSprites;
+    
     Rigidbody2D rb;
     Transform followTarget;
+    
+    // true after "We can help with that", until the client leaves. researchers check this when clicked
+    public bool IsFollowing => followTarget != null;
 
     void Awake()
     {
@@ -49,6 +62,23 @@ public class Client : MonoBehaviour, IPointerClickHandler
     {
         this.clientData = clientData;
         gameObject.name = $"Client {clientData.Id} - {clientData.Name}";
+    }
+    
+    //This sets the sprites to render for the respective parts.
+    //Appearance is a Vector3Int, x = head, y = torso, z = leg
+    private void ApplyAppearance()
+    {
+        Vector3Int look = clientData.Appearance;
+        SetSprite(headRenderer, headSprites, look.x);
+        SetSprite(torsoRenderer, torsoSprites, look.y);
+        SetSprite(legsRenderer, legSprites, look.z);
+    }
+    
+    // Does nothing if the renderer or sprite list isn't set up, so a bare prefab still works.
+    private static void SetSprite(SpriteRenderer target, Sprite[] sprites, int index)
+    {
+        if (target == null || sprites == null || index < 0 || index >= sprites.Length) return;
+        target.sprite = sprites[index];
     }
 
     /// <summary>

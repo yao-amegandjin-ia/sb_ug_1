@@ -7,6 +7,7 @@
 >
 
 <!-- Templates must sit directly under <ui:UXML>, above the layout -->
+    <Style src="MethodologyMatchScreen.uss"/>
     <ui:Template src="/Assets/UI/Researcher Methodology Component/ResearcherMethodologyComponent.uxml" name="ResearcherMethodologyComponent"/>
 
     <ui:VisualElement name="method-match-screen">
