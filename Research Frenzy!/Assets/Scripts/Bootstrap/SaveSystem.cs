@@ -1,17 +1,17 @@
-﻿using Assets.Scripts.GameDataObjects;
+﻿using Assets;
+using Assets.Scripts.GameDataObjects;
 using Assets.Scripts.Interfaces;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.Networking;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Assets;
-using System.Runtime.CompilerServices;
-using TMPro.EditorUtilities;
 namespace Assets.Scripts.Bootstrap
 {
     /// <summary>
@@ -45,7 +45,7 @@ namespace Assets.Scripts.Bootstrap
         private DateTime _lastPlayed;
 
         /// <summary>
-        /// 
+        /// Constructor for the savesystem class.
         /// 
         /// </summary>
         /// <param name="apiBaseUrl"></param>
@@ -92,7 +92,6 @@ namespace Assets.Scripts.Bootstrap
                     webRequest.downloadHandler.text
                 );
 
-                JObject player = (JObject)loadResponse["player"];
 
                 return new SaveData
                 {
@@ -188,6 +187,72 @@ namespace Assets.Scripts.Bootstrap
 
                 
 
+
+            }
+        }
+       //Provide a null PlayerData if not sending back a finalPlayerState
+        public async override Awaitable EndGame(PlayerData finalPlayerState)
+        {
+            await CheckServerHealth();
+            string endpointURL = apiBaseUrl + $"/sessions/{_sessionId}/end";
+            string body;
+            if (finalPlayerState == null)
+            {
+                body = "{}";
+            }
+            else
+            {
+                body = JsonConvert.SerializeObject(new
+                {
+                    player = finalPlayerState
+
+                });
+            }
+            
+
+            using (UnityWebRequest webRequest = UnityWebRequest.Post(endpointURL, body, "application/json"))
+            {
+                await webRequest.SendWebRequest();
+
+                if (webRequest.result != UnityWebRequest.Result.Success)
+                {
+                    throw new Exception($"{webRequest.responseCode}: {webRequest.error}");
+                }
+            }
+        }
+
+        public async override Awaitable SaveQuizData(QuizType quizType, Dictionary<int, int> responses)
+        {
+            await CheckServerHealth();
+            string quiz;
+            if (quizType == QuizType.MidGame)
+            {
+                quiz = "mid-game";
+            }
+            else
+            {
+                quiz = "post-game";
+            }
+
+            string endpointURL = apiBaseUrl + $"/sessions/{_sessionId}/quizzes/{quiz}";
+
+            string body = JsonConvert.SerializeObject(
+                new
+                {
+                    responses = responses
+                }
+                );
+
+            using (UnityWebRequest webRequest = UnityWebRequest.Put(endpointURL, body))
+            {
+                webRequest.SetRequestHeader("Content-Type", "application/json");
+
+                await webRequest.SendWebRequest();
+
+                if (webRequest.result != UnityWebRequest.Result.Success)
+                {
+                    throw new Exception($"{webRequest.responseCode}: {webRequest.error}");
+                }
 
             }
         }
