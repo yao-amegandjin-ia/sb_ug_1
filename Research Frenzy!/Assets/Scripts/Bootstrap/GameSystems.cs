@@ -12,6 +12,8 @@ namespace Assets.Scripts.Bootstrap
         //For testing this is going to be referenced in the savesystem.
         private readonly string _playerId = "a1b2c3d4-0000-4000-8000-000000000001";
         private readonly string _apiUrl = "http://localhost:8080";
+        private readonly int _seed = GameSeed.EnsureInitialized();
+
 
         //...
         public DataManager DataManager { get;  }
@@ -26,7 +28,7 @@ namespace Assets.Scripts.Bootstrap
             DataManager = new DataManager();
             SceneLoader = new SceneLoader();
             //Change this concrete implementation change the adapter
-            SaveSystem = new SaveSystem(_apiUrl, _playerId);
+            SaveSystem = new SaveSystem(_apiUrl, _playerId, _seed);
         }
 
 

@@ -1,6 +1,7 @@
 using Assets.Scripts.Bootstrap;
 using UnityEngine;
 using Assets.Scripts.GameDataObjects;
+using Assets;
 using Assets.Scripts.Interfaces;
 using System.Collections.Generic;
 using System;

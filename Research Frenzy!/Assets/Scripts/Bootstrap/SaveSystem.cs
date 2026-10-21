@@ -9,7 +9,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Assets;
 using System.Runtime.CompilerServices;
+using TMPro.EditorUtilities;
 namespace Assets.Scripts.Bootstrap
 {
     /// <summary>
@@ -35,12 +37,15 @@ namespace Assets.Scripts.Bootstrap
         //
         private string _playerId;
         private string _sessionId;
+
+        private int _seed;
         private DateTime _lastPlayed;
 
         //Inject a test playerId!
-        public SaveSystem(string apiBaseUrl, string playerId) : base(apiBaseUrl) 
+        public SaveSystem(string apiBaseUrl, string playerId, int seed) : base(apiBaseUrl) 
         {
             _playerId = playerId;
+            _seed = seed;
         }
         
        
@@ -49,13 +54,17 @@ namespace Assets.Scripts.Bootstrap
         {
             await CheckServerHealth();
 
-            //In the cyclones commons adapter I assume getttingPlayerId will be super easy. They would then store in the static global var.
-
-            string responseString = await CreateOrResume(_playerId);
+            //Note if the body for create or resume is empty/filled with no data a seed and player id will be created. 
+            string responseString = await CreateOrResume(_playerId, _seed);
             JObject response = JObject.Parse(responseString);
 
+            //Update all of the database specific fields based upon what session create or resume returns. 
              _sessionId = response["session_id"].Value<string>();
             _playerId = response["player_uuid"].Value<string>();
+            _lastPlayed = response["last_played"].Value<DateTime>();
+            _seed = response["seed"].Value<int>();
+            //We set the seed in the static class as well so that it is not mismatched!
+            GameSeed.Set(_seed);
 
             string endpointURL = apiBaseUrl + $"/sessions/{_sessionId}/save";
 
@@ -118,14 +127,15 @@ namespace Assets.Scripts.Bootstrap
             }
 
         }
+         
 
-
-        private async Awaitable<string> CreateOrResume(string playerId)
+        private async Awaitable<string> CreateOrResume(string playerId, int seed)
         {
             string endpointURL = apiBaseUrl + "/sessions";
             string body = JsonConvert.SerializeObject(new
             {
-                player_uuid = playerId
+                player_uuid = playerId, 
+                seed = seed
             });
 
             using (UnityWebRequest webRequest = UnityWebRequest.Post(endpointURL, body, "application/json"))
