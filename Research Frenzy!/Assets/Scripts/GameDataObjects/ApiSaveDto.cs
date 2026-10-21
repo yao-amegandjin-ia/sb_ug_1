@@ -35,14 +35,15 @@ namespace Assets.Scripts.Bootstrap.ApiDtos
         [JsonProperty("owned_upgrades")]
         public Dictionary<string, int> OwnedUpgrades { get; set; }
 
-        [JsonProperty("hired_researchers")]
-        public List<string> HiredResearchers { get; set; }
+        
     }
 
     public class ApiResearcherDto
     {
         [JsonProperty("researcher_id")]
         public int ResearcherId { get; set; }
+        [JsonProperty("current_client_id")]
+        public int CurrentClientId { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }

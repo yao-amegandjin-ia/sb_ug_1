@@ -72,7 +72,7 @@ namespace Assets.Scripts.Bootstrap
              _sessionId = response["session_id"].Value<string>();
             _playerId = response["player_uuid"].Value<string>();
             _lastPlayed = response["last_played"]?.Value<DateTime>()
-              ?? DateTime.UtcNow;
+              ?? DateTime.Now;
             _seed = response["seed"].Value<int>();
             //We set the seed in the static class as well so that it is not mismatched!
             GameSeed.Set(_seed);
@@ -91,8 +91,8 @@ namespace Assets.Scripts.Bootstrap
                 if (webRequest.result != UnityWebRequest.Result.Success)
                 {
                     throw new Exception(
-                        $"{webRequest.responseCode}: {webRequest.error}"
-                    );
+                   $"{webRequest.responseCode}: {webRequest.error}\n" +
+                   $"{webRequest.downloadHandler?.text}");
                 }
 
                 //Convert the response to the api object
@@ -102,7 +102,7 @@ namespace Assets.Scripts.Bootstrap
                     throw new Exception("The API returned an empty save response.");
 
                 }
-                return FromApiDto(apiSave);
+                return SaveDataMapper.FromApiDto(apiSave);
                 
             }
         }
@@ -121,7 +121,7 @@ namespace Assets.Scripts.Bootstrap
             await CheckServerHealth();
             string endpointURL = apiBaseUrl + $"/sessions/{_sessionId}/save";
 
-            ApiSaveDto apiSave = ToApiDto(saveData);
+            ApiSaveDto apiSave = SaveDataMapper.ToApiDto(saveData);
             string body = JsonConvert.SerializeObject(apiSave);
             
             using (UnityWebRequest webRequest = UnityWebRequest.Put(endpointURL, body))
@@ -132,7 +132,9 @@ namespace Assets.Scripts.Bootstrap
 
                 if (webRequest.result != UnityWebRequest.Result.Success)
                 {
-                    throw new Exception($"{webRequest.responseCode}: {webRequest.error}");
+                    throw new Exception(
+                   $"{webRequest.responseCode}: {webRequest.error}\n" +
+                   $"{webRequest.downloadHandler?.text}");
                 }
                
             }
@@ -166,7 +168,9 @@ namespace Assets.Scripts.Bootstrap
 
                 if (webRequest.result != UnityWebRequest.Result.Success)
                 {
-                    throw new Exception($"{webRequest.responseCode}: {webRequest.error}");
+                    throw new Exception(
+                   $"{webRequest.responseCode}: {webRequest.error}\n" +
+                   $"{webRequest.downloadHandler?.text}");
                 }
 
                 return webRequest.downloadHandler.text;
@@ -185,7 +189,9 @@ namespace Assets.Scripts.Bootstrap
 
                 if (webRequest.result != UnityWebRequest.Result.Success)
                 {
-                    throw new Exception($"{webRequest.responseCode}: {webRequest.error}");
+                    throw new Exception(
+                    $"{webRequest.responseCode}: {webRequest.error}\n" +
+                    $"{webRequest.downloadHandler?.text}");
                 }
 
         
@@ -208,7 +214,7 @@ namespace Assets.Scripts.Bootstrap
             }
             else
             {
-                body = JsonConvert.SerializeObject(ToApiPlayer(finalPlayerState));
+                body = JsonConvert.SerializeObject(SaveDataMapper.ToApiPlayer(finalPlayerState));
             }
             
 
@@ -218,7 +224,9 @@ namespace Assets.Scripts.Bootstrap
 
                 if (webRequest.result != UnityWebRequest.Result.Success)
                 {
-                    throw new Exception($"{webRequest.responseCode}: {webRequest.error}");
+                    throw new Exception(
+                   $"{webRequest.responseCode}: {webRequest.error}\n" +
+                   $"{webRequest.downloadHandler?.text}");
                 }
             }
         }
@@ -257,74 +265,14 @@ namespace Assets.Scripts.Bootstrap
 
                 if (webRequest.result != UnityWebRequest.Result.Success)
                 {
-                    throw new Exception($"{webRequest.responseCode}: {webRequest.error}");
+                    throw new Exception(
+                   $"{webRequest.responseCode}: {webRequest.error}\n" +
+                   $"{webRequest.downloadHandler?.text}");
                 }
 
             }
         }
 
-        //Convert to the api dtos
-        private static SaveData FromApiDto(ApiSaveDto api) => new SaveData
-        {
-            Player = api.Player == null ? null : new PlayerData
-            {
-                CurrentMoney = api.Player.CurrentMoney,
-                TotalMoneyEarned = api.Player.TotalMoneyEarned,
-                CurrentDay = api.Player.CurrentDay,
-                StudyResults = api.Player.StudyResults ?? new Dictionary<int, int>(),
-                OwnedUpgrades = api.Player.OwnedUpgrades ?? new Dictionary<string, int>(),
-                HiredResearchers = api.Player.HiredResearchers ?? new List<string>()
-            },
-            Researchers = api.Researchers?.Select(r => new ResearcherDataObject
-            {
-                ResearcherId = r.ResearcherId,
-                Name = r.Name,
-                Postion = r.Position,
-                Experience = r.Experience,
-                Speed = r.Speed,
-                Quality = r.Quality,
-                Methodologies = r.Methodologies ?? new List<MethodologiesEnum>(),
-                Skin = r.Skin ?? new List<int>()
-            }).ToList() ?? new List<ResearcherDataObject>(),
-            Clients = api.Clients?.Select(c => new ClientDataObject
-            {
-                ClientId = c.ClientId,
-                RequestId = c.RequestId,
-                Skin = c.Skin ?? new List<int>()
-            }).ToList() ?? new List<ClientDataObject>()
-        };
-    }
-
-     private static ApiSaveDto ToApiDto(SaveData save) => new ApiSaveDto
-     {
-         Player = save.Player == null ? null : ToApiPlayer(save.Player),
-         Researchers = save.Researchers?.Select(r => new ApiResearcherDto
-         {
-             ResearcherId = r.ResearcherId,
-             Name = r.Name,
-             Position = r.Postion, // Rename to r.Position if the game model typo is fixed.
-             Experience = r.Experience,
-             Speed = r.Speed,
-             Quality = r.Quality,
-             Methodologies = r.Methodologies,
-             Skin = r.Skin
-         }).ToList(),
-         Clients = save.Clients?.Select(c => new ApiClientDto
-         {
-             ClientId = c.ClientId,
-             RequestId = c.RequestId,
-             Skin = c.Skin
-         }).ToList()
-     };
-        private static ApiPlayerDto ToApiPlayer(PlayerData player) => new ApiPlayerDto
-        {
-            CurrentMoney = player.CurrentMoney,
-            TotalMoneyEarned = player.TotalMoneyEarned,
-            CurrentDay = player.CurrentDay,
-            StudyResults = player.StudyResults,
-            OwnedUpgrades = player.OwnedUpgrades,
-            HiredResearchers = player.HiredResearchers
-        };
 
 
 

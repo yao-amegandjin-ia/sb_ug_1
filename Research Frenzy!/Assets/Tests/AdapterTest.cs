@@ -1,21 +1,18 @@
 using Assets.Scripts.Bootstrap;
+using Assets.Scripts.Bootstrap.ApiDtos;
 using Assets.Scripts.GameDataObjects;
-using Newtonsoft.Json;
+using Assets.Scripts.Interfaces;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
-using Assets.Scripts.Interfaces;
-using System.Linq;
 
-
-// Play Mode integration tests. Requires the Spring Boot API and an isolated test database.
-// Assumes DTOs have been aligned with the Postman API contract.
+// Play Mode integration tests. Requires a running Spring Boot API and isolated test database.
 public class SaveSystemIntegrationTests
 {
     private const string BaseUrl = "http://localhost:8080";
@@ -26,29 +23,25 @@ public class SaveSystemIntegrationTests
     [SetUp]
     public void SetUp()
     {
-        Debug.Log("Setup started");
         TextAsset asset = Resources.Load<TextAsset>("ResearchFrenzyPostman");
         Assert.That(asset, Is.Not.Null,
             "Copy the Postman collection to Assets/Resources/ResearchFrenzyPostman.json");
         collection = JObject.Parse(asset.text);
         adapter = new SaveSystem(BaseUrl, null, 0);
     }
-    
-
 
     [Test]
     public async Task SaveAndLoad_DayOne_RoundTripsAllEntities()
     {
         await StartNewSession();
         JObject fixture = Fixture("4. Save day 1");
-        Debug.Log((JsonConvert.SerializeObject(ToSaveData(fixture), Formatting.Indented)));
-        await adapter.SaveGame(ToSaveData(fixture));
-        SaveData loaded = await adapter.LoadGame();
-        Assert.That(loaded, Is.Not.Null);
-        Assert.That(loaded.Researchers, Has.Count.EqualTo(10));
-        Assert.That(loaded.Clients, Has.Count.EqualTo(3));
+        SaveData expected = ToSaveData(fixture);
+        AssertFixtureWasMapped(fixture, expected);
 
-        AssertContainsFixture(fixture, JObject.FromObject(loaded), "adapter load");
+        await adapter.SaveGame(expected); // Do not swallow errors.
+        SaveData loaded = await adapter.LoadGame();
+        AssertEntityCounts(fixture, loaded);
+        AssertContainsFixture(fixture, ToApiJson(loaded), "adapter load");
         AssertContainsFixture(fixture, await GetJson($"/sessions/{sessionId}/save"), "database load");
     }
 
@@ -59,12 +52,13 @@ public class SaveSystemIntegrationTests
         await adapter.SaveGame(ToSaveData(Fixture("4. Save day 1")));
 
         JObject dayThree = Fixture("6. Save day 3");
-        await adapter.SaveGame(ToSaveData(dayThree));
+        SaveData expected = ToSaveData(dayThree);
+        AssertFixtureWasMapped(dayThree, expected);
+        await adapter.SaveGame(expected);
 
         SaveData loaded = await adapter.LoadGame();
-        Assert.That(loaded.Researchers, Has.Count.EqualTo(10));
-        Assert.That(loaded.Clients, Has.Count.EqualTo(3));
-        AssertContainsFixture(dayThree, JObject.FromObject(loaded), "adapter load");
+        AssertEntityCounts(dayThree, loaded);
+        AssertContainsFixture(dayThree, ToApiJson(loaded), "adapter load");
         AssertContainsFixture(dayThree, await GetJson($"/sessions/{sessionId}/save"), "database load");
     }
 
@@ -73,22 +67,20 @@ public class SaveSystemIntegrationTests
     {
         await StartNewSession();
         await adapter.SaveGame(ToSaveData(Fixture("6. Save day 3")));
-
-        await adapter.SaveQuizData(QuizType.MidGame,
-            QuizResponses("8. Mid-game quiz answers"));
-        await adapter.SaveQuizData(QuizType.MidGame,
-            QuizResponses("9. Mid-game quiz - one more answer"));
+        await adapter.SaveQuizData(QuizType.MidGame, QuizResponses("8. Mid-game quiz answers"));
+        await adapter.SaveQuizData(QuizType.MidGame, QuizResponses("9. Mid-game quiz - one more answer"));
 
         JObject collected = await GetJson($"/sessions/{sessionId}/data-collection");
-        JObject answers = (JObject)collected["mid_game_quiz_responses"];
+        JObject answers = collected["mid_game_quiz_responses"] as JObject;
         Assert.That(answers, Is.Not.Null);
         Assert.That(answers.Count, Is.EqualTo(5));
-        Assert.That(answers["4"].Value<int>(), Is.EqualTo(2));
-        Assert.That(answers["1"].Value<int>(), Is.EqualTo(3));
-        Assert.That(answers["7"].Value<int>(), Is.EqualTo(1));
-        Assert.That(answers["2"].Value<int>(), Is.EqualTo(4));
-        Assert.That(answers["11"].Value<int>(), Is.EqualTo(5));
-        Assert.That(collected["score"].Value<int>(), Is.EqualTo(1900));
+        Assert.That(answers["4"]?.Value<int>(), Is.EqualTo(2));
+        Assert.That(answers["1"]?.Value<int>(), Is.EqualTo(3));
+        Assert.That(answers["7"]?.Value<int>(), Is.EqualTo(1));
+        Assert.That(answers["2"]?.Value<int>(), Is.EqualTo(4));
+        Assert.That(answers["11"]?.Value<int>(), Is.EqualTo(5));
+        // This is an integration assertion against the backend's scoring rules.
+        Assert.That(collected["score"]?.Value<int>(), Is.EqualTo(1900));
     }
 
     [Test]
@@ -96,21 +88,28 @@ public class SaveSystemIntegrationTests
     {
         await StartNewSession();
         await adapter.SaveGame(ToSaveData(Fixture("6. Save day 3")));
-        JObject finalPlayer = Fixture("11. End game with final player state")["player"] as JObject;
-        Assert.That(finalPlayer, Is.Not.Null);
+        JObject finalPlayerJson = Fixture("11. End game with final player state")["player"] as JObject;
+        Assert.That(finalPlayerJson, Is.Not.Null);
 
-        await adapter.EndGame(finalPlayer.ToObject<PlayerData>());
+        // Deserialize using the API DTO and the same mapping as SaveGame/LoadGame.
+        ApiSaveDto finalApiSave = new ApiSaveDto { Player = finalPlayerJson.ToObject<ApiPlayerDto>() };
+        PlayerData finalPlayer = SaveDataMapper.FromApiDto(finalApiSave).Player;
+        Assert.That(finalPlayer.CurrentMoney, Is.EqualTo(finalPlayerJson["current_money"]?.Value<int>()));
+        await adapter.EndGame(finalPlayer);
+
         JObject saved = await GetJson($"/sessions/{sessionId}/save");
-        AssertContainsFixture(finalPlayer, saved["player"], "final player");
-        Assert.That(saved["researchers"], Is.Empty);
-        Assert.That(saved["clients"], Is.Empty);
+        AssertContainsFixture(finalPlayerJson, saved["player"], "final player");
+        Assert.That(saved["researchers"], Is.TypeOf<JArray>());
+        Assert.That(((JArray)saved["researchers"]).Count, Is.Zero);
+        Assert.That(saved["clients"], Is.TypeOf<JArray>());
+        Assert.That(((JArray)saved["clients"]).Count, Is.Zero);
 
-        await adapter.SaveQuizData(QuizType.PostGame,
-            QuizResponses("15. Post-game quiz after end"));
+        await adapter.SaveQuizData(QuizType.PostGame, QuizResponses("15. Post-game quiz after end"));
         JObject collected = await GetJson($"/sessions/{sessionId}/data-collection");
-        Assert.That(collected["score"].Value<int>(), Is.EqualTo(6400));
-        Assert.That(collected["post_game_quiz_responses"], Has.Count.EqualTo(4));
-        Assert.That(collected["post_game_quiz_responses"]["9"].Value<int>(), Is.EqualTo(2));
+        Assert.That(collected["score"]?.Value<int>(), Is.EqualTo(6400));
+        Assert.That(collected["post_game_quiz_responses"], Is.TypeOf<JObject>());
+        Assert.That(((JObject)collected["post_game_quiz_responses"]).Count, Is.EqualTo(4));
+        Assert.That(collected["post_game_quiz_responses"]?["9"]?.Value<int>(), Is.EqualTo(2));
     }
 
     [Test]
@@ -131,30 +130,50 @@ public class SaveSystemIntegrationTests
 
     private async Task StartNewSession()
     {
-        // Current adapter creates a session, then GET /save returns 404 until first PUT.
-        // Once LoadGame handles the initial 404 gracefully, remove this catch.
-        try { await adapter.LoadGame(); }
-        catch (Exception ex)
-        {
-            if (!ex.Message.Contains("404")) throw;
-        }
-
+        // LoadGame creates/resumes a session and should handle an empty save (404).
+        await adapter.LoadGame();
         FieldInfo field = typeof(SaveSystem).GetField("_sessionId",
             BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.That(field, Is.Not.Null);
         sessionId = field.GetValue(adapter) as string;
-        Assert.That(sessionId, Is.Not.Null.And.Not.Empty,
-            "LoadGame did not establish a session");
+        Assert.That(sessionId, Is.Not.Null.And.Not.Empty);
     }
 
     private static SaveData ToSaveData(JObject body)
     {
-        return new SaveData
+        return SaveDataMapper.FromApiDto(body.ToObject<ApiSaveDto>());
+    }
+
+    private static JObject ToApiJson(SaveData save)
+    {
+        return JObject.FromObject(SaveDataMapper.ToApiDto(save));
+    }
+
+    private static void AssertEntityCounts(JObject fixture, SaveData loaded)
+    {
+        Assert.That(loaded, Is.Not.Null);
+        Assert.That(loaded.Researchers, Is.Not.Null);
+        Assert.That(loaded.Clients, Is.Not.Null);
+        Assert.That(loaded.Researchers.Count, Is.EqualTo(((JArray)fixture["researchers"]).Count));
+        Assert.That(loaded.Clients.Count, Is.EqualTo(((JArray)fixture["clients"]).Count));
+    }
+
+    private static void AssertFixtureWasMapped(JObject fixture, SaveData mapped)
+    {
+        AssertEntityCounts(fixture, mapped);
+        Assert.That(mapped.Player, Is.Not.Null);
+        Assert.That(mapped.Player.CurrentMoney, Is.EqualTo(fixture["player"]?["current_money"]?.Value<int>()));
+        Assert.That(mapped.Player.CurrentDay, Is.EqualTo(fixture["player"]?["current_day"]?.Value<int>()));
+        if (mapped.Researchers.Count > 0)
+            Assert.That(mapped.Researchers[0].ResearcherId,
+                Is.EqualTo(fixture["researchers"]?[0]?["researcher_id"]?.Value<int>()));
+        if (mapped.Clients.Count > 0)
         {
-            Player = body["player"].ToObject<PlayerData>(),
-            Researchers = body["researchers"].ToObject<List<ResearcherDataObject>>(),
-            Clients = body["clients"].ToObject<List<ClientDataObject>>()
-        };
+            Assert.That(mapped.Clients[0].ClientId,
+                Is.EqualTo(fixture["clients"]?[0]?["client_id"]?.Value<int>()));
+            Assert.That(mapped.Clients[0].RequestId,
+                Is.EqualTo(fixture["clients"]?[0]?["request_id"]?.Value<int>()));
+        }
     }
 
     private Dictionary<int, int> QuizResponses(string prefix)
@@ -175,8 +194,8 @@ public class SaveSystemIntegrationTests
     {
         foreach (JObject item in items)
         {
-            if (item["name"]?.Value<string>()?.StartsWith(prefix,
-                    StringComparison.Ordinal) == true && item["request"] != null)
+            if (item["name"]?.Value<string>()?.StartsWith(prefix, StringComparison.Ordinal) == true
+                && item["request"] != null)
                 return item;
             if (item["item"] is JArray nested)
             {
@@ -187,8 +206,7 @@ public class SaveSystemIntegrationTests
         return null;
     }
 
-    // Verify every field in the fixture, allowing additional response/DTO fields.
-    // Arrays must match in length and order.
+    // Compare the fixture against API-shaped output; allow extra properties in the response.
     private static void AssertContainsFixture(JToken expected, JToken actual, string path)
     {
         Assert.That(actual, Is.Not.Null, $"Missing {path}");
@@ -201,7 +219,7 @@ public class SaveSystemIntegrationTests
         else if (expected is JArray expectedArray)
         {
             Assert.That(actual, Is.TypeOf<JArray>(), path);
-            Assert.That(actual.Count(), Is.EqualTo(expectedArray.Count()), path);
+            Assert.That(actual.Count(), Is.EqualTo(expectedArray.Count), path);
             for (int i = 0; i < expectedArray.Count; i++)
                 AssertContainsFixture(expectedArray[i], actual[i], path + "[" + i + "]");
         }
@@ -218,7 +236,7 @@ public class SaveSystemIntegrationTests
         {
             await request.SendWebRequest();
             Assert.That(request.responseCode, Is.EqualTo(200),
-                request.downloadHandler.text);
+                request.downloadHandler?.text ?? request.error);
             return JObject.Parse(request.downloadHandler.text);
         }
     }

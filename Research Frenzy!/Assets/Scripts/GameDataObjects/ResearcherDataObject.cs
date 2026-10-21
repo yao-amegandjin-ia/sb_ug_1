@@ -8,6 +8,8 @@ namespace Assets.Scripts.GameDataObjects
     public class ResearcherDataObject
     {
         public int ResearcherId { get; set; }
+
+        public int ClientId { get; set; }
         public string Name { get; set; }
         public int Postion { get; set; }
         public int Experience { get; set; }
@@ -40,7 +42,6 @@ namespace Assets.Scripts.GameDataObjects
 
         public Dictionary<string, int> OwnedUpgrades{ get; set; } = new();
 
-        //ResearcherIds
-        public List<string> HiredResearchers { get; set; } = new(); 
+        
     }
 }
