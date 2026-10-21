@@ -172,9 +172,14 @@ public class MethodMatchScreen : MonoBehaviour
             else if (request.GoodMethodologies != null && request.GoodMethodologies.Contains(picked)) { reward = goodReward; result = 1; }
         }
 
+        
+        GameInitializer game = FindAnyObjectByType<GameInitializer>();
+        if (game != null && request != null)
+            game.RecordStudy(request.RequestId, methodId, reward);
+        
         if (hud != null)
         {
-            hud.AddMoney(reward);
+            
             hud.AddStudyResult(result);
         }
         Debug.Log($"{client.Data.Name} matched with {researcher.Data.Name} using {picked}: +${reward}");
