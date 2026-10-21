@@ -24,9 +24,12 @@ namespace Assets.Scripts.Bootstrap
         {
             this.apiBaseUrl = apiBaseUrl;
         }
+
+        public abstract Awaitable EndGame(PlayerData finalPlayerState);
         public abstract Awaitable<SaveData> LoadGame();
 
         public abstract Awaitable SaveGame(SaveData saveData);
+        public abstract Awaitable SaveQuizData(QuizType quizType, Dictionary<int, int> responses);
     }
     /// <summary>
     /// This is the concrete adapter implementation for the SaveSystem. Implement a seperate concrete class and inject the new dependency to switch this out. 
@@ -41,7 +44,13 @@ namespace Assets.Scripts.Bootstrap
         private int _seed;
         private DateTime _lastPlayed;
 
-        //Inject a test playerId!
+        /// <summary>
+        /// 
+        /// 
+        /// </summary>
+        /// <param name="apiBaseUrl"></param>
+        /// <param name="playerId">Set to NULL if no playerid</param>
+        /// <param name="seed">Set to NUll if no seed</param>
         public SaveSystem(string apiBaseUrl, string playerId, int seed) : base(apiBaseUrl) 
         {
             _playerId = playerId;
@@ -91,10 +100,10 @@ namespace Assets.Scripts.Bootstrap
                     Player = loadResponse["player"].ToObject<PlayerData>(),
 
                     Researchers = loadResponse["researchers"]
-                        .ToObject<List<ResearcherData>>(),
+                        .ToObject<List<ResearcherDataObject>>(),
 
                     Clients = loadResponse["clients"]
-                        .ToObject<List<ClientData>>()
+                        .ToObject<List<ClientDataObject>>()
                 };
             }
         }
@@ -127,16 +136,27 @@ namespace Assets.Scripts.Bootstrap
             }
 
         }
-         
+
 
         private async Awaitable<string> CreateOrResume(string playerId, int seed)
         {
             string endpointURL = apiBaseUrl + "/sessions";
-            string body = JsonConvert.SerializeObject(new
+            string body;
+            //For now seed won't ever be null
+            if (playerId == null)
             {
-                player_uuid = playerId, 
-                seed = seed
-            });
+                body = "{}";
+
+            }
+            else
+            {
+                body = JsonConvert.SerializeObject(new
+                {
+                    player_uuid = playerId,
+                    _seed = seed
+                });
+            }
+            
 
             using (UnityWebRequest webRequest = UnityWebRequest.Post(endpointURL, body, "application/json"))
             {

@@ -20,6 +20,8 @@ namespace Assets.Scripts.GameDataObjects
         //Usually two but could be more so using a List not an array
         public List<MethodologiesEnum> GoodMethodologies;
 
+        public string Name;
+
 
     }
     [Serializable]

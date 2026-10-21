@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Assets.Scripts.GameDataObjects
 {
-    public class ResearcherData
+    public class ResearcherDataObject
     {
         [JsonProperty("researcher_uuid")]
 
@@ -22,7 +22,7 @@ namespace Assets.Scripts.GameDataObjects
         public List<int> Skin { get; set; } = new();
 
     }
-    public class ClientData
+    public class ClientDataObject
     {
         [JsonProperty("client_uuid")]
 

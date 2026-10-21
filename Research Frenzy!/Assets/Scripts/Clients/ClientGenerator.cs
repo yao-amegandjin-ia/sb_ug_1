@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Assets.Scripts.Requests;
+using Assets.Scripts.GameDataObjects;
 using Clients;
 using UnityEngine;
 using Random = System.Random;
@@ -36,7 +36,7 @@ public class ClientGenerator : MonoBehaviour
     [SerializeField, Min(1)] private int bodyCount = 6;
     [SerializeField, Min(1)] private int legCount = 8;
  
-    private readonly Dictionary<int, Request> requestsById = new Dictionary<int, Request>();
+    private readonly Dictionary<int, RequestData> requestsById = new Dictionary<int, RequestData>();
     private readonly List<int> sortedIds = new List<int>();
  
     [SerializeField]private List<int> deck;     // request IDs in shuffled order
@@ -47,7 +47,7 @@ public class ClientGenerator : MonoBehaviour
     public bool HasRequest(int requestId) => requestsById.ContainsKey(requestId);
  
     /// <summary>Call once at startup with the requests from the DataManager (RequestList.Requests).</summary>
-    public void Initialize(IEnumerable<Request> requests)
+    public void Initialize(IEnumerable<RequestData> requests)
     {
         requestsById.Clear();
         sortedIds.Clear();
@@ -59,7 +59,7 @@ public class ClientGenerator : MonoBehaviour
             return;
         }
  
-        foreach (Request request in requests)
+        foreach (RequestData request in requests)
         {
             if (request == null) continue;
  
@@ -122,7 +122,7 @@ public class ClientGenerator : MonoBehaviour
     /// </summary>
     public ClientData CreateClientForRequest(int requestId)
     {
-        Request request;
+        RequestData request;
         if (!requestsById.TryGetValue(requestId, out request))
         {
             Debug.LogError($"ClientGenerator: no request with ID {requestId}.");

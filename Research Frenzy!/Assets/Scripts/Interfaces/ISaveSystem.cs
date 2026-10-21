@@ -27,10 +27,28 @@ namespace Assets.Scripts.Interfaces
         /// </summary>
         /// <returns></returns>
         public Awaitable<SaveData> LoadGame();
+        /// <summary>
+        /// Sends the final player state to the database for data collection purposes and cleans unneeded data. 
+        /// </summary>
+        /// <param name="finalPlayerState"></param>
+        /// <returns></returns>
+        public Awaitable EndGame(PlayerData finalPlayerState);
+        /// <summary>
+        /// Saves the data from multiple choice quiz. 
+        /// </summary>
+        /// <param name="quizType"> Middle or Postgame</param>
+        /// <param name="responses">{questionId: response}</param>
+        /// <returns></returns>
+        public Awaitable SaveQuizData(QuizType quizType, Dictionary<int, int> responses);
         
 
         
 
 
+    }
+    public enum QuizType
+    {
+        MidGame,
+        PostGame
     }
 }

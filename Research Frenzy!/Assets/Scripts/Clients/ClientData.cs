@@ -3,7 +3,7 @@
 // the panel buttons call the public functions below to change what happens to them.
 
 using System;
-using Assets.Scripts.Requests;
+using Assets.Scripts.GameDataObjects;
 using UnityEngine;
 
 namespace Clients
@@ -38,7 +38,7 @@ namespace Clients
         [Header("Info")]
         [SerializeField] private int id = 0;
         [SerializeField] private int requestId;
-        [SerializeField] private Request request;
+        [SerializeField] private RequestData request;
         [Header("Skin")]
         [SerializeField] private Vector3Int appearance = Vector3Int.zero;
         [Header("Patience")]
@@ -53,7 +53,7 @@ namespace Clients
 
         public int Id => id;
         public int RequestId => requestId;
-        public Request Request => request;
+        public RequestData Request => request;
         public Vector3Int Appearance => appearance;
         public float MaxPatience => maxPatience;
         public float Patience => currentPatience;
@@ -89,7 +89,7 @@ namespace Clients
         }
 
         // called when the client is created (by the ClientGenerator). Also stores the Request itself.
-        public void Init(int id, Request request, float patience, Vector3Int appearance)
+        public void Init(int id, RequestData request, float patience, Vector3Int appearance)
         {
             Init(id, request?.RequestId ?? 0, patience, appearance);
             this.request = request;

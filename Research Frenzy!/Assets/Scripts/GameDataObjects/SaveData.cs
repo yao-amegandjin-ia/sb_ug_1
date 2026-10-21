@@ -9,9 +9,9 @@ namespace Assets.Scripts.GameDataObjects
         
         public PlayerData Player { get; set; } = new();
 
-        public List<ResearcherData> Researchers { get; set; } = new();
+        public List<ResearcherDataObject> Researchers { get; set; } = new();
 
-        public List<ClientData> Clients { get; set; } = new();
+        public List<ClientDataObject> Clients { get; set; } = new();
 
     }
 }
