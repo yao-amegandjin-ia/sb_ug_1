@@ -7,10 +7,8 @@ namespace Assets.Scripts.GameDataObjects
 {
     public class ResearcherDataObject
     {
-        [JsonProperty("researcher_id")]
         public int ResearcherId { get; set; }
         public string Name { get; set; }
-       
         public int Postion { get; set; }
         public int Experience { get; set; }
         public int Speed { get; set; }
@@ -24,14 +22,10 @@ namespace Assets.Scripts.GameDataObjects
     }
     public class ClientDataObject
     {
-        [JsonProperty("client_id")]
-
+    
         public int ClientId { get; set; }
-        [JsonProperty("request_id")]
-
+       
         public int RequestId { get; set; }
-
-        public string Name { get; set; }
         public List<int> Skin { get; set; } = new();
     }
     public class PlayerData

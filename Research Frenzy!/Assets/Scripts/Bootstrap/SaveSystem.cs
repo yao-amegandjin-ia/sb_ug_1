@@ -1,4 +1,5 @@
 ﻿using Assets;
+using Assets.Scripts.Bootstrap.ApiDtos;
 using Assets.Scripts.GameDataObjects;
 using Assets.Scripts.Interfaces;
 using Newtonsoft.Json;
@@ -6,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -93,38 +95,34 @@ namespace Assets.Scripts.Bootstrap
                     );
                 }
 
-                JObject loadResponse = JObject.Parse(
-                    webRequest.downloadHandler.text
-                );
-
-
-                return new SaveData
+                //Convert the response to the api object
+                ApiSaveDto apiSave = JsonConvert.DeserializeObject<ApiSaveDto>(webRequest.downloadHandler.text);
+                if (apiSave == null)
                 {
+                    throw new Exception("The API returned an empty save response.");
 
-                    Player = loadResponse["player"].ToObject<PlayerData>(),
-
-                    Researchers = loadResponse["researchers"]
-                        .ToObject<List<ResearcherDataObject>>(),
-
-                    Clients = loadResponse["clients"]
-                        .ToObject<List<ClientDataObject>>()
-                };
+                }
+                return FromApiDto(apiSave);
+                
             }
         }
 
         public override async Awaitable SaveGame(SaveData saveData)
         {
+            if (saveData == null)
+            {
+                throw new ArgumentNullException(nameof(saveData));
+            }
+            if (string.IsNullOrEmpty(_sessionId))
+            {
+                throw new InvalidOperationException("Call LoadGame() to create or resume a session before saving.");
+            }
+
             await CheckServerHealth();
             string endpointURL = apiBaseUrl + $"/sessions/{_sessionId}/save";
 
-            string body = JsonConvert.SerializeObject(
-                new
-                {
-                    player = saveData.Player,
-                    researchers = saveData.Researchers,
-                    clients = saveData.Clients
-                }
-                );
+            ApiSaveDto apiSave = ToApiDto(saveData);
+            string body = JsonConvert.SerializeObject(apiSave);
             
             using (UnityWebRequest webRequest = UnityWebRequest.Put(endpointURL, body))
             {
@@ -146,7 +144,7 @@ namespace Assets.Scripts.Bootstrap
         {
             string endpointURL = apiBaseUrl + "/sessions";
             string body;
-            //For now seed won't ever be null
+            //For now seed should not ever be null
             if (playerId == null)
             {
                 body = "{}";
@@ -190,14 +188,17 @@ namespace Assets.Scripts.Bootstrap
                     throw new Exception($"{webRequest.responseCode}: {webRequest.error}");
                 }
 
-                
-
+        
 
             }
         }
        //Provide a null PlayerData if not sending back a finalPlayerState
         public async override Awaitable EndGame(PlayerData finalPlayerState)
         {
+            if (string.IsNullOrEmpty(_sessionId))
+            {
+                throw new InvalidOperationException("Call LoadGame() to create or resume a session before saving.");
+            }
             await CheckServerHealth();
             string endpointURL = apiBaseUrl + $"/sessions/{_sessionId}/end";
             string body;
@@ -207,11 +208,7 @@ namespace Assets.Scripts.Bootstrap
             }
             else
             {
-                body = JsonConvert.SerializeObject(new
-                {
-                    player = finalPlayerState
-
-                });
+                body = JsonConvert.SerializeObject(ToApiPlayer(finalPlayerState));
             }
             
 
@@ -228,6 +225,10 @@ namespace Assets.Scripts.Bootstrap
 
         public async override Awaitable SaveQuizData(QuizType quizType, Dictionary<int, int> responses)
         {
+            if (string.IsNullOrEmpty(_sessionId))
+            {
+                throw new InvalidOperationException("Call LoadGame() to create or resume a session before saving.");
+            }
             await CheckServerHealth();
             string quiz;
             if (quizType == QuizType.MidGame)
@@ -261,5 +262,71 @@ namespace Assets.Scripts.Bootstrap
 
             }
         }
+
+        //Convert to the api dtos
+        private static SaveData FromApiDto(ApiSaveDto api) => new SaveData
+        {
+            Player = api.Player == null ? null : new PlayerData
+            {
+                CurrentMoney = api.Player.CurrentMoney,
+                TotalMoneyEarned = api.Player.TotalMoneyEarned,
+                CurrentDay = api.Player.CurrentDay,
+                StudyResults = api.Player.StudyResults ?? new Dictionary<int, int>(),
+                OwnedUpgrades = api.Player.OwnedUpgrades ?? new Dictionary<string, int>(),
+                HiredResearchers = api.Player.HiredResearchers ?? new List<string>()
+            },
+            Researchers = api.Researchers?.Select(r => new ResearcherDataObject
+            {
+                ResearcherId = r.ResearcherId,
+                Name = r.Name,
+                Postion = r.Position,
+                Experience = r.Experience,
+                Speed = r.Speed,
+                Quality = r.Quality,
+                Methodologies = r.Methodologies ?? new List<MethodologiesEnum>(),
+                Skin = r.Skin ?? new List<int>()
+            }).ToList() ?? new List<ResearcherDataObject>(),
+            Clients = api.Clients?.Select(c => new ClientDataObject
+            {
+                ClientId = c.ClientId,
+                RequestId = c.RequestId,
+                Skin = c.Skin ?? new List<int>()
+            }).ToList() ?? new List<ClientDataObject>()
+        };
+    }
+
+     private static ApiSaveDto ToApiDto(SaveData save) => new ApiSaveDto
+     {
+         Player = save.Player == null ? null : ToApiPlayer(save.Player),
+         Researchers = save.Researchers?.Select(r => new ApiResearcherDto
+         {
+             ResearcherId = r.ResearcherId,
+             Name = r.Name,
+             Position = r.Postion, // Rename to r.Position if the game model typo is fixed.
+             Experience = r.Experience,
+             Speed = r.Speed,
+             Quality = r.Quality,
+             Methodologies = r.Methodologies,
+             Skin = r.Skin
+         }).ToList(),
+         Clients = save.Clients?.Select(c => new ApiClientDto
+         {
+             ClientId = c.ClientId,
+             RequestId = c.RequestId,
+             Skin = c.Skin
+         }).ToList()
+     };
+        private static ApiPlayerDto ToApiPlayer(PlayerData player) => new ApiPlayerDto
+        {
+            CurrentMoney = player.CurrentMoney,
+            TotalMoneyEarned = player.TotalMoneyEarned,
+            CurrentDay = player.CurrentDay,
+            StudyResults = player.StudyResults,
+            OwnedUpgrades = player.OwnedUpgrades,
+            HiredResearchers = player.HiredResearchers
+        };
+
+
+
     }
 }
