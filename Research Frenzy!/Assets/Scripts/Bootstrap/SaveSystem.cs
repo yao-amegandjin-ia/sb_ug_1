@@ -9,7 +9,6 @@ using System.Data.Common;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.Networking;
 namespace Assets.Scripts.Bootstrap
@@ -70,7 +69,8 @@ namespace Assets.Scripts.Bootstrap
             //Update all of the database specific fields based upon what session create or resume returns. 
              _sessionId = response["session_id"].Value<string>();
             _playerId = response["player_uuid"].Value<string>();
-            _lastPlayed = response["last_played"].Value<DateTime>();
+            _lastPlayed = response["last_played"]?.Value<DateTime>()
+              ?? DateTime.UtcNow;
             _seed = response["seed"].Value<int>();
             //We set the seed in the static class as well so that it is not mismatched!
             GameSeed.Set(_seed);
@@ -81,6 +81,11 @@ namespace Assets.Scripts.Bootstrap
             {
                 await webRequest.SendWebRequest();
 
+                //Empty save data if no session exists yet.
+                if (webRequest.responseCode == 404)
+                {
+                    return new SaveData();
+                }
                 if (webRequest.result != UnityWebRequest.Result.Success)
                 {
                     throw new Exception(
@@ -152,7 +157,7 @@ namespace Assets.Scripts.Bootstrap
                 body = JsonConvert.SerializeObject(new
                 {
                     player_uuid = playerId,
-                    _seed = seed
+                    seed = seed
                 });
             }
             
