@@ -10,7 +10,7 @@ namespace Assets.Scripts.GameDataObjects
         [JsonProperty("researcher_id")]
         public int ResearcherId { get; set; }
         public string Name { get; set; }
-        [JsonProperty("cubicle_position")]
+       
         public int Postion { get; set; }
         public int Experience { get; set; }
         public int Speed { get; set; }

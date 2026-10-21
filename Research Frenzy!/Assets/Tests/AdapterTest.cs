@@ -1,16 +1,18 @@
 using Assets.Scripts.Bootstrap;
 using Assets.Scripts.GameDataObjects;
-using Assets.Scripts.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
+using Assets.Scripts.Interfaces;
+using System.Linq;
+
 
 // Play Mode integration tests. Requires the Spring Boot API and an isolated test database.
 // Assumes DTOs have been aligned with the Postman API contract.
@@ -24,19 +26,22 @@ public class SaveSystemIntegrationTests
     [SetUp]
     public void SetUp()
     {
+        Debug.Log("Setup started");
         TextAsset asset = Resources.Load<TextAsset>("ResearchFrenzyPostman");
         Assert.That(asset, Is.Not.Null,
             "Copy the Postman collection to Assets/Resources/ResearchFrenzyPostman.json");
         collection = JObject.Parse(asset.text);
         adapter = new SaveSystem(BaseUrl, null, 0);
     }
+    
+
 
     [Test]
     public async Task SaveAndLoad_DayOne_RoundTripsAllEntities()
     {
         await StartNewSession();
         JObject fixture = Fixture("4. Save day 1");
-
+        Debug.Log((JsonConvert.SerializeObject(ToSaveData(fixture), Formatting.Indented)));
         await adapter.SaveGame(ToSaveData(fixture));
         SaveData loaded = await adapter.LoadGame();
         Assert.That(loaded, Is.Not.Null);

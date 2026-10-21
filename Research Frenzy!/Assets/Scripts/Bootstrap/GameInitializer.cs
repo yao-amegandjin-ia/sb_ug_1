@@ -1,11 +1,12 @@
-using Assets.Scripts.Bootstrap;
-using UnityEngine;
-using Assets.Scripts.GameDataObjects;
 using Assets;
+using Assets.Scripts.Bootstrap;
+using Assets.Scripts.GameDataObjects;
 using Assets.Scripts.Interfaces;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using Unity.Loading;
+using UnityEditor.SceneManagement;
+using UnityEngine;
 public class GameInitializer : MonoBehaviour
 {
 
@@ -16,6 +17,7 @@ public class GameInitializer : MonoBehaviour
 
     private void Awake()
     {
+        EditorSceneManager.playModeStartScene = null;
         systems = new GameSystems();
         
     }
