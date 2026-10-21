@@ -1,0 +1,558 @@
+/* orange is the main color (burnt clay + orange from the asset list doc) */
+:root {
+    --main: #C8602F;
+    --main-dark: #9C4520;
+    --orange: #FFA500;
+    --orange-light: #FFE2B8;
+    --purple: #7300FF;
+    --bg: #FFF6EC;
+    --text: #3A2416;
+    --muted: #8A6A55;
+}
+
+.hidden {
+    display: none;
+}
+
+#game-ui {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    color: var(--text);
+}
+
+/* ---------- buttons ---------- */
+
+/* .unity-button so it beats the default theme */
+.unity-button {
+    border-width: 0;
+    border-radius: 10px;
+    margin: 0;
+    -unity-font-style: bold;
+}
+
+.small-button {
+    background-color: var(--main);
+    color: white;
+    font-size: 16px;
+    padding: 8px 14px;
+    margin-right: 8px;
+}
+
+.close-button {
+    background-color: var(--main-dark);
+    color: white;
+    font-size: 16px;
+    padding: 6px 14px;
+}
+
+/* :hover and :active are listed too, otherwise the default theme turns buttons grey */
+.small-button:hover, .small-button:hover:active,
+.close-button:hover, .close-button:hover:active {
+    background-color: var(--text);
+}
+
+.big-button {
+    font-size: 26px;
+    height: 72px;
+    min-width: 260px;
+    padding: 0 30px;
+    margin: 0 12px;
+}
+
+.primary, .primary:hover, .primary:hover:active {
+    background-color: var(--orange);
+    color: var(--text);
+}
+
+.secondary, .secondary:hover, .secondary:hover:active {
+    background-color: white;
+    color: var(--main);
+    border-width: 3px;
+    border-color: var(--main);
+}
+
+.main, .main:hover, .main:hover:active {
+    background-color: var(--main);
+}
+
+.dark { background-color: var(--main-dark); }
+.orange { background-color: var(--orange); }
+.white { background-color: white; }
+
+.big-button:hover, .hud-button:hover {
+    opacity: 0.85;
+}
+
+/* ---------- top left ---------- */
+
+#top-buttons {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    flex-direction: row;
+}
+
+/* ---------- bottom bar ---------- */
+
+#hud {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 120px;
+    flex-direction: row;
+    align-items: stretch;
+    padding: 14px 20px;
+    background-color: var(--bg);
+    border-top-width: 4px;
+    border-top-color: var(--main);
+}
+
+.hud-button {
+    width: 230px;
+    margin-right: 14px;
+    justify-content: center;
+    align-items: center;
+}
+
+.hud-button-title {
+    color: white;
+    font-size: 24px;
+    -unity-font-style: bold;
+}
+
+.hud-button-sub {
+    color: white;
+    font-size: 15px;
+    opacity: 0.85;
+}
+
+.hud-card {
+    border-radius: 10px;
+    padding: 6px 18px;
+    margin-right: 14px;
+    justify-content: center;
+    align-items: center;
+    min-width: 200px;
+}
+
+.small-card {
+    min-width: 140px;
+}
+
+.card-label {
+    font-size: 15px;
+    -unity-font-style: bold;
+    color: white;
+    opacity: 0.9;
+}
+
+.white .card-label, .orange .card-label {
+    color: var(--muted);
+}
+
+.card-value {
+    font-size: 36px;
+    -unity-font-style: bold;
+    color: white;
+}
+
+.orange .card-value {
+    color: var(--text);
+}
+
+#studies {
+    width: 480px;
+    border-width: 3px;
+    border-color: var(--orange);
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+/* labels have a default margin/padding, take it off so 3 lines fit in the bar */
+#hud .unity-label {
+    margin: 0;
+    padding: 0;
+}
+
+#studies .card-label {
+    font-size: 13px;
+}
+
+.studies-row {
+    flex-direction: row;
+    width: 100%;
+}
+
+.study {
+    flex-grow: 1;
+    align-items: center;
+}
+
+.study-label {
+    font-size: 13px;
+    margin-top: 2px;
+    color: var(--muted);
+}
+
+.study-count {
+    font-size: 28px;
+    -unity-font-style: bold;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+/* ---------- side panels (codex, manage firm) ---------- */
+
+.side-panel {
+    position: absolute;
+    left: 20px;
+    top: 80px;
+    bottom: 140px;
+    width: 520px;
+    background-color: var(--bg);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.panel-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--main);
+    padding: 14px 20px;
+}
+
+.panel-title {
+    color: white;
+    font-size: 26px;
+    -unity-font-style: bold;
+}
+
+.panel-hint {
+    color: var(--muted);
+    font-size: 18px;
+    margin: 14px 20px 4px 20px;
+}
+
+.panel-scroll {
+    flex-grow: 1;
+    padding: 10px 20px 20px 20px;
+}
+
+.section-title {
+    color: var(--main);
+    font-size: 18px;
+    -unity-font-style: bold;
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+/* codex rows */
+
+.method-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+}
+
+.method-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background-color: var(--main);
+    color: white;
+    font-size: 22px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-right: 14px;
+}
+
+.method-name {
+    font-size: 22px;
+    -unity-font-style: bold;
+    color: var(--text);
+}
+
+.method-text {
+    white-space: normal;
+    font-size: 19px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: -4px 0 12px 0;
+    border-left-width: 6px;
+    border-left-color: var(--orange);
+}
+
+/* manage firm */
+
+.firm-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+}
+
+.firm-name {
+    font-size: 22px;
+    -unity-font-style: bold;
+}
+
+.firm-detail {
+    font-size: 17px;
+    color: var(--muted);
+    white-space: normal;
+}
+
+.badge-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.badge-row .method-badge {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    margin-right: 8px;
+}
+
+.stats-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.stat {
+    width: 31%;
+    margin-right: 2%;
+    margin-bottom: 8px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 8px;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.stat-value {
+    font-size: 26px;
+    -unity-font-style: bold;
+}
+
+/* ---------- day summary ---------- */
+
+.modal-bg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(40, 20, 10, 0.55);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal {
+    width: 760px;
+    background-color: var(--bg);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.modal-body {
+    padding: 24px 30px 30px 30px;
+    align-items: stretch;
+}
+
+.summary-row {
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px 18px;
+    margin-bottom: 8px;
+}
+
+.summary-label {
+    font-size: 22px;
+}
+
+.summary-value {
+    font-size: 22px;
+    -unity-font-style: bold;
+}
+
+.summary-money {
+    flex-direction: row;
+    margin: 12px 0 22px 0;
+}
+
+.money-box {
+    flex-grow: 1;
+    flex-basis: 0;
+    background-color: var(--orange);
+    border-radius: 10px;
+    padding: 10px;
+    align-items: center;
+    margin: 0 4px;
+}
+
+.money-box .card-label {
+    color: var(--muted);
+}
+
+.money-value {
+    font-size: 34px;
+    -unity-font-style: bold;
+}
+
+.modal-body .big-button {
+    align-self: center;
+}
+
+/* ---------- start screen ---------- */
+
+#start-screen {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--main-dark);
+}
+
+.start-page {
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.start-card {
+    width: 1300px;
+    background-color: var(--bg);
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.start-header {
+    justify-content: center;
+    padding: 26px;
+}
+
+.start-title {
+    color: white;
+    font-size: 56px;
+    -unity-font-style: bold;
+}
+
+.start-body {
+    padding: 34px 60px 44px 60px;
+    align-items: center;
+}
+
+.start-tagline {
+    font-size: 28px;
+    color: var(--muted);
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-bottom: 26px;
+}
+
+.start-text {
+    font-size: 26px;
+    white-space: normal;
+    background-color: white;
+    border-radius: 12px;
+    padding: 30px 36px;
+    margin-bottom: 34px;
+    width: 100%;
+}
+
+.button-row {
+    flex-direction: row;
+    justify-content: center;
+}
+
+.starter-row {
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 34px;
+}
+
+.starter-card {
+    width: 400px;
+    background-color: white;
+    border-radius: 14px;
+    border-width: 4px;
+    border-color: white;
+    padding: 24px;
+    margin: 0 20px;
+    align-items: flex-start;
+}
+
+.starter-card.selected {
+    border-color: var(--main);
+}
+
+.starter-name {
+    font-size: 32px;
+    -unity-font-style: bold;
+    color: var(--text);
+}
+
+.starter-level {
+    font-size: 18px;
+    color: var(--muted);
+    margin-bottom: 12px;
+}
+
+.starter-method {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.starter-method-name {
+    font-size: 20px;
+    color: var(--text);
+}
+
+.selected-tag {
+    background-color: var(--main);
+    color: white;
+    font-size: 16px;
+    -unity-font-style: bold;
+    padding: 4px 12px;
+    border-radius: 8px;
+    visibility: hidden;
+}
+
+.starter-card.selected .selected-tag {
+    visibility: visible;
+}
+
+/* clickable rows/cards are buttons too, so keep their colors on hover */
+.method-row:hover, .method-row:hover:active {
+    background-color: #FFF0DC;
+}
+
+.method-row.open, .method-row.open:hover, .method-row.open:hover:active {
+    background-color: var(--orange-light);
+}
+
+.starter-card:hover, .starter-card:hover:active {
+    background-color: #FFFBF6;
+}

@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Default Local Group
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Default Local Group
+  m_GUID: dd313ef8ca732e74680404fe03ebbe16
+  m_SerializeEntries:
+  - m_GUID: 3f7d196e853e8a54086121c70015e8c5
+    m_Address: Assets/UI/Methodology Match Screen/MethodologyMatchScreen.uss
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 44b6e33838f59264bb6a9ecda2f5138f
+    m_Address: Assets/UI/Researcher Hire Screen/ResearcherHireScreen.uss
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6cffbbba9ba7687439ad82f214b591d5
+    m_Address: Assets/UI/Researcher Methodology Component/ResearcherMethodologyComponent.uxml
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 76e217a6ba8e0db449087d02abaae080
+    m_Address: Assets/UI/Researcher Methodology Component/ResearcherMethodologyComponent.uss
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a1052773ee9ac014d8b6553c2c7d8a8b
+    m_Address: Assets/UI/Researcher Referral Screen/ResearcherReferralScreen.uss
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf21063501cdda948a2a2ed5d93a2980
+    m_Address: Assets/UI/Methodology Match Screen/MethodologyMatchScreen.uxml
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c1313eda44fa3434387d1dbef9cb5e4a
+    m_Address: Assets/UI/Researcher Referral Screen/ResearcherReferralScreen.uxml
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d26a2ead1ef1fcf4189d0b5db8da273f
+    m_Address: Assets/UI/Researcher Request Screen/ResearcherRequestScreen.uss
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eb9433873a45a9849aaa25a7ae7c9272
+    m_Address: Assets/UI/Researcher Request Screen/ResearcherRequestScreen.uxml
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f9f088d9f21716141b283f7def35bf8a
+    m_Address: Assets/UI/Researcher Hire Screen/ResearcherHireScreen.uxml
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 874bcdc7d5ba3364e8ceeccbb627e08c, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4f77457ee0d0fa749aee035678223e7e, type: 2}
+    - {fileID: 11400000, guid: f51b77ff87376ea4ea8f4699e3b8fa56, type: 2}

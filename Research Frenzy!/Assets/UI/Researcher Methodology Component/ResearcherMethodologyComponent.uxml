@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+>
+
+<Style src="/Assets/UI/Researcher Methodology Component/ResearcherMethodologyComponent.uss"/>
+<ui:VisualElement name="methodologies">
+    <ui:Button name="methodology-one" text="Qualitative"/>
+    <ui:Button name="methodology-two" text="Systematic"/>
+    <ui:Button name="methodology-three" text="Qualitative"/>
+    <ui:Button name="methodology-four" text="Applied"/>
+</ui:VisualElement>
+    
+</ui:UXML>

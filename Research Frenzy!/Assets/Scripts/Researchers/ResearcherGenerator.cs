@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Researchers;
 using UnityEngine;
 using Random = System.Random;
 
 /// <summary>
 /// Generates the starting pool of researchers from the game seed.
+/// This only creates the data object, not game object.
 /// </summary>
 public class ResearcherGenerator : MonoBehaviour
 {
@@ -31,13 +33,17 @@ public class ResearcherGenerator : MonoBehaviour
     [SerializeField, Min(1)] private int legCount = 8;
 
     [Header("Stat ranges (inclusive)")]
-    [SerializeField] private Vector2Int experienceRange = new Vector2Int(0, 10);
     [SerializeField] private Vector2Int speedRange = new Vector2Int(1, 3);
     [SerializeField] private Vector2Int qualityRange = new Vector2Int(1, 3);
 
     [Header("Methodologies")]
     [Tooltip("IDs of every methodology in the game.")]
     [SerializeField] private List<int> methodologyIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+    
+    [Tooltip("How many methodologies (levels) each researcher starts with. " +
+             "Capped at the number of methodologies in the game.")]
+    [SerializeField, Min(1)] private int methodologiesPerResearcher = 4;
+
 
     [Header("Name pools")]
     [SerializeField] private string[] firstNames =
@@ -48,9 +54,10 @@ public class ResearcherGenerator : MonoBehaviour
     {
         "Lathrop", "Gilbert", "D'Costa","Amegandjin", "Kim", "Finders","King", "Flynn", "Smith", "Johnson", "Anderson", "Gonzalez", "Garcia"
     };
-
-    private readonly List<Researcher> researchers = new List<Researcher>();
-    public IReadOnlyList<Researcher> Researchers => researchers;
+    
+    [Header("Researcher List")]
+    [SerializeField] private List<ResearcherData> researchers = new List<ResearcherData>();
+    public IReadOnlyList<ResearcherData> Researchers => researchers;
 
     private void Start()
     {
@@ -62,13 +69,12 @@ public class ResearcherGenerator : MonoBehaviour
     public void Generate()
     {
         if (!ValidateSettings()) return;
-
-        foreach (Researcher old in researchers)
-            if (old != null) Destroy(old.gameObject);
+        
         researchers.Clear();
 
         if (overrideSeed)
             GameSeed.Set(seedOverride);
+        
         Random rng = GameSeed.CreateRandom(RandomStreamId);
         Debug.Log($"ResearcherGenerator: generating with seed {GameSeed.Seed} (override {(overrideSeed ? "ON" : "OFF")}).");
 
@@ -97,11 +103,61 @@ public class ResearcherGenerator : MonoBehaviour
             // Sequential IDs: 1 through researcherCount.
             int id = i + 1;
 
-            Researcher r = CreateResearcherObject(fullName);
+            ResearcherData r = new ResearcherData();
             r.Init(id, fullName, look, experience, speed, quality,methods);
             researchers.Add(r);
+            
+            Debug.Log($"ResearcherGenerator: Researcher generated: " + r.Name);
         }
     }
+    
+    /// <summary>Finds a researcher by ID (1-10), or null.</summary>
+    public ResearcherData GetById(int id)
+    {
+        foreach (ResearcherData r in researchers)
+            if (r.Id == id) return r;
+        return null;
+    }
+ 
+    /// <summary>Researchers who haven't been hired yet.</summary>
+    public List<ResearcherData> GetUnhired()
+    {
+        List<ResearcherData> result = new List<ResearcherData>();
+        foreach (ResearcherData r in researchers)
+            if (!r.IsPurchased) result.Add(r);
+        return result;
+    }
+    
+    
+    /// <summary>
+    /// Snapshots of all researchers for saving. These are copies, so the game does not change them.
+    /// We save the whole list, since stats may change.
+    /// </summary>
+    public ResearcherList GetState()
+    {
+        ResearcherList researcherList = new ResearcherList();
+        foreach (ResearcherData r in researchers)
+            researcherList.researchers.Add(r.Clone());
+        return researcherList;
+    }
+ 
+    /// <summary>
+    /// This replaces the researcher list after loading.
+    /// </summary>
+    public void LoadState(ResearcherList researcherList)
+    {
+        if (researcherList == null)
+        {
+            Debug.LogError("ResearcherGenerator: cannot load a null state.");
+            return;
+        }
+ 
+        researchers.Clear();
+        foreach (ResearcherData r in researcherList.researchers)
+            researchers.Add(r.Clone());
+    }
+
+
 
     // Methodology distribution
 
