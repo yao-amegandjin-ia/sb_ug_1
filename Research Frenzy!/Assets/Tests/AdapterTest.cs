@@ -41,8 +41,8 @@ public class SaveSystemIntegrationTests
         await adapter.SaveGame(expected); // Do not swallow errors.
         SaveData loaded = await adapter.LoadGame();
         AssertEntityCounts(fixture, loaded);
-        AssertContainsFixture(fixture, ToApiJson(loaded), "adapter load");
-        AssertContainsFixture(fixture, await GetJson($"/sessions/{sessionId}/save"), "database load");
+        AssertContainsLoadResponse(fixture, ToApiJson(loaded), "adapter load");
+        AssertContainsLoadResponse(fixture, await GetJson($"/sessions/{sessionId}/save"), "database load");
     }
 
     [Test]
@@ -58,8 +58,8 @@ public class SaveSystemIntegrationTests
 
         SaveData loaded = await adapter.LoadGame();
         AssertEntityCounts(dayThree, loaded);
-        AssertContainsFixture(dayThree, ToApiJson(loaded), "adapter load");
-        AssertContainsFixture(dayThree, await GetJson($"/sessions/{sessionId}/save"), "database load");
+        AssertContainsLoadResponse(dayThree, ToApiJson(loaded), "adapter load");
+        AssertContainsLoadResponse(dayThree, await GetJson($"/sessions/{sessionId}/save"), "database load");
     }
 
     [Test]
@@ -204,6 +204,21 @@ public class SaveSystemIntegrationTests
             }
         }
         return null;
+    }
+
+    // The save-request fixture and GET /save response have different contracts.
+    // Specifically, researcher.current_client_id is accepted on save but omitted on load.
+    // Compare all other fixture fields without mutating either JSON object.
+    private static void AssertContainsLoadResponse(JObject saveFixture, JObject actual, string path)
+    {
+        JObject expectedResponse = (JObject)saveFixture.DeepClone();
+        if (expectedResponse["researchers"] is JArray researchers)
+        {
+            foreach (JObject researcher in researchers.OfType<JObject>())
+                researcher.Remove("current_client_id");
+        }
+
+        AssertContainsFixture(expectedResponse, actual, path);
     }
 
     // Compare the fixture against API-shaped output; allow extra properties in the response.

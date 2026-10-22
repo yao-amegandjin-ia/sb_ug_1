@@ -210,11 +210,17 @@ namespace Assets.Scripts.Bootstrap
             string body;
             if (finalPlayerState == null)
             {
-                body = "{}";
+                body = JsonConvert.SerializeObject(new
+                {
+                    player = "{}"
+                });
             }
             else
             {
-                body = JsonConvert.SerializeObject(SaveDataMapper.ToApiPlayer(finalPlayerState));
+                body = JsonConvert.SerializeObject(new
+                {
+                    player = SaveDataMapper.ToApiPlayer(finalPlayerState)
+                });
             }
             
 
