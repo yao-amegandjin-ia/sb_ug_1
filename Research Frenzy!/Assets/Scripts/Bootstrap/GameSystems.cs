@@ -10,8 +10,9 @@ namespace Assets.Scripts.Bootstrap
     public class GameSystems
     {
         //For testing this is going to be referenced in the savesystem.
-        private readonly string _playerId = "a1b2c3d4-0000-4000-8000-000000000001";
+        private readonly string _playerId = null;
         private readonly string _apiUrl = "http://localhost:8080";
+        //Going to get overwritten anyway
         private readonly int _seed = GameSeed.EnsureInitialized();
 
 

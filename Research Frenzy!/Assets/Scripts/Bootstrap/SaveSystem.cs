@@ -57,6 +57,12 @@ namespace Assets.Scripts.Bootstrap
             _playerId = playerId;
             _seed = seed;
         }
+
+        //Default Constructor
+        public SaveSystem(string apiBaseUrl): base(apiBaseUrl) 
+        {
+
+        }
         
        
         //For now just calling createOrResume endpoint on every load. I presume load will only be called on game start up. 
