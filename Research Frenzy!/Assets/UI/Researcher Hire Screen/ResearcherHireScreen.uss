@@ -2,7 +2,6 @@
     width: 95%;
     height: 100%;
     background-color: #e5e5e5;
-    font-size: 100%;
     color: #2A1B4D;
     display: flex;
     flex-direction: column;
@@ -77,7 +76,7 @@
 
 
 
-#fame, #speed {
+#quality, #speed {
     white-space: nowrap; 
     padding: 10px 16px;       
     background-color: white;
@@ -152,7 +151,16 @@ ScrollView {
 }
 
 #researcher-overview {
-    flex-wrap: wrap;  
+    flex-wrap: wrap;
+    padding-bottom: 8px;  
+}
+
+
+#researcher-overview > TemplateContainer {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-width: 300px;
 }
 
 

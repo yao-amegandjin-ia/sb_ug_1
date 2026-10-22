@@ -62,7 +62,8 @@ public class SceneLoader
     private ISceneInitializable findInterfaceInScene(Scene scene)
     {
         GameObject[] rootObjects = scene.GetRootGameObjects();
-        return rootObjects.Select(root => root.GetComponentInChildren<ISceneInitializable>(true)).FirstOrDefault();
+        return rootObjects.Select(root => root.GetComponentInChildren<ISceneInitializable>(true))
+            .FirstOrDefault(found => found != null);
 
     }
 

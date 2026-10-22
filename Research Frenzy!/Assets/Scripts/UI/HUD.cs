@@ -10,7 +10,8 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(CodexPanel), typeof(ManageFirmPanel))]
 public class HUD : MonoBehaviour
 {
-    public int money = 0;
+    // read straight from GameInitializer, so there is only one money value. DaySummary and ManageFirmPanel still use hud.money
+    public int money => game != null ? game.currentMoney : 0;
     public int day = 1;
     public int totalDays = 7;
     public float dayLength = 180f; // seconds, placeholder until we decide
@@ -29,6 +30,7 @@ public class HUD : MonoBehaviour
     Label moneyText, dayText, timerText;
     Label bestText, partialText, wrongText, ongoingText;
     CodexPanel codex;
+    GameInitializer game;
     ManageFirmPanel firm;
 
     void Start()
@@ -42,6 +44,10 @@ public class HUD : MonoBehaviour
         partialText = root.Q<Label>("partial-count");
         wrongText = root.Q<Label>("wrong-count");
         ongoingText = root.Q<Label>("ongoing-count");
+        
+        game = FindAnyObjectByType<GameInitializer>();
+        if (game != null) game.MoneyEarned += OnMoneyEarned;
+        else Debug.LogWarning("HUD: no GameInitializer found, money will show $0. Did you press Play from the Bootstrap scene?");
 
         codex = GetComponent<CodexPanel>();
         firm = GetComponent<ManageFirmPanel>();
@@ -100,14 +106,19 @@ public class HUD : MonoBehaviour
         return day >= totalDays;
     }
 
-    public void AddMoney(int amount)
+    void OnDestroy()
     {
-        money += amount;
+        if (game != null) game.MoneyEarned -= OnMoneyEarned;
+    }
+
+    // GameInitializer already added the money, this just counts it for today and updates the label
+    void OnMoneyEarned(int amount)
+    {
         if (amount > 0)
             earnedToday += amount;
         Refresh();
     }
-
+ 
     // 0 = best, 1 = partial (good), 2 = wrong
     public void AddStudyResult(int result)
     {
@@ -116,7 +127,6 @@ public class HUD : MonoBehaviour
         else { wrong++; wrongToday++; }
         Refresh();
     }
-
     public void AddLostClient()
     {
         lostToday++;

@@ -12,15 +12,10 @@ public class ResearcherGenerator : MonoBehaviour
 {
     // Stream ID for this system's random numbers (see GameSeed.CreateRandom).
     private const int RandomStreamId = 1001;
-
-    [Header("Seed")]
-    [Tooltip("If ticked, uses the seed below and stores it as the game seed. " +
-             "Otherwise uses the existing game seed (or makes a new one).")]
-    [SerializeField] private bool overrideSeed = false;
-    [SerializeField] private int seedOverride = 12345;
+    
 
     [Header("Generation")]
-    [SerializeField] private bool generateOnStart = true;
+    [SerializeField] private bool generateOnStart = false;
     [SerializeField, Min(1)] private int researcherCount = 10;
     [Tooltip("Optional prefab with a Researcher component. If empty, a new GameObject is created.")]
     [SerializeField] private Researcher researcherPrefab;
@@ -40,9 +35,7 @@ public class ResearcherGenerator : MonoBehaviour
     [Tooltip("IDs of every methodology in the game.")]
     [SerializeField] private List<int> methodologyIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
     
-    [Tooltip("How many methodologies (levels) each researcher starts with. " +
-             "Capped at the number of methodologies in the game.")]
-    [SerializeField, Min(1)] private int methodologiesPerResearcher = 4;
+
 
 
     [Header("Name pools")]
@@ -71,12 +64,10 @@ public class ResearcherGenerator : MonoBehaviour
         if (!ValidateSettings()) return;
         
         researchers.Clear();
-
-        if (overrideSeed)
-            GameSeed.Set(seedOverride);
+        
         
         Random rng = GameSeed.CreateRandom(RandomStreamId);
-        Debug.Log($"ResearcherGenerator: generating with seed {GameSeed.Seed} (override {(overrideSeed ? "ON" : "OFF")}).");
+        Debug.Log($"ResearcherGenerator: generating with seed {GameSeed.Seed}");
 
         //Unique heads: shuffle all head indices, then deal one to each researcher.
         List<int> heads = new List<int>();
@@ -220,19 +211,7 @@ public class ResearcherGenerator : MonoBehaviour
         return fallback;
     }
 
-    private Researcher CreateResearcherObject(string objectName)
-    {
-        if (researcherPrefab != null)
-        {
-            Researcher instance = Instantiate(researcherPrefab, spawnParent);
-            instance.gameObject.name = objectName;
-            return instance;
-        }
 
-        GameObject go = new GameObject(objectName);
-        if (spawnParent != null) go.transform.SetParent(spawnParent);
-        return go.AddComponent<Researcher>();
-    }
     
 
     //Inclusive min/max; tolerates a reversed range.

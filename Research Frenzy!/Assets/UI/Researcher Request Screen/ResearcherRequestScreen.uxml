@@ -5,8 +5,9 @@
     xmlns:uie="UnityEditor.UIElements"
     xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
 >
+    <Style src="ResearcherRequestScreen.uss"/>
 
-<ui:VisualElement name="researcher-request-screen">
+    <ui:VisualElement name="researcher-request-screen">
     <ui:VisualElement name="header">
         <ui:TextElement name="client-name" text="Alice Smith"/>
         <ui:Button name="close-btn" text="CLOSE"/>

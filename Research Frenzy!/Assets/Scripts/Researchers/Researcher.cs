@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using Researchers;
+using UI;
 
 /// <summary>
 ///
@@ -9,8 +11,10 @@ using Researchers;
 /// The prefab is the same for all researchers.
 /// Bind() applies the ResearcherData to this object, making each Researcher different.
 /// </summary>
+[RequireComponent(typeof(Rigidbody2D))]
 
-public class Researcher : MonoBehaviour
+//TODO: Is there a cheaper way to find the objects? Including player?
+public class Researcher : MonoBehaviour, IPointerClickHandler
 {
     // Shown in the Inspector so you can watch stats at runtime. It points at the same
     // object the hiring UI and save system use, so changes made in code show up here.
@@ -30,6 +34,19 @@ public class Researcher : MonoBehaviour
     [SerializeField] private Sprite[] legSprites;
     
     public ResearcherData Data => data;
+    
+    [Header("Talking")]
+    public MethodMatchScreen matchScreen;
+    public PlayerMover player;
+    public float talkDistance = 1.2f;   // how close the player has to get before the screen opens
+    
+    
+    void Awake()
+    {
+        // prefabs can't keep links to scene objects, so find them if they're empty
+        if (matchScreen == null) matchScreen = FindAnyObjectByType<MethodMatchScreen>();
+        if (player == null) player = FindAnyObjectByType<PlayerMover>();
+    }
 
     /// <summary>Makes this object represent the given researcher. Call right after instantiating.</summary>
     public void Bind(ResearcherData researcherData)
@@ -54,6 +71,52 @@ public class Researcher : MonoBehaviour
     {
         if (target == null || sprites == null || index < 0 || index >= sprites.Length) return;
         target.sprite = sprites[index];
+    }
+    
+    // only does something when you've brought a client over
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (matchScreen == null) matchScreen = FindAnyObjectByType<MethodMatchScreen>();
+        Debug.Log($"Clicked researcher {gameObject.name}");
+        
+        if (matchScreen == null) { Debug.LogWarning("Researcher: no MethodMatchScreen found. Is MatchUI set up in the UI scene?"); return; }
+        if (data == null) { Debug.LogWarning("Researcher: no data. Was it spawned through the ResearcherSpawner?"); return; }
+        if (!data.IsAvailable) { Debug.Log($"{data.Name} isn't available (hired: {data.IsPurchased}, state: {data.CurrentState})."); return; }
+ 
+        Client client = FindFollowingClient();
+        if (client == null)
+        {
+            Debug.Log($"{data.Name}: bring a client over first.");
+            return;
+        }
+ 
+        // no player in the scene, just open it
+        if (player == null)
+        {
+            OpenMatch(client);
+            return;
+        }
+ 
+        player.WalkUpTo(transform, talkDistance, () => OpenMatch(client));
+    }
+ 
+    void OpenMatch(Client client)
+    {
+        // the client might have left while the player was walking over
+        if (!this || !client || !client.IsFollowing) return;
+ 
+        matchScreen.Open(client, this);
+    }
+ 
+    // the client tagging along behind the player, or null
+    static Client FindFollowingClient()
+    {
+        ClientSpawner spawner = FindAnyObjectByType<ClientSpawner>();
+        if (spawner == null) return null;
+ 
+        foreach (Client c in spawner.ActiveClients)
+            if (c != null && c.IsFollowing) return c;
+        return null;
     }
 
 

@@ -1,7 +1,12 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Research Frenzy!/Assets/Scripts/GameDataObjects.meta
 guid: 805aed5f99e34914d8209ca32213928a
 folderAsset: yes
 DefaultImporter:
+========
+guid: 2af12974d2c6c1647996e28a08554314
+PrefabImporter:
+>>>>>>>> origin/main:Research Frenzy!/Assets/Prefabs/Client.prefab.meta
   externalObjects: {}
   userData: 
   assetBundleName: 

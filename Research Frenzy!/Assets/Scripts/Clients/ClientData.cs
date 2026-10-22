@@ -25,6 +25,7 @@ namespace Clients
         Returning,        // told to come back tomorrow
         Completed,        // done (consultation finished or request rejected)
         LeftDissatisfied,  // patience ran out
+        Following // following the player
     }
 
     /// <summary>
@@ -123,6 +124,13 @@ namespace Clients
         {
             if (state == ClientState.InProcess || state == ClientState.Waiting)
                 SetState(ClientState.Waiting);
+        }
+        
+        // "We can help with that" - follows the player for now
+        public void StartFollowing()
+        {
+            if (state == ClientState.InProcess || state == ClientState.Waiting)
+                SetState(ClientState.Following);
         }
 
         // "Assign" - researcher + methodology picked on the request screen

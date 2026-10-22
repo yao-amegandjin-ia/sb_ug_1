@@ -35,7 +35,7 @@
 }
 #close-btn{
     background-color: #8683CC;
-    border-width: none;
+    border-width: 0;
 }
 
 #close-btn, #decision-btns Button, #researcher-request-screen {
@@ -56,9 +56,9 @@
 }
 #decision-btns Button {
     flex-basis: 25%;
-    white-space: wrap
+    white-space: normal;
     flex-shrink: 0;
-    border-width: none;
+    border-width: 0;
 }
 #decision-btns {
     display: flex;
