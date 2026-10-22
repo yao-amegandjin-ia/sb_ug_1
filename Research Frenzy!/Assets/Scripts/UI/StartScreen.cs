@@ -5,6 +5,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Assets.Scripts.GameDataObjects;
 
 public class StartScreen : MonoBehaviour
 {

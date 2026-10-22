@@ -6,7 +6,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
-using Assets.Scripts.Requests;
+using Assets.Scripts.GameDataObjects;
+using Assets.Scripts;
 using System.Collections.Generic;
 using Clients;
 
@@ -50,7 +51,7 @@ public class PanelController : MonoBehaviour
         
         int requestId = _currentClientData.RequestId;
 
-        Request req = reqList.Requests.Find(x => x.RequestId == requestId);
+        RequestData req = reqList.Requests.Find(x => x.RequestId == requestId);
 
         if (nameText) nameText.text = req.Name;
         if (requestText) requestText.text = "\"" + req.ProblemText + "\"";

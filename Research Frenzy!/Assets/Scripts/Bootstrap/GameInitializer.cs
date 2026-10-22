@@ -1,6 +1,10 @@
+using Assets;
 using Assets.Scripts.Bootstrap;
-using UnityEngine;
+using Assets.Scripts.Clients;
+using Assets.Scripts.GameDataObjects;
 using Assets.Scripts.Interfaces;
+using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System;
 using Clients;
@@ -75,6 +79,7 @@ public class GameInitializer : MonoBehaviour
 
     private void Awake()
     {
+        EditorSceneManager.playModeStartScene = null;
         systems = new GameSystems();
  
         // set the seed before any generator uses it (clients and researchers both draw from it)
