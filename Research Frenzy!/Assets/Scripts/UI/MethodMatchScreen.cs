@@ -1,3 +1,4 @@
+
 namespace UI
 {
   // MethodMatchScreen - goes on the MatchUI object in the UI scene (its own UIDocument with MethodologyMatchScreen.uxml).
@@ -6,10 +7,9 @@ namespace UI
 // $50 for a good one and $0 otherwise. NO MATCH closes it and the client keeps following you.
 
 using System.Collections.Generic;
-using Assets.Scripts.Requests;
 using UnityEngine;
 using UnityEngine.UIElements;
-
+using Assets.Scripts.GameDataObjects;
 /// <summary>
 /// Method match screen goes on the MatchUI object in UI scene
 /// This opens when the player clicks a researcher WHILE a client follows
@@ -161,7 +161,7 @@ public class MethodMatchScreen : MonoBehaviour
 
         int methodId = shownIds[selected];
         MethodologiesEnum picked = (MethodologiesEnum)methodId;
-        Request request = client.Data.Request;
+        RequestData request = client.Data.Request;
 
         // HUD study results: 0 = best, 1 = partial (good), 2 = wrong
         int reward = 0;

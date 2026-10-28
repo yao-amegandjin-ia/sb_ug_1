@@ -1,3 +1,5 @@
+using Assets.Scripts.GameDataObjects;
+
 namespace UI
 {
     // RequestScreen - goes on the RequestUI object in the UI scene (its own UIDocument with ResearcherRequestScreen.uxml).
@@ -7,6 +9,8 @@ namespace UI
 using Clients;
 using UnityEngine;
 using UnityEngine.UIElements;
+
+
 
 /// <summary>
 /// Request Screen goes on the RequestUI object in the UI Scene
@@ -19,6 +23,8 @@ using UnityEngine.UIElements;
 public class RequestScreen : MonoBehaviour
 {
     public ReferralScreen referral;   //both are in the UI scene, so this can be set in the Inspector
+    public HUD hud;
+    public int correctRejectReward = 50;
 
     VisualElement root;
     TextElement nameText;
@@ -91,6 +97,18 @@ public class RequestScreen : MonoBehaviour
     {
         if (current)
         {
+            RequestData request = current.Data.Request;
+            bool correct = request != null && !request.IsResearchable;
+            int reward = correct ? correctRejectReward : 0;
+ 
+            // GameInitializer is in the Bootstrap scene, so it's found here instead of set in the Inspector
+            GameInitializer game = FindAnyObjectByType<GameInitializer>();
+            if (game != null && request != null)
+                game.RecordStudy(request.RequestId, (int)MethodologiesEnum.None, reward);
+ 
+            if (correct && hud != null) hud.AddCorrectReject();
+            Debug.Log($"{current.Data.Name} denied: {(correct ? "correct" : "wrong, this one was researchable")}, +${reward}");
+ 
             current.Data.Complete();   // "request was rejected"
             current.Leave();
         }

@@ -149,6 +149,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   day: 1
+  overrideSeed: 1
+  seedOverride: 12345
+  currentMoney: 0
+  totalMoney: 0
+  studyResults:
+    Results: []
 --- !u!4 &1547386714
 Transform:
   m_ObjectHideFlags: 0

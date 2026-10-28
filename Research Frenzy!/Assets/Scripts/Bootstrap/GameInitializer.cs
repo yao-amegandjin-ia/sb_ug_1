@@ -1,6 +1,5 @@
 using Assets;
 using Assets.Scripts.Bootstrap;
-using Assets.Scripts.Clients;
 using Assets.Scripts.GameDataObjects;
 using Assets.Scripts.Interfaces;
 using UnityEngine;
@@ -9,6 +8,7 @@ using System.Collections.Generic;
 using System;
 using Clients;
 using Researchers;
+using UnityEditor.SceneManagement;
 
 
 /// <summary>One finished study: which methodology the player matched a request with.</summary>

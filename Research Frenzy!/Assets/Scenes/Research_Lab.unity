@@ -60294,7 +60294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5df9193834ca41a98df804ac08ccb71d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClientSpawner
-  clientPrefab: {fileID: 369142416029791450, guid: 2af12974d2c6c1647996e28a08554314, type: 3}
+  clientPrefab: {fileID: 369142416029791450, guid: d2a5697e53fd4f64faec02fd97232477, type: 3}
   spawnParent: {fileID: 0}
   spawnPoint: {fileID: 1070613317}
   spacing: {x: 1.5, y: 0, z: 0}
@@ -60344,8 +60344,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3cba292123a46a4a66acaca8ec91d1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResearcherGenerator
-  overrideSeed: 0
-  seedOverride: 12345
   generateOnStart: 0
   researcherCount: 10
   researcherPrefab: {fileID: 0}
@@ -60356,7 +60354,6 @@ MonoBehaviour:
   speedRange: {x: 1, y: 3}
   qualityRange: {x: 1, y: 3}
   methodologyIds: 0100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d000000i
-  methodologiesPerResearcher: 4
   firstNames:
   - Jim
   - Stephen
