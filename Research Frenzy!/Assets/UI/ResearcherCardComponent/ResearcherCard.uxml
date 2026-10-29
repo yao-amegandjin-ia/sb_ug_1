@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ui="UnityEngine.UIElements"
+        xmlns:uie="UnityEditor.UIElements"
+        xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+        editor-extension-mode="False"
+>
+    <!-- one researcher on the hire screen. ResearcherHireScreen.cs fills in the named elements -->
+    <Style src="ResearcherCard.uss"/>
+    <ui:Template src="/Assets/UI/Researcher Methodology Component/ResearcherMethodologyComponent.uxml" name="ResearcherMethodologyComponent"/>
+
+    <ui:VisualElement class="researcher-card">
+
+        <!-- profile picture. shows initials until there's a sprite (set its background-image from code) -->
+        <ui:VisualElement name="portrait" class="portrait">
+            <ui:Label name="portrait-initials" class="portrait-initials" text="LK" picking-mode="Ignore"/>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="details">
+            <ui:Label name="researcher-name" class="researcher-name" text="Laufey Kim"/>
+            <ui:VisualElement class="stats">
+                <ui:Label name="quality" class="stat" text="QUALITY 3/3"/>
+                <ui:Label name="speed" class="stat" text="SPEED 2/3"/>
+            </ui:VisualElement>
+            <ui:Instance template="ResearcherMethodologyComponent" name="methods" class="methods"/>
+        </ui:VisualElement>
+
+        <ui:Button name="hire-researcher" class="hire-button" text="HIRE"/>
+    </ui:VisualElement>
+</ui:UXML>

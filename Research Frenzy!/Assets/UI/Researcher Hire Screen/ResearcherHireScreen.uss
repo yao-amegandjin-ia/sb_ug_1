@@ -1,225 +1,88 @@
+/* one centred window. the dim and centring around it come from ModalScreen */
 #researcher-hire-screen {
-    width: 95%;
-    height: 100%;
-    background-color: #e5e5e5;
-    color: #2A1B4D;
-    display: flex;
+    width: 70%;
+    max-width: 1200px;
+    min-width: 700px;
+    height: 85%;
     flex-direction: column;
-    justify-content: center;
-    -unity-font-style: bold;
-    font-size: 16px;
-}
-
-#researchers {
-    padding-top: 12px;
-    flex-grow: 1; 
-    flex-shrink: 1;
-}
-
-#researcher > * {
-    flex-shrink: 0;
-}
-
-#researcher-overview {
-    background-color: #FFA500;
-}
-
-#speciality-blurb, #back-to-upgrades {
-    background-color: #7300FF;
-}
-
-#researcher-overview {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    padding: 8px 16px 0 16px;
-}
-
-#name-and-stats {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0; 
-    margin-right: 24px;
-}
-
-#back-to-upgrades {
-    flex-shrink: 0;
-    padding: 6px 12px;
-}
-
-
-#speciality-blurb {
-    padding: 10px 16px;
-    white-space: normal;
-    color: white;
-}
-#bio-text {
-    padding: 10px 16px;
-    margin-right: 16px;
-    white-space: normal;
-}
-
-#researcher-name {
-   margin-top: 4px;
-    margin-bottom: 8px;
-}
-
-#researcher-bio {
-    margin-bottom: 8px;
-}
-#cost-info {
-    padding: 1% 8%;
-}
-
-
-
-#quality, #speed {
-    white-space: nowrap; 
-    padding: 10px 16px;       
-    background-color: white;
+    background-color: #F4F3FB;
     border-radius: 10px;
-}
-
-#researcher {
-    width: 90%;
-    background-color: white;
-    margin-bottom: 16px;
     overflow: hidden;
-    padding-bottom: 12px;
+    color: #2A1B4D;
+    -unity-font-style: bold;
 }
 
-#cost-info, #researcher, #speciality-blurb, #back-to-upgrades, #researcher-hire-screen {
-  border-radius: 10px;
+#header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    background-color: #7300FF;
+    padding: 12px 20px;
 }
 
-ScrollView {
-    display: flex;
-    justify-content: center;
-}
-
-#hire-researcher, #back-to-upgrades-button {
-    border-color: transparent;
-    background-color: #0099FF;
-    width: 25%;
-    border-radius: 10px;
+#hire-title {
+    color: white;
+    font-size: 22px;
 }
 
 #back-to-upgrades-button {
-
     background-color: #8683CC;
-    color: #FFFFFF;
+    color: white;
     border-width: 0;
     border-radius: 10px;
-    -unity-font-style: bold;
+    padding: 6px 18px;
 }
 
+#back-to-upgrades-button:hover, #back-to-upgrades-button:hover:active {
+    background-color: #9C99DB;
+}
 
-
-#cost-info {
+/* the list fills the rest of the window. cards stretch to the full width, with the same gap on both sides */
+#researchers {
     flex-grow: 1;
-    padding: 8px 16px;
-}
-#hiring-info {
-    display: flex;
-    flex-direction: row;
-    background-color: #CFCDE6;
-    align-items: stretch;
-    padding: 5px;
-    border-radius: 10px;
 }
 
-#hiring-info, #speciality-blurb {
-    margin: 0px 15px 0px 15px;
+#researchers .unity-scroll-view__content-container {
+    padding: 16px 16px 4px 16px;
 }
 
-#researcher-stats {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-shrink: 0;    
-}
-#speed {
-    margin-left: 8px; 
-}
+/* --- scrollbar, same colours as before --- */
 
-#hire-researcher {
-    width: 120px;
-    margin-left: 8px;
-}
-
-#researcher-overview {
-    flex-wrap: wrap;
-    padding-bottom: 8px;  
-}
-
-
-#researcher-overview > TemplateContainer {
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: 0;
-    min-width: 300px;
-}
-
-
-ScrollView .unity-scroller--vertical {
-    width: 26px;
-    margin-left: 10px;
+#researchers .unity-scroller--vertical {
+    width: 18px;
+    margin: 8px 6px 8px 0;
     background-color: rgba(0, 0, 0, 0);
     border-width: 0;
 }
 
-
-ScrollView .unity-scroller__low-button,
-ScrollView .unity-scroller__high-button {
-    width: 26px;
-    height: 26px;
-    background-color: #8683CC;
-    border-width: 0;
-    border-radius: 8px;
-    -unity-background-image-tint-color: #FFFFFF;
+#researchers .unity-scroller__low-button,
+#researchers .unity-scroller__high-button {
+    display: none;
 }
 
-ScrollView .unity-scroller__low-button:hover,
-ScrollView .unity-scroller__high-button:hover {
-    background-color: #9C99DB;
-}
-
-ScrollView .unity-scroller__low-button:active,
-ScrollView .unity-scroller__high-button:active {
-    background-color: #7300FF;
-}
-
-ScrollView .unity-base-slider__tracker {
+#researchers .unity-base-slider__tracker {
     width: 8px;
     background-color: #E4E2F5;
     border-width: 0;
     border-radius: 4px;
 }
 
-
-ScrollView .unity-base-slider__dragger {
+#researchers .unity-base-slider__dragger {
     width: 8px;
     background-color: #8683CC;
     border-width: 0;
     border-radius: 4px;
-    margin-left: 6px;
 }
 
-ScrollView .unity-base-slider__dragger:hover {
+#researchers .unity-base-slider__dragger:hover {
     background-color: #9C99DB;
 }
 
-ScrollView .unity-base-slider__dragger:active {
+#researchers .unity-base-slider__dragger:active {
     background-color: #7300FF;
 }
 
-ScrollView .unity-base-slider__dragger-border {
+#researchers .unity-base-slider__dragger-border {
     display: none;
-}
-
-ScrollView .unity-scroll-view__content-container {
-    align-items: center;
 }

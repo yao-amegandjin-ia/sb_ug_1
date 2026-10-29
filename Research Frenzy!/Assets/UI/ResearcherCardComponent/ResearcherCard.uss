@@ -1,0 +1,77 @@
+/* one row: portrait | name, stats and methods | HIRE */
+.researcher-card {
+    flex-direction: row;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    border-left-width: 6px;
+    border-color: #FFA500;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+}
+
+.portrait {
+    width: 88px;
+    height: 88px;
+    flex-shrink: 0;
+    margin-right: 16px;
+    border-radius: 44px;
+    background-color: #8683CC;
+    justify-content: center;
+    align-items: center;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.portrait-initials {
+    color: white;
+    font-size: 28px;
+    -unity-font-style: bold;
+}
+
+.details {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.researcher-name {
+    color: #2A1B4D;
+    font-size: 20px;
+    -unity-font-style: bold;
+    margin-bottom: 6px;
+}
+
+.stats {
+    flex-direction: row;
+    margin-bottom: 4px;
+}
+
+.stat {
+    background-color: #E4E2F5;
+    color: #2A1B4D;
+    border-radius: 8px;
+    padding: 4px 10px;
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+/* the method buttons have a 4px margin, so pull the tray left to line up with the name */
+.methods {
+    margin-left: -4px;
+}
+
+.hire-button {
+    width: 120px;
+    height: 48px;
+    flex-shrink: 0;
+    margin-left: 16px;
+    background-color: #0099FF;
+    color: white;
+    border-width: 0;
+    border-radius: 10px;
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.hire-button:hover, .hire-button:hover:active {
+    background-color: #33ADFF;
+}

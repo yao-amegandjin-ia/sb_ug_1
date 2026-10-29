@@ -54,4 +54,15 @@ public static class MethodLibrary
         }
         return "Unknown";
     }
+    
+    // the whole entry (name + description), or null
+    public static MethodEntry Get(int id)
+    {
+        foreach (MethodEntry m in GetAll())
+        {
+            if (m.id == id)
+                return m;
+        }
+        return null;
+    }
 }

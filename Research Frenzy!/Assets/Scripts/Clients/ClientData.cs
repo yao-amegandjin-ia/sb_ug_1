@@ -118,11 +118,11 @@ namespace Clients
             if (maxPatience <= 0f) return 0f;
             return currentPatience / maxPatience;
         }
-
-        // "Ask them to wait"
+        
+        // "Ask them to wait". also works on a client who was following, if the player changes their mind
         public void SendToWaitingRoom()
         {
-            if (state == ClientState.InProcess || state == ClientState.Waiting)
+            if (state == ClientState.InProcess || state == ClientState.Waiting || state == ClientState.Following)
                 SetState(ClientState.Waiting);
         }
         
