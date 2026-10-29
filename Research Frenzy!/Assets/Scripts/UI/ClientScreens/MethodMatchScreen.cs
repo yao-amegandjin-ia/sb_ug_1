@@ -3,7 +3,7 @@
 
 using UnityEngine.UIElements;
 
-namespace UI
+namespace UI.ClientScreens
 {
     /// <summary>
     /// Method match screen goes on the MatchUI object in UI scene

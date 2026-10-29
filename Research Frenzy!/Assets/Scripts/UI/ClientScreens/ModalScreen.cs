@@ -12,20 +12,24 @@ using GameLogic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace UI
+namespace UI.ClientScreens
 {
     
     /// <summary>
     /// Abstract Class for UI screens
     /// 
     /// </summary>
-    [RequireComponent(typeof(PanelRenderer))]
+     [RequireComponent(typeof(PanelRenderer))]
     public abstract class ModalScreen : MonoBehaviour
     {
         [Tooltip("Optional. Only needed if a <Style> path in the UXML doesn't resolve and the screen shows up unstyled.")]
         [SerializeField] private StyleSheet[] extraStyleSheets;
 
-        [Tooltip("Colour drawn over the lab behind the screen.")]
+        [Tooltip("Ticked: dim the lab and block clicks on it while open (centred popups like the hire screen). " +
+                 "Unticked: the lab stays visible and clickable around the screen (side panels like request / referral).")]
+        [SerializeField] private bool blockLabBehind = true;
+
+        [Tooltip("Colour drawn over the lab behind the screen, when Block Lab Behind is ticked.")]
         [SerializeField] private Color dimColor = new Color(0f, 0f, 0f, 0.5f);
 
         private PanelRenderer panelRenderer;
@@ -92,7 +96,6 @@ namespace UI
             {
                 // it'll still appear once the UI loads, see OnUIReload
                 Debug.LogWarning($"{GetType().Name}: opened before its UI loaded. Check the PanelRenderer has a Source Asset and Panel Settings.");
-                
                 return;
             }
 
@@ -124,7 +127,8 @@ namespace UI
             if (IsOpen) OnShown();
         }
 
-        // cover the whole screen, dim the lab behind it and center the card
+        // cover the whole screen and center the card. a side panel places itself with position: absolute in its USS.
+        // when the lab isn't blocked the overlay is see-through and ignores clicks, so only the panel catches them
         private void SetUpOverlay(VisualElement root)
         {
             root.style.position = Position.Absolute;
@@ -134,7 +138,8 @@ namespace UI
             root.style.bottom = 0;
             root.style.justifyContent = Justify.Center;
             root.style.alignItems = Align.Center;
-            root.style.backgroundColor = dimColor;
+            root.style.backgroundColor = blockLabBehind ? dimColor : Color.clear;
+            root.pickingMode = blockLabBehind ? PickingMode.Position : PickingMode.Ignore;
 
             if (extraStyleSheets == null) return;
             foreach (StyleSheet sheet in extraStyleSheets)

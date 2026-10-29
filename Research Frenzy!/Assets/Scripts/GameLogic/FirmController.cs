@@ -40,6 +40,10 @@ namespace GameLogic
 
         private GameInitializer game;
         private ResearcherGenerator researcherGenerator;   // in the Research_Lab scene, so found when first needed
+        
+        private Client following;                          // the one client the player is helping right now
+        /// <summary>The client following the player, or null. Only one at a time.</summary>
+        public Client FollowingClient => following && following.IsFollowing ? following : null;
 
         private void Awake()
         {
@@ -76,24 +80,56 @@ namespace GameLogic
 
         // Referral Screen
 
-        /// <summary>"We can help with that". The client follows the player until they're matched with a researcher.</summary>
-        public void TakeOnClient(Client client)
+        // --- referral screen ---
+ 
+        /// <summary>True if the player can take this client on: nobody else is following, or it's this client already.</summary>
+        public bool CanTakeOn(Client client)
         {
-            if (client) client.FollowPlayer();
+            return FollowingClient == null || FollowingClient == client;
+        }
+ 
+        /// <summary>
+        /// "We can help with that". The client follows the player until they're matched with a researcher.
+        /// Only one client can follow at a time.
+        /// </summary>
+        /// <returns>False if someone else is already following.</returns>
+        public bool TakeOnClient(Client client)
+        {
+            if (!client) return false;
+            if (!CanTakeOn(client))
+            {
+                Debug.Log($"Already helping {FollowingClient.Data.Name}, so {client.Data.Name} can't follow too.");
+                return false;
+            }
+ 
+            if (!client.IsFollowing) client.FollowPlayer();
+            following = client;
+            return true;
         }
 
-        /// <summary>"Please wait". The client goes to the waiting room.</summary>
+        /// <summary>"Please wait". The client goes to the waiting room, and stops following if they were.</summary>
         public void SendToWaitingRoom(Client client)
         {
-            if (client) client.Data.SendToWaitingRoom();
+            if (!client) return;
+            StopFollowing(client);
+            client.Data.SendToWaitingRoom();
         }
-
+ 
         /// <summary>"Come back tomorrow". The client leaves and returns the next day.</summary>
         public void SendHomeUntilTomorrow(Client client)
         {
             if (!client) return;
+            StopFollowing(client);
             client.Data.AskToReturnTomorrow();
             client.Leave();
+        }
+ 
+        // frees the "one client at a time" slot if this was the client following
+        private void StopFollowing(Client client)
+        {
+            if (client != following) return;
+            client.StopFollowing();
+            following = null;
         }
 
         //Method Match Screen

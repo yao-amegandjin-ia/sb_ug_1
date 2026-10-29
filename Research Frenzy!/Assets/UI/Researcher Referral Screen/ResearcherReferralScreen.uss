@@ -1,11 +1,15 @@
+/* left side panel, same spot and size as the request screen it replaces */
 #researcher-referral-screen {
-    background-color: #F4F3FB;
+    position: absolute;
+    left: 20px;
+    top: 80px;
+    bottom: 140px;
+    width: 25%;
+    min-width: 360px;
     flex-direction: column;
-    justify-content: space-between;
-    width: 90%;
-    min-height: 85%;            
-    padding-bottom: 12px;
+    background-color: #F4F3FB;
     border-radius: 10px;
+    overflow: hidden;
     -unity-font-style: bold;
 }
 
@@ -16,13 +20,13 @@
     flex-shrink: 0;
     background-color: #7300FF;
     padding: 12px 16px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
 }
 
 #client-name {
     font-size: 20px;
     color: #FFFFFF;
+    white-space: normal;
+    flex-shrink: 1;
 }
 
 #close-btn {
@@ -30,38 +34,41 @@
     color: #FFFFFF;
     border-width: 0;
     border-radius: 10px;
+    flex-shrink: 0;
 }
 
-#close-btn:hover {
+#close-btn:hover, #close-btn:hover:active {
     background-color: #9C99DB;
 }
 
-
+/* fills the space between the header and the buttons, and centres the text in it,
+   so the buttons stay at the bottom and 3-4 sentences have room */
 #problem-statement {
-    flex-shrink: 0;
-    padding: 24px 24px 12px 24px;
+    flex-grow: 1;
+    justify-content: center;
+    padding: 24px 28px;
 }
 
 #problem-text {
     color: #2A1B4D;
     font-size: 18px;
     white-space: normal;
-    -unity-text-align: middle-left;
+    -unity-text-align: middle-center;
 }
 
 #referral-options {
     flex-direction: column;
     flex-shrink: 0;
-    padding: 0 20px;
+    padding: 0 20px 8px 20px;
 }
 
 .option {
     flex-shrink: 0;
     padding: 12px 16px;
-    margin: 0 0 12px 0;          
-    border-width: 0;          
+    margin: 0 0 12px 0;
+    border-width: 0;
     border-radius: 12px;
-    -unity-text-align: middle-left; 
+    -unity-text-align: middle-left;
 }
 
 .option-title {
@@ -78,29 +85,28 @@
     white-space: normal;
 }
 
-#help-option    { 
-    background-color: #0099FF; 
+#help-option {
+    background-color: #0099FF;
 }
 
-#wait-option    { 
-    background-color: #8683CC; 
-}
-
-#tomorrow-option { 
-    background-color: #FFA500; 
-}
-
-#help-option:hover {
+#help-option:hover, #help-option:hover:active {
     background-color: #33ADFF;
 }
 
-#tomorrow-option:hover {
-    background-color: #FFB733;
+#wait-option {
+    background-color: #8683CC;
 }
 
-
-#wait-option:hover {
+#wait-option:hover, #wait-option:hover:active {
     background-color: #9C99DB;
+}
+
+#tomorrow-option {
+    background-color: #FFA500;
+}
+
+#tomorrow-option:hover, #tomorrow-option:hover:active {
+    background-color: #FFB733;
 }
 
 #tomorrow-option .option-title,

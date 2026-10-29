@@ -1,8 +1,7 @@
-
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace UI
+namespace UI.ClientScreens
 {
     
     /// <summary>

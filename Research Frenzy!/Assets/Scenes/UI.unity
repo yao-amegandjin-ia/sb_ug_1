@@ -165,6 +165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.RequestScreen
   extraStyleSheets: []
+  blockLabBehind: 1
   dimColor: {r: 0, g: 0, b: 0, a: 0.5}
   referral: {fileID: 2083464592}
 --- !u!1931382934 &436650139
@@ -271,6 +272,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.MethodMatchScreen
   extraStyleSheets: []
+  blockLabBehind: 1
   dimColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!1931382934 &1375822312
 PanelRenderer:
@@ -376,8 +378,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.ResearcherHireScreen
   extraStyleSheets: []
+  blockLabBehind: 1
   dimColor: {r: 0, g: 0, b: 0, a: 0.5}
-  methodologyComponent: {fileID: 9197481963319205126, guid: 6cffbbba9ba7687439ad82f214b591d5, type: 3}
+  researcherCard: {fileID: 9197481963319205126, guid: 7c7ef34750234ce4abba70dbed018fe8, type: 3}
 --- !u!1931382934 &1559369281
 PanelRenderer:
   m_ObjectHideFlags: 0
@@ -694,6 +697,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.ReferralScreen
   extraStyleSheets: []
+  blockLabBehind: 1
   dimColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!1931382934 &2083464593
 PanelRenderer:

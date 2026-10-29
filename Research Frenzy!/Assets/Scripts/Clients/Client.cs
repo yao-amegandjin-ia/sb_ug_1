@@ -5,6 +5,7 @@
 using System.Net.Http;
 using Clients;
 using UI;
+using UI.ClientScreens;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
@@ -18,6 +19,7 @@ using UnityEngine.Serialization;
 public class Client : MonoBehaviour, IPointerClickHandler
 {
     public RequestScreen requestScreen;
+    public ReferralScreen referralScreen;
     public PlayerMover player;
     public float talkDistance = 1.2f;   // how close the player has to get before the panel opens
     
@@ -51,6 +53,7 @@ public class Client : MonoBehaviour, IPointerClickHandler
     {
         // prefabs can't keep links to scene objects, so find them if they're empty
         if (requestScreen == null) requestScreen = FindAnyObjectByType<RequestScreen>();
+        if (referralScreen == null) referralScreen = FindAnyObjectByType<ReferralScreen>();
         if (player == null) player = FindAnyObjectByType<PlayerMover>();
         
         rb = GetComponent<Rigidbody2D>();
@@ -120,15 +123,17 @@ public class Client : MonoBehaviour, IPointerClickHandler
         player.WalkUpTo(transform, talkDistance, OpenRequest);
     }
 
-/// <summary>
-/// Open Request Screen if client is able to be talked to
-/// </summary>
+    /// <summary>
+    /// Open Request Screen if client is able to be talked to.
+    /// A client who is already following goes straight back to the referral screen.
+    /// </summary>
     void OpenRequest()
     {
         // client might have left while the player was walking over
         if (!this || !CanTalk()) return;
 
-        requestScreen.Open(this);
+        if (IsFollowing && referralScreen) referralScreen.Open(this);
+        else requestScreen.Open(this);
     }
 
     /// <summary>
@@ -138,6 +143,14 @@ public class Client : MonoBehaviour, IPointerClickHandler
     {
         if (clientData != null) clientData.StartFollowing();
         if (player != null) followTarget = player.transform;
+    }
+    
+    /// <summary>
+    /// Stops following the player and stays where they are. Set the client's state before calling this.
+    /// </summary>
+    public void StopFollowing()
+    {
+        followTarget = null;
     }
     
     /// <summary>
@@ -157,6 +170,6 @@ public class Client : MonoBehaviour, IPointerClickHandler
     bool CanTalk()
     {
         if (clientData == null) return true;
-        return clientData.State == ClientState.InProcess || clientData.State == ClientState.Waiting;
+        return clientData.State == ClientState.InProcess || clientData.State == ClientState.Waiting || clientData.State== ClientState.Following;
     }
 }
