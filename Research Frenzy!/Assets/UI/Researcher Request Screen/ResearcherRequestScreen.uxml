@@ -12,7 +12,7 @@
         <ui:TextElement name="client-name" text="Alice Smith"/>
         <ui:Button name="close-btn" text="CLOSE"/>
     </ui:VisualElement>
-    <ui:VisualElement name="problem-statement">
+    <ui:VisualElement name="problem-text">
         <ui:TextElement text="We want to understand why some college students choose not to attend professor office hours."/>
     </ui:VisualElement>
     <ui:VisualElement name="decision-btns">

@@ -1,8 +1,10 @@
 // HUD - goes on the GameUI object. bottom bar: codex, manage firm, studies, money, day, timer.
 // adding this script also adds the other UI scripts it needs (RequireComponent).
 // other scripts should call AddMoney / AddStudyResult / SetOngoing instead of touching the labels.
+// study results and correct rejects come from FirmController's events, so the screens don't have to tell the HUD.
 
 using System;
+using GameLogic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -31,6 +33,7 @@ public class HUD : MonoBehaviour
     Label bestText, partialText, wrongText, ongoingText;
     CodexPanel codex;
     GameInitializer game;
+    FirmController firmRules;   // game rules, in the Bootstrap scene. not the ManageFirmPanel below
     ManageFirmPanel firm;
 
     void Start()
@@ -48,6 +51,14 @@ public class HUD : MonoBehaviour
         game = FindAnyObjectByType<GameInitializer>();
         if (game != null) game.MoneyEarned += OnMoneyEarned;
         else Debug.LogWarning("HUD: no GameInitializer found, money will show $0. Did you press Play from the Bootstrap scene?");
+
+        firmRules = FindAnyObjectByType<FirmController>();
+        if (firmRules != null)
+        {
+            firmRules.StudyFinished += OnStudyFinished;
+            firmRules.RequestRejected += OnRequestRejected;
+        }
+        else Debug.LogWarning("HUD: no FirmController found, study counts won't update. Is it on the GameInitializer object?");
 
         codex = GetComponent<CodexPanel>();
         firm = GetComponent<ManageFirmPanel>();
@@ -109,6 +120,21 @@ public class HUD : MonoBehaviour
     void OnDestroy()
     {
         if (game != null) game.MoneyEarned -= OnMoneyEarned;
+        if (firmRules != null)
+        {
+            firmRules.StudyFinished -= OnStudyFinished;
+            firmRules.RequestRejected -= OnRequestRejected;
+        }
+    }
+
+    void OnStudyFinished(StudyOutcome outcome)
+    {
+        AddStudyResult((int)outcome);
+    }
+
+    void OnRequestRejected(bool correct)
+    {
+        if (correct) AddCorrectReject();
     }
 
     // GameInitializer already added the money, this just counts it for today and updates the label

@@ -25,12 +25,12 @@
    -unity-font-style: bold;
 }
 
-#problem-statement {
+#problem-text {
     align-self: center;
     color: #2A1B4D;
 }
 
-#problem-statement, #decision-btns Button {
+#problem-text, #decision-btns Button {
     font-size: 18px;
 }
 #close-btn{
