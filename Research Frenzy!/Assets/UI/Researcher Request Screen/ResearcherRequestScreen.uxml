@@ -8,17 +8,17 @@
     <Style src="ResearcherRequestScreen.uss"/>
 
     <ui:VisualElement name="researcher-request-screen">
-    <ui:VisualElement name="header">
-        <ui:TextElement name="client-name" text="Alice Smith"/>
-        <ui:Button name="close-btn" text="CLOSE"/>
+        <ui:VisualElement name="header">
+            <ui:TextElement name="client-name" text="Alice Smith"/>
+            <ui:Button name="close-btn" text="CLOSE"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="problem-statement">
+            <ui:TextElement name="problem-text" text="We want to understand why some college students choose not to attend professor office hours."/>
+        </ui:VisualElement>
+        <ui:VisualElement name="decision-btns">
+            <ui:Button name="accept-btn" text="WE CAN HELP"/>
+            <ui:Button name="deny-btn" text="WE CAN'T HELP"/>
+        </ui:VisualElement>
     </ui:VisualElement>
-    <ui:VisualElement name="problem-statement">
-        <ui:TextElement text="We want to understand why some college students choose not to attend professor office hours."/>
-    </ui:VisualElement>
-    <ui:VisualElement name="decision-btns">
-        <ui:Button name="accept-btn" text="WE CAN HELP"/>
-        <ui:Button name="deny-btn" text="WE CAN'T HELP"/>
-    </ui:VisualElement>
-</ui:VisualElement>
-    
+
 </ui:UXML>

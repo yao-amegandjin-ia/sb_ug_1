@@ -1,48 +1,76 @@
+/* left side panel, same spot as the codex / manage firm panels in GameUI.uss:
+   20px in from the left, below the top buttons (80px) and above the bottom bar (140px) */
+#researcher-request-screen {
+    position: absolute;
+    left: 20px;
+    top: 80px;
+    bottom: 140px;
+    width: 25%;
+    min-width: 360px;
+    flex-direction: column;
+    background-color: #F4F3FB;
+    border-radius: 10px;
+    overflow: hidden;
+    -unity-font-style: bold;
+}
 
 #header {
-    display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
     background-color: #7300FF;
     color: white;
     padding: 12px 16px;
-    border-top-right-radius: 10px;
-    border-top-left-radius: 10px;
 }
 
 #client-name {
     font-size: 20px;
-}
-#researcher-request-screen {
-   background-color: #F4F3FB;
-   display: flex;
-   flex-direction: column;
-   justify-content: space-between;
-   height: 85%;
-   width: 90%;
-   padding-bottom: 5%;
-   -unity-font-style: bold;
+    white-space: normal;
+    flex-shrink: 1;
 }
 
-#problem-statement {
-    align-self: center;
-    color: #2A1B4D;
-}
-
-#problem-statement, #decision-btns Button {
-    font-size: 18px;
-}
-#close-btn{
+#close-btn {
     background-color: #8683CC;
+    color: white;
     border-width: 0;
+    border-radius: 10px;
+    flex-shrink: 0;
 }
 
-#close-btn, #decision-btns Button, #researcher-request-screen {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
+#close-btn:hover, #close-btn:hover:active {
+    background-color: #9C99DB;
+}
+
+/* fills the space between the header and the buttons, and centres the text in it,
+   so the buttons stay at the bottom and 3-4 sentences have room */
+#problem-statement {
+    flex-grow: 1;
+    justify-content: center;
+    padding: 24px 28px;
+}
+
+#problem-text {
+    color: #2A1B4D;
+    font-size: 18px;
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+/* stacked, full width. side by side is too cramped in a narrow panel */
+#decision-btns {
+    flex-direction: column;
+    flex-shrink: 0;
+    padding: 0 20px 20px 20px;
+}
+
+#decision-btns Button {
+    height: 56px;
+    margin: 12px 0 0 0;
+    border-width: 0;
+    border-radius: 10px;
+    font-size: 18px;
+    white-space: normal;
 }
 
 #accept-btn {
@@ -50,31 +78,15 @@
     color: white;
 }
 
+#accept-btn:hover, #accept-btn:hover:active {
+    background-color: #33ADFF;
+}
+
 #deny-btn {
     background-color: #FFA500;
     color: #2A1B4D;
 }
-#decision-btns Button {
-    flex-basis: 25%;
-    white-space: normal;
-    flex-shrink: 0;
-    border-width: 0;
-}
-#decision-btns {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-}
 
-#accept-btn:hover {
-    background-color: #33ADFF;
-}
-
-#deny-btn:hover {
+#deny-btn:hover, #deny-btn:hover:active {
     background-color: #FFB733;
-}
-
-
-#close-btn:hover {
-    background-color: #9C99DB;
 }

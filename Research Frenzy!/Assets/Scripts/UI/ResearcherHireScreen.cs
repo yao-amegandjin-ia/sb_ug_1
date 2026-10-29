@@ -1,180 +1,94 @@
-using System.Collections.Generic;
+// ResearcherHireScreen - goes on the HireUI object in the UI scene (PanelRenderer with ResearcherHireScreen.uxml).
+// lists the researchers the FirmController says can be hired. HIRE asks it to put them in a cubicle.
+// for now the Spawn Researcher button opens it. later it will show with daily progression at the end of the day.
+
 using Researchers;
+using UI.ClientScreens;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.UIElements;
-
-
 
 namespace UI
 {
-    /// <summary>
-    /// ResearcherHireScreen
-    /// This is what will appear when hiring a new researcher
-    /// Currently, this will display from a button press. Later will show with daily progression at the end of day.
-    /// </summary>
-    //TODO: Probably needs to be made more efficient
-    //TODO: May switch to panel renderer in the future?
-    [RequireComponent(typeof(UIDocument))]
-    public class ResearcherHireScreen : MonoBehaviour {
-        
-        //drag ResearcherHireScreen.uss in here. added in code so it works whatever the UXML's Style path says
-        [SerializeField] private StyleSheet styleSheet;
- //drag ResearcherMethodologyComponent.uxml in here
-        [SerializeField] private VisualTreeAsset methodologyComponent;
+    public class ResearcherHireScreen : ModalScreen
+    {
+        //drag ResearcherCard.uxml in here (UI/Researcher Hire Screen)
+        [SerializeField] private VisualTreeAsset researcherCard;
  
-        private VisualElement root;
-        private bool isOpen;
+        private ScrollView list;
  
-        private void Start()
+        protected override void BindUI(VisualElement root)
         {
-            root = GetComponent<UIDocument>().rootVisualElement;
-            
-            if (styleSheet != null) root.styleSheets.Add(styleSheet);
-            else Debug.LogWarning("ResearcherHireScreen: no Style Sheet set, the screen will be unstyled.");
- 
-            // cover the whole screen, dim the lab behind it and center the screen
-            root.style.position = Position.Absolute;
-            root.style.left = 0;
-            root.style.right = 0;
-            root.style.top = 0;
-            root.style.bottom = 0;
-            root.style.justifyContent = Justify.Center;
-            root.style.alignItems = Align.Center;
-            root.style.backgroundColor = new Color(0f, 0f, 0f, 0.5f);
- 
-            Button backButton = root.Q<Button>("back-to-upgrades-button");
-            if (backButton != null) backButton.clicked += Close;
- 
-            Close();
+            list = Find<ScrollView>("researchers");
+            HookButton("back-to-upgrades-button", Close);
         }
  
-        // --- opening and closing (the Spawn Researcher button calls Toggle) ---
+        public void Open() => Show();
  
-        public void Open()
-        {
-            isOpen = true;
-            root.style.display = DisplayStyle.Flex;
-            BuildCards();
-        }
- 
-        public void Close()
-        {
-            isOpen = false;
-            root.style.display = DisplayStyle.None;
-        }
- 
+        // the Spawn Researcher button calls this
         public void Toggle()
         {
-            if (isOpen) Close();
+            if (IsOpen) Close();
             else Open();
         }
  
-        //One card per researcher who hasn't been hired yet
-        private void BuildCards()
+        // rebuilt every time it opens, so researchers hired since last time are gone
+        protected override void OnShown()
         {
-            ScrollView researchers = root.Q<ScrollView>("researchers");
-            if (researchers == null) return;
-            researchers.Clear();
+            if (list == null) return;
+            list.Clear();
+            if (!Firm) return;
  
-            ResearcherGenerator generator = FindAnyObjectByType<ResearcherGenerator>();
-            if (generator == null)
+            if (researcherCard == null)
             {
-                Debug.LogWarning("ResearcherHireScreen: no ResearcherGenerator found. Is it in the Research_Lab scene?");
+                Debug.LogWarning("ResearcherHireScreen: no Researcher Card set. Drag ResearcherCard.uxml into it.");
                 return;
             }
  
-            foreach (ResearcherData r in generator.GetUnhired())
-            {
-                VisualElement stats = new VisualElement()
-                {
-                    name = "researcher-stats"
-                };
- 
-                TextElement name = new TextElement()
-                {
-                    name = "researcher-name",
-                    text = r.Name
-                };
- 
-                TextElement quality = new TextElement()
-                {
-                    name = "quality",
-                    text = "QUALITY: " + r.Quality + " / 3"
-                };
- 
-                TextElement speed = new TextElement() {
-                    name = "speed",
-                    text = "SPEED: " + r.Speed + " / 3"
-                };
- 
-                stats.Add(quality);
-                stats.Add(speed);
- 
-                VisualElement researcherOverview = new VisualElement()
-                {
-                    name = "researcher-overview"
-                };
- 
-                VisualElement nameAndStats = new VisualElement()
-                {
-                    name = "name-and-stats"
-                };
- 
-                nameAndStats.Add(name);
-                nameAndStats.Add(stats);
- 
-                researcherOverview.Add(nameAndStats);
- 
-                // the same four-button component the match screen uses, filled with this researcher's methods
-                if (methodologyComponent != null)
-                {
-                    VisualElement researcherMethologies = methodologyComponent.Instantiate();
-                    List<Button> methodologies = researcherMethologies.Query<Button>().ToList();
-                    for (int i = 0; i < methodologies.Count; i++)
-                    {
-                        if (i < r.KnownMethodologyIds.Count)
-                            methodologies[i].text = MethodLibrary.GetName(r.KnownMethodologyIds[i]);
-                        else
-                            methodologies[i].style.display = DisplayStyle.None;
-                    }
-                    researcherOverview.Add(researcherMethologies);
-                }
- 
-                VisualElement hiringInfo = new VisualElement()
-                {
-                    name = "hiring-info"
-                };
- 
-                ResearcherData toHire = r;   // copy for the lambda
-                Button hireButton = new Button(() => HireClicked(toHire)) {
-                    name = "hire-researcher",
-                    text = "HIRE"
-                };
- 
-                hiringInfo.Add(hireButton);
- 
-                VisualElement researcher = new VisualElement() {
-                    name = "researcher"
-                };
- 
-                researcher.Add(researcherOverview);
-                researcher.Add(hiringInfo);
-                researchers.Add(researcher);
-            }
+            foreach (ResearcherData r in Firm.GetHireCandidates())
+                list.Add(BuildCard(r));
         }
  
-        private void HireClicked(ResearcherData data)
+        // the layout is all in ResearcherCard.uxml / .uss. this only fills in the named elements
+        private VisualElement BuildCard(ResearcherData r)
         {
-            GameInitializer game = FindAnyObjectByType<GameInitializer>();
-            if (!game)
-            {
-                Debug.LogWarning("ResearcherHireScreen: no GameInitializer found. Did you press Play from the Bootstrap scene?");
-                return;
-            }
+            VisualElement card = researcherCard.Instantiate();
  
-            if (game.HireResearcher(data) != null)
+            SetText(card, "researcher-name", r.Name);
+            SetText(card, "quality", "QUALITY " + r.Quality + "/3");
+            SetText(card, "speed", "SPEED " + r.Speed + "/3");
+ 
+            // no pictures yet, so the portrait shows initials. once there are sprites:
+            //   card.Q("portrait").style.backgroundImage = new StyleBackground(sprite);
+            //   card.Q("portrait-initials").style.display = DisplayStyle.None;
+            SetText(card, "portrait-initials", Initials(r.Name));
+ 
+            new MethodologyTray(card.Q("methods")).Show(r.KnownMethodologyIds);
+ 
+            Button hireButton = card.Q<Button>("hire-researcher");
+            if (hireButton != null) hireButton.clicked += () => HireClicked(r);
+ 
+            return card;
+        }
+ 
+        private static void SetText(VisualElement card, string elementName, string text)
+        {
+            TextElement element = card.Q<TextElement>(elementName);
+            if (element != null) element.text = text;
+        }
+ 
+        // "Laufey Kim" -> "LK"
+        private static string Initials(string fullName)
+        {
+            string initials = "";
+            foreach (string part in fullName.Split(' '))
+                if (part.Length > 0) initials += char.ToUpper(part[0]);
+            return initials;
+        }
+ 
+        // hiring itself is FirmController.Hire. the screen only closes if it worked
+        private void HireClicked(ResearcherData researcher)
+        {
+            if (Firm && Firm.Hire(researcher))
                 Close();
         }
     }
