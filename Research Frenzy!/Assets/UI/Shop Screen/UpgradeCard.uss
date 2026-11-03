@@ -1,0 +1,111 @@
+/* one row: picture | name, description and levels | BUY. same card look as ResearcherCard.uss */
+.upgrade-card {
+    flex-direction: row;
+    align-items: center;
+    background-color: white;
+    border-radius: 10px;
+    border-left-width: 6px;
+    border-color: #FFA500;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+}
+
+/* square-ish box for the item picture (researchers get a circle, items get a rounded square) */
+.upgrade-icon {
+    width: 88px;
+    height: 88px;
+    flex-shrink: 0;
+    margin-right: 16px;
+    border-radius: 14px;
+    background-color: #8683CC;
+    justify-content: center;
+    align-items: center;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.icon-placeholder {
+    color: white;
+    font-size: 36px;
+    -unity-font-style: bold;
+}
+
+.details {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.upgrade-name {
+    color: #2A1B4D;
+    font-size: 20px;
+    -unity-font-style: bold;
+    margin-bottom: 4px;
+}
+
+.upgrade-description {
+    color: #5A4F7A;
+    font-size: 14px;
+    -unity-font-style: normal;
+    white-space: normal;
+    margin-bottom: 8px;
+}
+
+.level-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+/* same pill as the QUALITY / SPEED stats on the researcher card */
+.level-text {
+    background-color: #E4E2F5;
+    color: #2A1B4D;
+    border-radius: 8px;
+    padding: 4px 10px;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.level-pips {
+    flex-direction: row;
+    align-items: center;
+}
+
+.level-pip {
+    width: 22px;
+    height: 10px;
+    margin-right: 4px;
+    border-radius: 5px;
+    background-color: #E4E2F5;
+}
+
+.level-pip.filled {
+    background-color: #FFA500;
+}
+
+/* same as the HIRE button */
+.buy-button {
+    width: 120px;
+    height: 48px;
+    flex-shrink: 0;
+    margin-left: 16px;
+    background-color: #0099FF;
+    color: white;
+    border-width: 0;
+    border-radius: 10px;
+    font-size: 18px;
+    -unity-font-style: bold;
+}
+
+.buy-button:hover, .buy-button:hover:active {
+    background-color: #33ADFF;
+}
+
+/* can't afford it */
+.buy-button:disabled {
+    background-color: #B9B6D9;
+    opacity: 1;
+}
+
+/* every level bought */
+.buy-button.maxed:disabled {
+    background-color: #2EB872;
+}

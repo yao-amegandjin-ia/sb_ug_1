@@ -30,6 +30,13 @@ public class ClientGenerator : MonoBehaviour
     [Header("Patience")]
     [Tooltip("Patience in seconds. The same for every client.")]
     [SerializeField, Min(1f)] private float patience = 30f;
+    
+    /// <summary>
+    /// Seconds added to every new client's patience.
+    /// GameInitializer sets this from the UpgradeController, so this script doesn't need to know about upgrades.
+    /// </summary>
+    public float ExtraPatience { get; set; }
+    
  
     [Header("Appearance (number of assets available per slot)")]
     [SerializeField, Min(1)] private int headCount = 12;
@@ -137,7 +144,7 @@ public class ClientGenerator : MonoBehaviour
             rng.Next(Mathf.Max(1, legCount)));
  
         ClientData client = new ClientData();
-        client.Init(requestId, request, patience, look);   // client ID = request ID (unique, needs no saving)
+        client.Init(requestId, request, patience + ExtraPatience, look);   // client ID = request ID (unique, needs no saving)
         return client;
     }
  

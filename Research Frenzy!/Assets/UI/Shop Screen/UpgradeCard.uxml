@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="False"
+>
+    <!-- one upgrade on the shop's upgrades tab. UpgradesTab.cs fills in the named elements -->
+    <Style src="UpgradeCard.uss"/>
+
+    <ui:VisualElement class="upgrade-card">
+
+        <!-- picture of the item. shows a letter until the upgrade asset has an Icon sprite -->
+        <ui:VisualElement name="upgrade-icon" class="upgrade-icon">
+            <ui:Label name="icon-placeholder" class="icon-placeholder" text="C" picking-mode="Ignore"/>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="details">
+            <ui:Label name="upgrade-name" class="upgrade-name" text="Clock"/>
+            <ui:Label name="upgrade-description" class="upgrade-description" text="A bigger wall clock. Adds 5 seconds to each day."/>
+            <ui:VisualElement class="level-row">
+                <ui:Label name="level-text" class="level-text" text="LEVEL 2/5"/>
+                <!-- the script adds one pip per level -->
+                <ui:VisualElement name="level-pips" class="level-pips">
+                    <ui:VisualElement class="level-pip filled"/>
+                    <ui:VisualElement class="level-pip filled"/>
+                    <ui:VisualElement class="level-pip"/>
+                    <ui:VisualElement class="level-pip"/>
+                    <ui:VisualElement class="level-pip"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:Button name="buy-upgrade" class="buy-button" text="$250"/>
+    </ui:VisualElement>
+</ui:UXML>

@@ -29,12 +29,12 @@ namespace UI
             button.style.right = 16;
             root.Add(button);
             
-            Button researcherButton = new Button(SpawnResearcherClicked);
-            researcherButton.text = "Spawn Researcher";
-            researcherButton.style.position = Position.Absolute;
-            researcherButton.style.top = 52;   // just under Spawn Client
-            researcherButton.style.right = 16;
-            root.Add(researcherButton);
+            Button upgradesButton = new Button(UpgradesClicked);
+            upgradesButton.text = "Upgrades";
+            upgradesButton.style.position = Position.Absolute;
+            upgradesButton.style.top = 52;   // just under Spawn Client
+            upgradesButton.style.right = 16;
+            root.Add(upgradesButton);
         }
 
         void SpawnClicked()
@@ -48,15 +48,15 @@ namespace UI
             lab.SpawnNextClient();
         }
         
-        void SpawnResearcherClicked()
+        void UpgradesClicked()
         {
-            ResearcherHireScreen hireScreen = FindAnyObjectByType<ResearcherHireScreen>();
-            if (hireScreen == null)
+            ShopScreen shop = FindAnyObjectByType<ShopScreen>();
+            if (shop == null)
             {
-                Debug.LogWarning("DemoSpawnButton: no ResearcherHireScreen found. Is it under UIRoot in the UI scene?");
+                Debug.LogWarning("DemoSpawnButton: no ShopScreen found. Is the ShopUI object under UIRoot in the UI scene?");
                 return;
             }
-            hireScreen.Toggle();
+            shop.Toggle();
         }
     }
 }
