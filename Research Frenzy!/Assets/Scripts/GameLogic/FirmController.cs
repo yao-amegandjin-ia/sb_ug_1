@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using Researchers;
 using UnityEngine;
+using GameLogic.Upgrades;
+using Clients;
 
 namespace GameLogic
 {
@@ -31,17 +33,25 @@ namespace GameLogic
         [Tooltip("How many of a researcher's methods can be used. The match screen's USS greys out buttons three and four, " +
                  "so this starts at 2. Set it to 4 to allow all of them.")]
         [SerializeField, Range(1, 4)] private int unlockedMethods = 2;
+        
+        [Header("Waiting room")]
+        [Tooltip("Clients who can sit in the waiting area before any Couch upgrades.")]
+        [SerializeField, Min(0)] private int baseWaitingSeats = 3;
 
         /// <summary>A study was finished with this result. The HUD counts these.</summary>
         public event Action<StudyOutcome> StudyFinished;
 
         /// <summary>A request was turned down. True when that was the right call (the request can't be researched).</summary>
         public event Action<bool> RequestRejected;
+        
+        /// <summary>A client left dissatisfied (patience ran out, or no seat to wait in). The HUD counts these.</summary>
+        public event Action<Client> ClientLost;
 
         private GameInitializer game;
         private ResearcherGenerator researcherGenerator;   // in the Research_Lab scene, so found when first needed
-        
-        private Client following;                          // the one client the player is helping right now
+        private ClientSpawner clientSpawner;   // same
+        private UpgradeController upgrades;    // on this same GameObject
+        private Client following;  // the one client the player is helping right now
         /// <summary>The client following the player, or null. Only one at a time.</summary>
         public Client FollowingClient => following && following.IsFollowing ? following : null;
 
@@ -50,10 +60,12 @@ namespace GameLogic
             game = GetComponent<GameInitializer>();
             if (game == null) game = FindAnyObjectByType<GameInitializer>();
             if (game == null) Debug.LogError("FirmController: no GameInitializer found. Put this on the GameInitializer object.");
+            
+            upgrades = GetComponent<UpgradeController>();
+            if (upgrades == null) upgrades = FindAnyObjectByType<UpgradeController>();
         }
 
         // Request Screen
-
         /// <summary>
         /// "We can't help". Pays correctRejectReward if the request really can't be researched,
         /// saves the request with methodology 0 (None) and sends the client away.
@@ -106,13 +118,72 @@ namespace GameLogic
             following = client;
             return true;
         }
+        
+        /// <summary>Seats in the waiting area: the base amount plus one per Couch level.</summary>
+        public int WaitingSeats => baseWaitingSeats + (upgrades != null ? upgrades.ExtraWaitingSeats : 0);
 
-        /// <summary>"Please wait". The client goes to the waiting room, and stops following if they were.</summary>
-        public void SendToWaitingRoom(Client client)
+        /// <summary>Clients sitting in the waiting area right now.</summary>
+        public int WaitingCount
+        {
+            get
+            {
+                if (clientSpawner == null) clientSpawner = FindAnyObjectByType<ClientSpawner>();
+                if (clientSpawner == null) return 0;
+
+                int count = 0;
+                foreach (Client c in clientSpawner.ActiveClients)
+                    if (c && c.Data != null && c.Data.State == ClientState.Waiting) count++;
+                return count;
+            }
+        }
+        
+        /// <summary>True if there's a free seat, or this client is already sitting down.</summary>
+        public bool CanSendToWaitingRoom(Client client)
+        {
+            if (!client) return false;
+            return client.Data.State == ClientState.Waiting || WaitingCount < WaitingSeats;
+        }
+
+        /// <summary>
+        /// "Please wait". The client goes to the waiting room, and stops following if they were.
+        /// If every seat is taken, it counts as their patience running out: they leave dissatisfied.
+        /// </summary>
+        /// <returns>True if they sat down, false if they left because the waiting area was full.</returns>
+        public bool SendToWaitingRoom(Client client)
+        {
+            if (!client) return false;
+            StopFollowing(client);
+
+            if (!CanSendToWaitingRoom(client))
+            {
+                Debug.Log($"Waiting area is full ({WaitingCount}/{WaitingSeats}), so {client.Data.Name} gave up.");
+                client.Data.RunOutOfPatience();   // Client hears this and calls HandleLeftDissatisfied below
+                return false;
+            }
+
+            client.Data.SendToWaitingRoom();
+            return true;
+        }
+        
+        // ReSharper disable Unity.PerformanceAnalysis
+        /// <summary>
+        /// Every client who leaves dissatisfied ends up here, whatever the reason (the patience timer hit 0,
+        /// or they were asked to wait with no free seat). Client calls it when its data fires OnLeftDissatisfied.
+        /// For study scoring it counts as a rejection: the request is saved with methodology 0 (None).
+        /// It pays nothing, even if the request couldn't be researched
+        /// </summary>
+        public void HandleLeftDissatisfied(Client client)
         {
             if (!client) return;
+
+            RequestData request = client.Data.Request;
+            if (request != null)
+                game.RecordStudy(request.RequestId, (int)MethodologiesEnum.None, 0);
+            Debug.Log($"{client.Data.Name} left dissatisfied. Saved as a rejection, +$0");
+
             StopFollowing(client);
-            client.Data.SendToWaitingRoom();
+            client.Leave();
+            ClientLost?.Invoke(client);
         }
  
         /// <summary>"Come back tomorrow". The client leaves and returns the next day.</summary>

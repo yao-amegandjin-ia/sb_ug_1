@@ -23,7 +23,7 @@
             </ui:Button>
             <ui:Button name="wait-option" class="option">
                 <ui:Label picking-mode="Ignore" class="option-title" text="PLEASE WAIT"/>
-                <ui:Label picking-mode="Ignore" class="option-desc" text="Our researcher is with another visitor right now."/>
+                <ui:Label name="wait-desc" picking-mode="Ignore" class="option-desc" text="Our researcher is with another visitor right now."/>
             </ui:Button>
             <ui:Button name="tomorrow-option" class="option">
                 <ui:Label picking-mode="Ignore" class="option-title" text="COME BACK TOMORROW"/>

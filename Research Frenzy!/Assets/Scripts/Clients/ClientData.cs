@@ -82,9 +82,7 @@ namespace Clients
 
                 if (currentPatience <= 0f)
                 {
-                    currentPatience = 0f;
-                    SetState(ClientState.LeftDissatisfied);
-                    OnLeftDissatisfied?.Invoke(this);
+                    RunOutOfPatience();
                 }
             }
         }
@@ -111,6 +109,19 @@ namespace Clients
             // Always starts at the door, even if the object was reused.
             state = ClientState.InProcess;
         }
+        
+        /// <summary>
+        /// The client gives up and leaves dissatisfied. Called when the patience timer hits 0,
+        /// and by FirmController when they're asked to wait but there's no free seat.
+        /// </summary>
+        public void RunOutOfPatience()
+        {
+            if (state == ClientState.LeftDissatisfied) return;
+            currentPatience = 0f;
+            SetState(ClientState.LeftDissatisfied);
+            OnLeftDissatisfied?.Invoke(this);
+        }
+        
 
         // for the patience bar UI (0 to 1)
         public float GetPatiencePercent()

@@ -9,6 +9,7 @@ using System;
 using Clients;
 using Researchers;
 using UnityEditor.SceneManagement;
+using GameLogic.Upgrades;
 
 
 /// <summary>One finished study: which methodology the player matched a request with.</summary>
@@ -65,8 +66,14 @@ public class GameInitializer : MonoBehaviour
     /// Triggered when money is added. HUD listens to this to update
     /// </summary>
     public event Action<int> MoneyEarned;
+    
+    /// <summary>
+    /// Triggered when money is spent.
+    /// </summary>
+    public event Action<int> MoneySpent;
 
     private GameSystems systems;
+    private UpgradeController upgrades;   // on this same GameObject. gives the bonus clients and patience
 
     //These are in the Research_Lab scene, so they're found after it loads instead of set in the Inspector
     
@@ -81,6 +88,8 @@ public class GameInitializer : MonoBehaviour
     {
         EditorSceneManager.playModeStartScene = null;
         systems = new GameSystems();
+        upgrades = GetComponent<UpgradeController>();
+        if (upgrades == null) Debug.LogWarning("GameInitializer: no UpgradeController on this object, so upgrades won't do anything.");
  
         // set the seed before any generator uses it (clients and researchers both draw from it)
         if (overrideSeed)
@@ -118,8 +127,30 @@ public class GameInitializer : MonoBehaviour
         }
 
         clientGenerator.Initialize(systems.DataManager.RequestList.Requests);
+        
+        // Magazines: new clients get the extra patience. re-applied every time an upgrade is bought or loaded
+        ApplyUpgradesToClients();
+        if (upgrades != null) upgrades.UpgradesChanged += ApplyUpgradesToClients;
+        
         Debug.Log("Clients initialized");
     }
+    
+    private void OnDestroy()
+    {
+        if (upgrades != null) upgrades.UpgradesChanged -= ApplyUpgradesToClients;
+    }
+
+    /// <summary>
+    /// Applies upgrades to clients. Currently, only magazines which add extra patience to clients
+    /// </summary>
+    private void ApplyUpgradesToClients()
+    {
+        if (clientGenerator != null)
+            clientGenerator.ExtraPatience = upgrades ? upgrades.ExtraPatienceSeconds : 0f;
+    }
+
+    /// <summary>Advertisements: extra new clients each day. Pass this as upgradeBonus to ClientGenerator.GenerateDay.</summary>
+    public int UpgradeClientBonus => upgrades ? upgrades.ExtraDailyClients : 0;
 
     // demo: sends in the next client from the deck. keeps going until the requests run out
     
@@ -131,7 +162,7 @@ public class GameInitializer : MonoBehaviour
     {
         if (clientGenerator == null || clientSpawner == null) return;
 
-        List<ClientData> next = clientGenerator.GenerateDay(day, 0, usedRequestIds);
+        List<ClientData> next = clientGenerator.GenerateDay(day, UpgradeClientBonus, usedRequestIds);
         if (next.Count == 0)
         {
             Debug.Log("No requests left to send in.");
@@ -161,10 +192,20 @@ public class GameInitializer : MonoBehaviour
  
         Debug.Log("Researchers initialized");
     }
+    
+    /// <summary>True if at least one cubicle is empty.</summary>
+    public bool HasFreeCubicle()
+    {
+        if (researcherSpawner == null) return false;
+        for (int cubicle = 1; cubicle <= researcherSpawner.CubicleCount; cubicle++)
+            if (researcherSpawner.IsCubicleFree(cubicle)) return true;
+        return false;
+    }
  
     // hires a researcher into the first free cubicle. called by the HIRE buttons on the hire screen
     public Researcher HireResearcher(ResearcherData data)
     {
+        
         if (researcherSpawner == null || data == null) return null;
  
         for (int cubicle = 1; cubicle <= researcherSpawner.CubicleCount; cubicle++)
@@ -230,4 +271,21 @@ public class GameInitializer : MonoBehaviour
         StudyResult result = studyResults.Results.Find(r => r.RequestId == requestId);
         return result != null ? result.MethodologyId : -1;
     }
+    
+    /// <summary>
+    /// Takes money out of currentMoney
+    /// Used when making a purchase
+    /// </summary>
+    /// <returns>False (and nothing is taken) if the player doesn't have enough.</returns>
+    public bool TrySpend(int amount)
+    {
+        if (amount < 0 || currentMoney < amount) return false;
+        currentMoney -= amount;
+        MoneySpent?.Invoke(amount);
+        return true;
+    }
+    
+    
+
+
 }

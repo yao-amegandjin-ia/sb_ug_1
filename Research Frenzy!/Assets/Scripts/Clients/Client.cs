@@ -9,6 +9,7 @@ using UI.ClientScreens;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
+using GameLogic;
 
 /// <summary>
 /// Game object for client. This is the component to be placed on the client prefab.
@@ -63,8 +64,25 @@ public class Client : MonoBehaviour, IPointerClickHandler
     /// <summary>Makes this object represent the given client. Call right after instantiating.</summary>
     public void Bind(ClientData clientData)
     {
+        if (this.clientData != null) this.clientData.OnLeftDissatisfied -= OnLeftDissatisfied;   // re-bound to a new client
         this.clientData = clientData;
         gameObject.name = $"Client {clientData.Id} - {clientData.Name}";
+
+        // patience ran out (timer, or no seat in the waiting area). the FirmController decides what that means
+        clientData.OnLeftDissatisfied += OnLeftDissatisfied;
+    }
+    
+    void OnDestroy()
+    {
+        if (clientData != null) clientData.OnLeftDissatisfied -= OnLeftDissatisfied;
+    }
+
+    // the data only knows its state changed. the body passes it to the game rules, which score it and remove us
+    void OnLeftDissatisfied(ClientData data)
+    {
+        FirmController firm = FindAnyObjectByType<FirmController>();
+        if (firm) firm.HandleLeftDissatisfied(this);
+        else Leave();   // no rules loaded (testing a scene on its own), so at least don't stay in the lab
     }
     
     //This sets the sprites to render for the respective parts.

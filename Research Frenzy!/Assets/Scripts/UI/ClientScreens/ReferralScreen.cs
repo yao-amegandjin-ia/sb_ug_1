@@ -14,6 +14,8 @@ namespace UI.ClientScreens
             private Button helpOption;
             private Label helpDesc;
             private string helpDescDefault; 
+            private Label waitDesc;
+            private string waitDescDefault;
             protected override void BindUI(VisualElement root)
             {
                 base.BindUI(root);   // client name + problem text
@@ -25,6 +27,9 @@ namespace UI.ClientScreens
                 helpOption = Find<Button>("help-option");
                 helpDesc = Find<Label>("help-desc");
                 if (helpDesc != null) helpDescDefault = helpDesc.text;
+                
+                waitDesc = Find<Label>("wait-desc");
+                if (waitDesc != null) waitDescDefault = waitDesc.text;
             }
 
             public void Open(Client client) => OpenFor(client);
@@ -33,6 +38,7 @@ namespace UI.ClientScreens
             {
                 base.OnShown();
                 RefreshHelpOption();
+                RefreshWaitOption();
             }
             
             // greyed out with the reason while another client follows the player
@@ -50,6 +56,17 @@ namespace UI.ClientScreens
                     helpDesc.text = "They're already following you. Take them to a researcher.";
                 else
                     helpDesc.text = helpDescDefault;
+            }
+            
+            // still clickable when every seat is taken, but warns the player what will happen
+            private void RefreshWaitOption()
+            {
+                if (waitDesc == null || !Firm) return;
+
+                bool hasSeat = Firm.CanSendToWaitingRoom(Current);
+                waitDesc.text = hasSeat
+                    ? waitDescDefault
+                    : $"No seats left ({Firm.WaitingCount}/{Firm.WaitingSeats}). They'll leave dissatisfied. A Couch upgrade adds seats.";
             }
 
             // --- options ---
