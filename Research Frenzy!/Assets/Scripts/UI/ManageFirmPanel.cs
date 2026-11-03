@@ -1,23 +1,15 @@
 // ManageFirmPanel - left side panel with the firm's current state:
 // hired researchers, upgrades, and stats for this session. it rebuilds every time it opens.
+// upgrades come from the UpgradeController (buying them is in the shop screen, this only shows them).
 
+using GameLogic.Upgrades;
 using Researchers;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+
 public class ManageFirmPanel : MonoBehaviour
 {
-    // placeholder until the upgrades system exists
-    public string[] upgradeNames = { "Faster Stations", "Bigger Waiting Area", "Campus Flyers", "Department Outreach" };
-    public string[] upgradeDescriptions =
-    {
-        "Consultations finish sooner.",
-        "Clients wait longer before leaving.",
-        "More clients come in each day.",
-        "Higher paying clients come in."
-    };
-    public int[] upgradeLevels = { 0, 0, 0, 0 };
-
     VisualElement panel;
     VisualElement researcherList;
     VisualElement upgradeList;
@@ -111,15 +103,22 @@ public class ManageFirmPanel : MonoBehaviour
     void RefreshUpgrades()
     {
         upgradeList.Clear();
-        for (int i = 0; i < upgradeNames.Length; i++)
+
+        UpgradeController upgrades = FindAnyObjectByType<UpgradeController>();
+        if (upgrades == null) return;
+
+        foreach (UpgradeDefinition upgrade in upgrades.All)
         {
+            if (upgrade == null) continue;
+            int level = upgrades.GetLevel(upgrade);
+
             VisualElement card = new VisualElement();
             card.AddToClassList("firm-card");
 
-            string level = upgradeLevels[i] == 0 ? "Not bought yet" : "Level " + upgradeLevels[i];
-            Label nameLabel = new Label(upgradeNames[i] + "  (" + level + ")");
+            string levelText = level == 0 ? "Not bought yet" : "Level " + level + "/" + upgrade.MaxLevel;
+            Label nameLabel = new Label(upgrade.DisplayName + "  (" + levelText + ")");
             nameLabel.AddToClassList("firm-name");
-            Label desc = new Label(upgradeDescriptions[i]);
+            Label desc = new Label(upgrade.Description);
             desc.AddToClassList("firm-detail");
 
             card.Add(nameLabel);

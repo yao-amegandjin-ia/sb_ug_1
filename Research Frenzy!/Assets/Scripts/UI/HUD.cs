@@ -59,7 +59,6 @@ public class HUD : MonoBehaviour
         {
             game.MoneyEarned += OnMoneyEarned;
             game.MoneySpent += OnMoneySpent;
-            firmRules.ClientLost += OnClientLost;
         }
         else Debug.LogWarning("HUD: no GameInitializer found, money will show $0. Did you press Play from the Bootstrap scene?");
 
@@ -68,6 +67,7 @@ public class HUD : MonoBehaviour
         {
             firmRules.StudyFinished += OnStudyFinished;
             firmRules.RequestRejected += OnRequestRejected;
+            firmRules.ClientLost += OnClientLost;
         }
         else Debug.LogWarning("HUD: no FirmController found, study counts won't update. Is it on the GameInitializer object?");
 
@@ -77,16 +77,27 @@ public class HUD : MonoBehaviour
         codex = GetComponent<CodexPanel>();
         firm = GetComponent<ManageFirmPanel>();
 
-        root.Q<Button>("codex-button").clicked += ToggleCodex;
-        root.Q<Button>("manage-button").clicked += ToggleFirm;
-        root.Q<Button>("sound-button").clicked += () => Debug.Log("TODO: sound on/off");
-        root.Q<Button>("settings-button").clicked += () => Debug.Log("TODO: settings");
-        root.Q<Button>("help-button").clicked += () => Debug.Log("TODO: help");
+        HookButton(root, "codex-button", ToggleCodex);
+        HookButton(root, "manage-button", ToggleFirm);
+        HookButton(root, "sound-button", () => Debug.Log("TODO: sound on/off"));
+        HookButton(root, "settings-button", () => Debug.Log("TODO: settings"));
+        HookButton(root, "help-button", () => Debug.Log("TODO: help"));
 
-        GetComponent<StartScreen>().GameStarted += (starter) => StartDay();
+        StartScreen startScreen = GetComponent<StartScreen>();
+        if (startScreen != null) startScreen.GameStarted += (starter) => StartDay();
+        else Debug.LogWarning("HUD: no StartScreen on this object, so the day won't start.");
 
         timeLeft = DayLength;
         Refresh();
+    }
+
+    // Q<Button>(name).clicked += ... throws a NullReferenceException if the UXML has no button with that name.
+    // this says which name is missing instead
+    void HookButton(VisualElement root, string buttonName, Action onClick)
+    {
+        Button button = root.Q<Button>(buttonName);
+        if (button != null) button.clicked += onClick;
+        else Debug.LogWarning($"HUD: no Button named '{buttonName}' in the GameUI UXML.");
     }
 
     void Update()
@@ -142,6 +153,7 @@ public class HUD : MonoBehaviour
         {
             firmRules.StudyFinished -= OnStudyFinished;
             firmRules.RequestRejected -= OnRequestRejected;
+            firmRules.ClientLost -= OnClientLost;
         }
     }
 
@@ -154,11 +166,6 @@ public class HUD : MonoBehaviour
     {
         if (correct) AddCorrectReject();
     }
-    // a client left dissatisfied (no seat in the waiting area). shows in the day summary's "lost" row
-    void OnClientLost(Client client)
-    {
-        AddLostClient();
-    }
 
     // GameInitializer already added the money, this just counts it for today and updates the label
     void OnMoneyEarned(int amount)
@@ -168,6 +175,12 @@ public class HUD : MonoBehaviour
         Refresh();
     }
  
+    // a client left dissatisfied (no seat in the waiting area). shows in the day summary's "lost" row
+    void OnClientLost(Client client)
+    {
+        AddLostClient();
+    }
+
     // GameInitializer already took the money (an upgrade was bought), this just updates the label
     void OnMoneySpent(int amount)
     {

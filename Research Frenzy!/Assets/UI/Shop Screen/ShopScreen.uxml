@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="False"
+>
+    <Style src="ShopScreen.uss"/>
+
+    <!-- ShopScreen.cs makes one button in "tab-bar" per ShopTab component, and fills "shop-list" with the open tab's cards -->
+    <ui:VisualElement name="shop-screen">
+        <ui:VisualElement name="header">
+            <ui:Label name="shop-title" text="RESEARCH FIRM SHOP"/>
+            <ui:VisualElement name="header-right">
+                <ui:Label name="shop-money" text="$0"/>
+                <ui:Button name="close-button" text="CLOSE"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- these two are only so the UI Builder shows something. the script replaces them -->
+        <ui:VisualElement name="tab-bar">
+            <ui:Button class="shop-tab selected" text="UPGRADES"/>
+            <ui:Button class="shop-tab" text="HIRE RESEARCHERS"/>
+        </ui:VisualElement>
+
+        <ui:ScrollView name="shop-list"/>
+    </ui:VisualElement>
+</ui:UXML>

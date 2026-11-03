@@ -259,6 +259,9 @@ namespace GameLogic
             }
             return researcherGenerator.GetUnhired();
         }
+        
+        /// <summary>True if there's an empty cubicle. The hire tab greys out HIRE when there isn't.</summary>
+        public bool HasFreeCubicle => game.HasFreeCubicle();
 
         /// <summary>HIRE. Puts the researcher in the first free cubicle.</summary>
         /// <returns>False if there was no free cubicle.</returns>

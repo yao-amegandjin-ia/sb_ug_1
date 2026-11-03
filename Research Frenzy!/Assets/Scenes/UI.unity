@@ -342,9 +342,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1559369279}
   - component: {fileID: 1559369281}
-  - component: {fileID: 1559369280}
+  - component: {fileID: 1559369284}
+  - component: {fileID: 1559369283}
+  - component: {fileID: 1559369282}
   m_Layer: 0
-  m_Name: HireUI
+  m_Name: ShopUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -365,22 +367,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1926409701}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1559369280
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1559369278}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd7954896eabec24bbdd183c8d6674d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UI.ResearcherHireScreen
-  extraStyleSheets: []
-  blockLabBehind: 1
-  dimColor: {r: 0, g: 0, b: 0, a: 0.5}
-  researcherCard: {fileID: 9197481963319205126, guid: 7c7ef34750234ce4abba70dbed018fe8, type: 3}
 --- !u!1931382934 &1559369281
 PanelRenderer:
   m_ObjectHideFlags: 0
@@ -431,7 +417,7 @@ PanelRenderer:
   m_MaskInteraction: 0
   serializedVersion: 1
   m_PanelSettings: {fileID: 11400000, guid: acb3fde8204751b45976af8d340aa5ce, type: 2}
-  sourceAsset: {fileID: 9197481963319205126, guid: f9f088d9f21716141b283f7def35bf8a, type: 3}
+  sourceAsset: {fileID: 9197481963319205126, guid: 81c85e53dbb043759029f69d77499760, type: 3}
   m_ParentUI: {fileID: 0}
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
@@ -439,6 +425,49 @@ PanelRenderer:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_Position: 0
+--- !u!114 &1559369282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559369278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d45af9621b014ec19b3e301f90c57ac0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NewAssembly::UI.HireTab
+  tabTitle: Hire Researchers
+  researcherCard: {fileID: 9197481963319205126, guid: 7c7ef34750234ce4abba70dbed018fe8, type: 3}
+--- !u!114 &1559369283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559369278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 849b4844a6d84cd992286a74d3b7a034, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NewAssembly::UI.UpgradesTab
+  tabTitle: Upgrades
+  upgradeCard: {fileID: 9197481963319205126, guid: 48780f14e3db442ebaae520157644fa5, type: 3}
+--- !u!114 &1559369284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1559369278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84a9ebdfc5be41619e0da76a55c95c04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NewAssembly::UI.ShopScreen
+  extraStyleSheets: []
+  blockLabBehind: 1
+  dimColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!1 &1571892137
 GameObject:
   m_ObjectHideFlags: 0
@@ -514,17 +543,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fd1e42ca991730408f154b29284130e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ManageFirmPanel
-  upgradeNames:
-  - Faster Stations
-  - Bigger Waiting Area
-  - Campus Flyers
-  - Department Outreach
-  upgradeDescriptions:
-  - Consultations finish sooner.
-  - Clients wait longer before leaving.
-  - More clients come in each day.
-  - Higher paying clients come in.
-  upgradeLevels: 00000000000000000000000000000000i
 --- !u!114 &1571892141
 MonoBehaviour:
   m_ObjectHideFlags: 0
