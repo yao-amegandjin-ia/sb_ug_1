@@ -1,13 +1,20 @@
-/* orange is the main color (burnt clay + orange from the asset list doc) */
+/* same colors as Yao's screens (shop, match, hire) so everything matches.
+   to change the look, change these first */
 :root {
-    --main: #C8602F;
-    --main-dark: #9C4520;
-    --orange: #FFA500;
-    --orange-light: #FFE2B8;
-    --purple: #7300FF;
-    --bg: #FFF6EC;
-    --text: #3A2416;
-    --muted: #8A6A55;
+    --purple: #7300FF;          /* headers, main buttons */
+    --purple-hover: #8C33FF;
+    --lavender: #8683CC;        /* close / small buttons, labels */
+    --lavender-hover: #9C99DB;
+    --navy: #2A1B4D;            /* text */
+    --muted: #5A4F7A;           /* secondary text */
+    --bg: #F4F3FB;              /* panels */
+    --tray: #E4E2F5;            /* soft fills */
+    --line: #B9B6D9;
+    --orange: #FFA500;          /* money */
+    --orange-hover: #FFB733;
+    --blue: #0099FF;            /* main action (continue, start) like the MATCH button */
+    --blue-hover: #33ADFF;
+    --green: #2EB872;           /* best answer */
 }
 
 .hidden {
@@ -20,7 +27,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    color: var(--text);
+    color: var(--navy);
 }
 
 /* ---------- buttons ---------- */
@@ -34,7 +41,7 @@
 }
 
 .small-button {
-    background-color: var(--main);
+    background-color: var(--lavender);
     color: white;
     font-size: 16px;
     padding: 8px 14px;
@@ -42,49 +49,60 @@
 }
 
 .close-button {
-    background-color: var(--main-dark);
+    background-color: var(--lavender);
     color: white;
     font-size: 16px;
-    padding: 6px 14px;
+    padding: 6px 18px;
 }
 
 /* :hover and :active are listed too, otherwise the default theme turns buttons grey */
 .small-button:hover, .small-button:hover:active,
 .close-button:hover, .close-button:hover:active {
-    background-color: var(--text);
+    background-color: var(--lavender-hover);
 }
 
 .big-button {
-    font-size: 26px;
-    height: 72px;
-    min-width: 260px;
+    font-size: 24px;
+    height: 64px;
+    min-width: 240px;
     padding: 0 30px;
     margin: 0 12px;
+    border-radius: 12px;
 }
 
-.primary, .primary:hover, .primary:hover:active {
-    background-color: var(--orange);
-    color: var(--text);
+.primary {
+    background-color: var(--blue);
+    color: white;
+}
+
+.primary:hover, .primary:hover:active {
+    background-color: var(--blue-hover);
 }
 
 .secondary, .secondary:hover, .secondary:hover:active {
     background-color: white;
-    color: var(--main);
+    color: var(--lavender);
     border-width: 3px;
-    border-color: var(--main);
+    border-color: var(--lavender);
 }
 
-.main, .main:hover, .main:hover:active {
-    background-color: var(--main);
+.secondary:hover {
+    color: var(--purple);
+    border-color: var(--purple);
 }
 
-.dark { background-color: var(--main-dark); }
+.main {
+    background-color: var(--purple);
+}
+
+.main:hover, .main:hover:active {
+    background-color: var(--purple-hover);
+}
+
+.dark { background-color: var(--navy); }
 .orange { background-color: var(--orange); }
 .white { background-color: white; }
-
-.big-button:hover, .hud-button:hover {
-    opacity: 0.85;
-}
+.lavender { background-color: var(--lavender); }
 
 /* ---------- top left ---------- */
 
@@ -108,7 +126,7 @@
     padding: 14px 20px;
     background-color: var(--bg);
     border-top-width: 4px;
-    border-top-color: var(--main);
+    border-top-color: var(--purple);
 }
 
 .hud-button {
@@ -150,8 +168,13 @@
     opacity: 0.9;
 }
 
-.white .card-label, .orange .card-label {
-    color: var(--muted);
+.white .card-label {
+    color: var(--lavender);
+}
+
+.orange .card-label {
+    color: var(--navy);
+    opacity: 0.75;
 }
 
 .card-value {
@@ -161,13 +184,13 @@
 }
 
 .orange .card-value {
-    color: var(--text);
+    color: var(--navy);
 }
 
 #studies {
     width: 480px;
     border-width: 3px;
-    border-color: var(--orange);
+    border-color: var(--lavender);
     padding-top: 2px;
     padding-bottom: 2px;
 }
@@ -195,12 +218,14 @@
 .study-label {
     font-size: 13px;
     margin-top: 2px;
-    color: var(--muted);
+    color: var(--lavender);
+    -unity-font-style: bold;
 }
 
 .study-count {
     font-size: 28px;
     -unity-font-style: bold;
+    color: var(--navy);
 }
 
 .spacer {
@@ -216,7 +241,7 @@
     bottom: 140px;
     width: 520px;
     background-color: var(--bg);
-    border-radius: 14px;
+    border-radius: 10px;
     overflow: hidden;
 }
 
@@ -224,7 +249,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--main);
+    background-color: var(--purple);
     padding: 14px 20px;
 }
 
@@ -235,8 +260,9 @@
 }
 
 .panel-hint {
-    color: var(--muted);
+    color: var(--lavender);
     font-size: 18px;
+    -unity-font-style: bold;
     margin: 14px 20px 4px 20px;
 }
 
@@ -246,11 +272,58 @@
 }
 
 .section-title {
-    color: var(--main);
+    color: var(--purple);
     font-size: 18px;
     -unity-font-style: bold;
     margin-top: 16px;
     margin-bottom: 8px;
+}
+
+/* scrollbars like the shop screen */
+.panel-scroll .unity-scroller--vertical,
+.summary-list .unity-scroller--vertical {
+    width: 18px;
+    margin: 8px 0 8px 6px;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+}
+
+.panel-scroll .unity-scroller__low-button,
+.panel-scroll .unity-scroller__high-button,
+.summary-list .unity-scroller__low-button,
+.summary-list .unity-scroller__high-button {
+    display: none;
+}
+
+.panel-scroll .unity-base-slider__tracker,
+.summary-list .unity-base-slider__tracker {
+    width: 8px;
+    background-color: var(--tray);
+    border-width: 0;
+    border-radius: 4px;
+}
+
+.panel-scroll .unity-base-slider__dragger,
+.summary-list .unity-base-slider__dragger {
+    width: 8px;
+    background-color: var(--lavender);
+    border-width: 0;
+    border-radius: 4px;
+}
+
+.panel-scroll .unity-base-slider__dragger:hover,
+.summary-list .unity-base-slider__dragger:hover {
+    background-color: var(--lavender-hover);
+}
+
+.panel-scroll .unity-base-slider__dragger:active,
+.summary-list .unity-base-slider__dragger:active {
+    background-color: var(--purple);
+}
+
+.panel-scroll .unity-base-slider__dragger-border,
+.summary-list .unity-base-slider__dragger-border {
+    display: none;
 }
 
 /* codex rows */
@@ -269,7 +342,7 @@
     width: 44px;
     height: 44px;
     border-radius: 10px;
-    background-color: var(--main);
+    background-color: var(--purple);
     color: white;
     font-size: 22px;
     -unity-font-style: bold;
@@ -280,18 +353,17 @@
 .method-name {
     font-size: 22px;
     -unity-font-style: bold;
-    color: var(--text);
+    color: var(--navy);
 }
 
 .method-text {
     white-space: normal;
     font-size: 19px;
-    background-color: white;
+    color: var(--navy);
+    background-color: var(--tray);
     border-radius: 10px;
     padding: 12px 16px;
     margin: -4px 0 12px 0;
-    border-left-width: 6px;
-    border-left-color: var(--orange);
 }
 
 /* manage firm */
@@ -344,7 +416,8 @@
 
 .stat-label {
     font-size: 14px;
-    color: var(--muted);
+    color: var(--lavender);
+    -unity-font-style: bold;
 }
 
 .stat-value {
@@ -360,7 +433,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(40, 20, 10, 0.55);
+    background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
 }
@@ -368,7 +441,7 @@
 .modal {
     width: 760px;
     background-color: var(--bg);
-    border-radius: 16px;
+    border-radius: 10px;
     overflow: hidden;
 }
 
@@ -377,27 +450,147 @@
     align-items: stretch;
 }
 
-.summary-row {
+.summary-modal {
+    width: 1100px;
+    height: 88%;
+}
+
+.summary-body {
+    flex-grow: 1;
+    padding: 20px 28px 24px 28px;
+}
+
+/* the five counts across the top */
+.summary-tiles {
     flex-direction: row;
-    justify-content: space-between;
+    flex-shrink: 0;
+    margin: 0 -4px;
+}
+
+.summary-tile {
+    flex-grow: 1;
+    flex-basis: 0;
+    margin: 0 4px;
+    padding: 8px 4px;
+    align-items: center;
     background-color: white;
     border-radius: 10px;
-    padding: 10px 18px;
+    border-width: 3px;
+    border-color: var(--line);
+}
+
+.summary-tile.best { border-color: var(--green); }
+.summary-tile.good { border-color: var(--blue); }
+.summary-tile.wrong { border-color: var(--orange); }
+.summary-tile.lost { border-color: var(--lavender); }
+
+.tile-value {
+    font-size: 30px;
+    -unity-font-style: bold;
+    color: var(--navy);
+}
+
+.tile-label {
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: var(--lavender);
+}
+
+/* one card per client from today */
+.summary-list {
+    flex-grow: 1;
+}
+
+.summary-empty {
+    color: var(--lavender);
+    font-size: 18px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-top: 30px;
+}
+
+.study-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+}
+
+.study-card-top {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.study-client {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: var(--navy);
+}
+
+.result-tag {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+}
+
+.result-tag.best { background-color: var(--green); }
+.result-tag.good { background-color: var(--blue); }
+.result-tag.wrong { background-color: var(--orange); color: var(--navy); }
+.result-tag.lost { background-color: var(--lavender); }
+
+.study-problem {
+    white-space: normal;
+    font-size: 17px;
+    color: var(--muted);
     margin-bottom: 8px;
 }
 
-.summary-label {
-    font-size: 22px;
-}
-
-.summary-value {
-    font-size: 22px;
-    -unity-font-style: bold;
-}
-
-.summary-money {
+.answer-row {
     flex-direction: row;
-    margin: 12px 0 22px 0;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.answer-label {
+    width: 150px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: var(--lavender);
+}
+
+.method-badge.small-badge {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+    margin-right: 10px;
+}
+
+.answer-text {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: var(--navy);
+}
+
+/* why the best answer is best, from the request's Rationale */
+.study-why {
+    white-space: normal;
+    font-size: 16px;
+    color: var(--navy);
+    background-color: var(--tray);
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-top: 6px;
+}
+
+.summary-footer {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    margin-top: 12px;
 }
 
 .money-box {
@@ -405,22 +598,24 @@
     flex-basis: 0;
     background-color: var(--orange);
     border-radius: 10px;
-    padding: 10px;
+    padding: 8px 10px;
     align-items: center;
-    margin: 0 4px;
+    margin-right: 10px;
 }
 
 .money-box .card-label {
-    color: var(--muted);
+    color: var(--navy);
+    opacity: 0.75;
 }
 
 .money-value {
-    font-size: 34px;
+    font-size: 30px;
     -unity-font-style: bold;
+    color: var(--navy);
 }
 
-.modal-body .big-button {
-    align-self: center;
+.summary-footer .big-button {
+    margin: 0;
 }
 
 /* ---------- start screen ---------- */
@@ -431,7 +626,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--main-dark);
+    background-color: var(--navy);
 }
 
 .start-page {
@@ -443,7 +638,7 @@
 .start-card {
     width: 1300px;
     background-color: var(--bg);
-    border-radius: 18px;
+    border-radius: 10px;
     overflow: hidden;
 }
 
@@ -465,7 +660,8 @@
 
 .start-tagline {
     font-size: 28px;
-    color: var(--muted);
+    color: var(--lavender);
+    -unity-font-style: bold;
     -unity-text-align: middle-center;
     white-space: normal;
     margin-bottom: 26px;
@@ -473,9 +669,10 @@
 
 .start-text {
     font-size: 26px;
+    color: var(--navy);
     white-space: normal;
     background-color: white;
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 30px 36px;
     margin-bottom: 34px;
     width: 100%;
@@ -495,7 +692,7 @@
 .starter-card {
     width: 400px;
     background-color: white;
-    border-radius: 14px;
+    border-radius: 10px;
     border-width: 4px;
     border-color: white;
     padding: 24px;
@@ -504,18 +701,19 @@
 }
 
 .starter-card.selected {
-    border-color: var(--main);
+    border-color: var(--purple);
 }
 
 .starter-name {
     font-size: 32px;
     -unity-font-style: bold;
-    color: var(--text);
+    color: var(--navy);
 }
 
 .starter-level {
     font-size: 18px;
-    color: var(--muted);
+    color: var(--lavender);
+    -unity-font-style: bold;
     margin-bottom: 12px;
 }
 
@@ -527,16 +725,16 @@
 
 .starter-method-name {
     font-size: 20px;
-    color: var(--text);
+    color: var(--navy);
 }
 
 .selected-tag {
-    background-color: var(--main);
+    background-color: var(--purple);
     color: white;
     font-size: 16px;
     -unity-font-style: bold;
     padding: 4px 12px;
-    border-radius: 8px;
+    border-radius: 10px;
     visibility: hidden;
 }
 
@@ -546,13 +744,22 @@
 
 /* clickable rows/cards are buttons too, so keep their colors on hover */
 .method-row:hover, .method-row:hover:active {
-    background-color: #FFF0DC;
+    background-color: var(--tray);
 }
 
 .method-row.open, .method-row.open:hover, .method-row.open:hover:active {
-    background-color: var(--orange-light);
+    background-color: var(--tray);
+}
+
+.method-row.open .method-name {
+    color: var(--purple);
 }
 
 .starter-card:hover, .starter-card:hover:active {
-    background-color: #FFFBF6;
+    background-color: white;
+    border-color: var(--line);
+}
+
+.starter-card.selected:hover, .starter-card.selected:hover:active {
+    border-color: var(--purple);
 }
