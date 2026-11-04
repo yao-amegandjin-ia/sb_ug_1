@@ -1,4 +1,7 @@
-﻿using Assets.Scripts.GameDataObjects;
+﻿using Assets.Scripts.Bootstrap;
+using Assets.Scripts.GameDataObjects;
+using Assets.Scripts.Interfaces;
+using Researchers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,23 +17,95 @@ using UnityEngine;
 public class DataManager
 {
 
-    public RequestList RequestList { get; private set; } 
+    public RequestList RequestList { get; private set; }
+
+    public SaveData SaveData { get; private set; }
+
+    private readonly BaseSaveSystem _saveSystem;
 
 
-    public DataManager() 
+    public DataManager(BaseSaveSystem saveSystem) 
     {
         RequestList = new RequestList();
-        InitializeDataObjects();
+        _saveSystem = saveSystem;
+        InitializeRequestData();
     }
 
+    /// <summary>
+    /// Sets DataManager's SaveData and returns it. 
+    /// Note SaveData may have empty fields after a load meaning first load for player.
+    /// </summary>
+    /// <returns></returns>
+    public async Awaitable<SaveData> Load()
+    {
+        SaveData saveData = await _saveSystem.LoadGame();
+        SaveData = saveData;
+        return saveData;
+    }
 
- 
-
+    /// <summary>
+    /// Saves the DataManager's SaveData object.
+    /// </summary>
+    /// <returns></returns>
+    public async Awaitable SaveGame()
+    {
+        await _saveSystem.SaveGame(SaveData);
+    }
 
     
-    // Could make a create a service to have data objects register for the DataManager but seems like adding abstraction
-    //Could also make an interface service and a delegate or callback registering with the manager
-    private void InitializeDataObjects()
+
+public void SetResearchers(IEnumerable<ResearcherData> researchers)
+{
+    if (researchers == null)
+        throw new ArgumentNullException(nameof(researchers));
+
+    if (SaveData == null)
+        throw new InvalidOperationException(
+            "Load or initialize SaveData before setting researchers.");
+
+    var savedResearchers = new List<ResearcherDataObject>();
+
+    foreach (ResearcherData researcher in researchers)
+    {
+        var methodologies = new List<MethodologiesEnum>();
+
+        foreach (int id in researcher.KnownMethodologyIds)
+        {
+            methodologies.Add((MethodologiesEnum)id);
+        }
+
+        savedResearchers.Add(new ResearcherDataObject
+        {
+            ResearcherId = researcher.Id,
+            ClientId = researcher.CurrentClientId,
+            Name = researcher.Name,
+            Postion = researcher.Position,
+            Experience = researcher.Experience,
+            Speed = researcher.Speed,
+            Quality = researcher.Quality,
+            Methodologies = methodologies,
+            Skin = new List<int>
+            {
+                researcher.Appearance.x, // Head
+                researcher.Appearance.y, // Torso
+                researcher.Appearance.z  // Legs
+            }
+        });
+    }
+
+    SaveData.Researchers = savedResearchers;
+}
+
+
+
+public RequestData GetRequest(int index)
+    {
+        return RequestList.Requests[index];
+    }
+
+    
+    
+    private void InitializeRequestData()
     {
         string filePath = Path.Combine(Application.streamingAssetsPath, "Config", "requests.json");
         filePath = filePath.Replace('\\', '/');
@@ -39,8 +114,6 @@ public class DataManager
         {
             string jsonString = File.ReadAllText(filePath);
             RequestList = JsonUtility.FromJson<RequestList>(jsonString);
-
-
         }
         else
         {

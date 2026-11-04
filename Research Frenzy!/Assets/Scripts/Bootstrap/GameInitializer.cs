@@ -84,10 +84,15 @@ public class GameInitializer : MonoBehaviour
     private ResearcherSpawner researcherSpawner;
     private readonly List<int> usedRequestIds = new List<int>();   //Requests already used
 
+    //For testing this is going to be referenced in the savesystem.
+    private readonly string _playerId = null;
+    private readonly string _apiUrl = "http://localhost:8080";
+    //Going to get overwritten anyway
+
     private void Awake()
     {
         EditorSceneManager.playModeStartScene = null;
-        systems = new GameSystems();
+        
         upgrades = GetComponent<UpgradeController>();
         if (upgrades == null) Debug.LogWarning("GameInitializer: no UpgradeController on this object, so upgrades won't do anything.");
  
@@ -97,6 +102,8 @@ public class GameInitializer : MonoBehaviour
         else
             GameSeed.EnsureInitialized();
         Debug.Log($"GameInitializer: game seed {GameSeed.Seed} (override {(overrideSeed ? "ON" : "OFF")})");
+        //Note: Do not move this above the GameSeed.Set
+        systems = new GameSystems(new SaveSystem(_apiUrl, _playerId, GameSeed.EnsureInitialized()));
     }
 
     private async Awaitable Start()
