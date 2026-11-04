@@ -1,6 +1,6 @@
 namespace UI
 {
-    // DemoSpawnButton - goes on the GameUI object (the one with the HUD's UIDocument).
+    // DemoSpawnButton - goes on the GameUI object (the one with the HUD's PanelRenderer and GameUIPanel).
 // temporary "Spawn Client" button for the demo.
 // the lab is a different scene, so it finds the LabInitializer at runtime instead of through the Inspector.
 
@@ -15,12 +15,12 @@ namespace UI
     /// 
     /// </summary>
 
-    [RequireComponent(typeof(UIDocument))]
-    public class DemoSpawnButton : MonoBehaviour
+    [RequireComponent(typeof(GameUIPanel))]
+    public class DemoSpawnButton : MonoBehaviour, IGameUIPart
     {
-        void Start()
+        // called by GameUIPanel once the UI has loaded (and again if it reloads)
+        public void Bind(VisualElement root)
         {
-            VisualElement root = GetComponent<UIDocument>().rootVisualElement;
 
             Button button = new Button(SpawnClicked);
             button.text = "Spawn Client";

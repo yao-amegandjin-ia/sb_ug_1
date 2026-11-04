@@ -22,6 +22,9 @@ namespace Assets.Scripts.GameDataObjects
 
         public string Name;
 
+        // why the best answer is best (and why the good ones are close). shown in the day summary
+        public string Rationale;
+
 
     }
     [Serializable]
