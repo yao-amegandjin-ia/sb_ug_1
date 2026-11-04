@@ -11,15 +11,15 @@ namespace Assets.Scripts.Bootstrap
     {
         
         //...
-        public DataManager DataManager { get;  }
+        public DataManager DataManager { get;  } 
         public  SceneLoader SceneLoader { get; }
         
 
         
 
-        public GameSystems(BaseSaveSystem saveSystem)
+        public GameSystems(DataManager dataManager)
         {
-            DataManager = new DataManager(saveSystem);
+            DataManager = dataManager;
             SceneLoader = new SceneLoader();
             
             

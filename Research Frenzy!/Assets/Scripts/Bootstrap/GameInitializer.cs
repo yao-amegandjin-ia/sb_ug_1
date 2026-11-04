@@ -103,11 +103,15 @@ public class GameInitializer : MonoBehaviour
             GameSeed.EnsureInitialized();
         Debug.Log($"GameInitializer: game seed {GameSeed.Seed} (override {(overrideSeed ? "ON" : "OFF")})");
         //Note: Do not move this above the GameSeed.Set
-        systems = new GameSystems(new SaveSystem(_apiUrl, _playerId, GameSeed.EnsureInitialized()));
     }
 
     private async Awaitable Start()
     {
+        var instance = await DataManager.CreateAsync(new SaveSystem(_apiUrl, _playerId, GameSeed.EnsureInitialized()));
+        systems = new GameSystems(instance);
+ 
+        //Should this be here?
+        systems.DataManager.Load();
         var components = await systems.SceneLoader.AddScenes();
         //This is where persistent systems accessor is sent to the other scenes.
         //A scene without an ISceneInitializable comes back null, so check before calling.
@@ -196,7 +200,10 @@ public class GameInitializer : MonoBehaviour
         researcherGenerator.Generate();
         if (researcherSpawner.CubicleCount == 0)
             Debug.LogWarning("GameInitializer: the ResearcherSpawner has no Cubicle Spots, so nobody can be hired.");
- 
+
+        //Send generates researchers to data manager
+        systems.DataManager.SetResearchers(researcherGenerator.Researchers);
+
         Debug.Log("Researchers initialized");
     }
     

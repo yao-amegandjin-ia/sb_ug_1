@@ -6,7 +6,7 @@ namespace Assets.Scripts.GameDataObjects
 {
     public class SaveData
     {
-        
+        public bool IsEmpty { get; set; }
         public PlayerData Player { get; set; } = new();
 
         public List<ResearcherDataObject> Researchers { get; set; } = new();

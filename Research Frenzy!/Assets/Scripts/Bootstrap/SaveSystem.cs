@@ -92,7 +92,10 @@ namespace Assets.Scripts.Bootstrap
                 //Empty save data if no session exists yet.
                 if (webRequest.responseCode == 404)
                 {
-                    return new SaveData();
+                    return new SaveData()
+                    {
+                        IsEmpty = false
+                    };
                 }
                 if (webRequest.result != UnityWebRequest.Result.Success)
                 {

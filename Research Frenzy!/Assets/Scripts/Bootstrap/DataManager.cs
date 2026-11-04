@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -24,12 +25,23 @@ public class DataManager
     private readonly BaseSaveSystem _saveSystem;
 
 
-    public DataManager(BaseSaveSystem saveSystem) 
+    private DataManager(BaseSaveSystem saveSystem)
     {
         RequestList = new RequestList();
         _saveSystem = saveSystem;
         InitializeRequestData();
     }
+
+    public static async Awaitable<DataManager> CreateAsync(BaseSaveSystem saveSystem)
+    {
+        var instance = new DataManager(saveSystem);
+        //perform async work
+        var saveData = await instance.Load();
+        return instance;
+    }
+
+    
+    
 
     /// <summary>
     /// Sets DataManager's SaveData and returns it. 
@@ -53,8 +65,13 @@ public class DataManager
     }
 
     
-
-public void SetResearchers(IEnumerable<ResearcherData> researchers)
+/// <summary>
+/// Sets researcher savedata based off of ResearcherData. 
+/// </summary>
+/// <param name="researchers"></param>
+/// <exception cref="ArgumentNullException"></exception>
+/// <exception cref="InvalidOperationException"></exception>
+public async Awaitable SetResearchers(IEnumerable<ResearcherData> researchers)
 {
     if (researchers == null)
         throw new ArgumentNullException(nameof(researchers));
@@ -62,6 +79,8 @@ public void SetResearchers(IEnumerable<ResearcherData> researchers)
     if (SaveData == null)
         throw new InvalidOperationException(
             "Load or initialize SaveData before setting researchers.");
+    if ()
+    
 
     var savedResearchers = new List<ResearcherDataObject>();
 
@@ -98,10 +117,12 @@ public void SetResearchers(IEnumerable<ResearcherData> researchers)
 
 
 
-public RequestData GetRequest(int index)
+    public RequestData GetRequest(int index)
     {
         return RequestList.Requests[index];
     }
+    
+    
 
     
     
