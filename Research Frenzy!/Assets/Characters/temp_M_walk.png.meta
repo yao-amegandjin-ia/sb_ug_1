@@ -1,0 +1,966 @@
+fileFormatVersion: 2
+guid: 6f08ce841f336024eb141d4a678e4930
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7105174831786968805
+    second: temp_M_walk_0
+  - first:
+      213: -3102243226911551016
+    second: temp_M_walk_1
+  - first:
+      213: 7388963360454630891
+    second: temp_M_walk_2
+  - first:
+      213: 7145011250664428925
+    second: temp_M_walk_3
+  - first:
+      213: -5859195512581724166
+    second: temp_M_walk_4
+  - first:
+      213: -4601113138685856377
+    second: temp_M_walk_5
+  - first:
+      213: 6303640593330962602
+    second: temp_M_walk_6
+  - first:
+      213: 2671594648521331000
+    second: temp_M_walk_7
+  - first:
+      213: -4384020620783764090
+    second: temp_M_walk_8
+  - first:
+      213: 6609144648050450936
+    second: temp_M_walk_9
+  - first:
+      213: 887329782223963179
+    second: temp_M_walk_10
+  - first:
+      213: -4989947186970057444
+    second: temp_M_walk_11
+  - first:
+      213: -5214295407616446461
+    second: temp_M_walk_12
+  - first:
+      213: -1600022067032319131
+    second: temp_M_walk_13
+  - first:
+      213: 888284737136502050
+    second: temp_M_walk_14
+  - first:
+      213: 2442948650792252653
+    second: temp_M_walk_15
+  - first:
+      213: 6929349222861889300
+    second: temp_M_walk_16
+  - first:
+      213: 4795181922731850992
+    second: temp_M_walk_17
+  - first:
+      213: -992582576053568570
+    second: temp_M_walk_18
+  - first:
+      213: 7508631625749966556
+    second: temp_M_walk_19
+  - first:
+      213: -6135713068741012721
+    second: temp_M_walk_20
+  - first:
+      213: 7302336178239846822
+    second: temp_M_walk_21
+  - first:
+      213: -8488666291612552493
+    second: temp_M_walk_22
+  - first:
+      213: -3004077478276206828
+    second: temp_M_walk_23
+  - first:
+      213: 1172733075451237323
+    second: temp_M_walk_24
+  - first:
+      213: -6186723704646641354
+    second: temp_M_walk_25
+  - first:
+      213: 3213243110440767678
+    second: temp_M_walk_26
+  - first:
+      213: 4380542423641674296
+    second: temp_M_walk_27
+  - first:
+      213: -2416520407171001172
+    second: temp_M_walk_28
+  - first:
+      213: -1728042692613867219
+    second: temp_M_walk_29
+  - first:
+      213: 5679195481726843266
+    second: temp_M_walk_30
+  - first:
+      213: 3161967163427569025
+    second: temp_M_walk_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: temp_M_walk_0
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 13
+        width: 395
+        height: 1224
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e645bb5dd6aa9260800000000000000
+      internalID: 7105174831786968805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_1
+      rect:
+        serializedVersion: 2
+        x: 435
+        y: 24
+        width: 394
+        height: 1213
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d15315b83e92f4d0800000000000000
+      internalID: -3102243226911551016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_2
+      rect:
+        serializedVersion: 2
+        x: 851
+        y: 13
+        width: 394
+        height: 1224
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bed5646270fda8660800000000000000
+      internalID: 7388963360454630891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_3
+      rect:
+        serializedVersion: 2
+        x: 1272
+        y: 24
+        width: 394
+        height: 1213
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d75d50860ed282360800000000000000
+      internalID: 7145011250664428925
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_4
+      rect:
+        serializedVersion: 2
+        x: 1693
+        y: 83
+        width: 336
+        height: 1154
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af7e00389b4ffaea0800000000000000
+      internalID: -5859195512581724166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_5
+      rect:
+        serializedVersion: 2
+        x: 2056
+        y: 35
+        width: 319
+        height: 1202
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7853f356aff8520c0800000000000000
+      internalID: -4601113138685856377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_6
+      rect:
+        serializedVersion: 2
+        x: 2402
+        y: 45
+        width: 357
+        height: 1192
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa08935b8b70b7750800000000000000
+      internalID: 6303640593330962602
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_7
+      rect:
+        serializedVersion: 2
+        x: 2781
+        y: 35
+        width: 325
+        height: 1202
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 831d2f89d29631520800000000000000
+      internalID: 2671594648521331000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_8
+      rect:
+        serializedVersion: 2
+        x: 3133
+        y: 72
+        width: 255
+        height: 1165
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68d32321974d823c0800000000000000
+      internalID: -4384020620783764090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_9
+      rect:
+        serializedVersion: 2
+        x: 3415
+        y: 72
+        width: 232
+        height: 1165
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f1a8386a0668bb50800000000000000
+      internalID: 6609144648050450936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_10
+      rect:
+        serializedVersion: 2
+        x: 3671
+        y: 104
+        width: 267
+        height: 1133
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2485145cbd605c00800000000000000
+      internalID: 887329782223963179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_11
+      rect:
+        serializedVersion: 2
+        x: 3964
+        y: 72
+        width: 235
+        height: 1165
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c15a0b8a87520cab0800000000000000
+      internalID: -4989947186970057444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_12
+      rect:
+        serializedVersion: 2
+        x: 4223
+        y: 72
+        width: 296
+        height: 1165
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 300321b04f913a7b0800000000000000
+      internalID: -5214295407616446461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_13
+      rect:
+        serializedVersion: 2
+        x: 4543
+        y: 104
+        width: 274
+        height: 1133
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56b90c548649bc9e0800000000000000
+      internalID: -1600022067032319131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_14
+      rect:
+        serializedVersion: 2
+        x: 4844
+        y: 123
+        width: 304
+        height: 1114
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2252c681342d35c00800000000000000
+      internalID: 888284737136502050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_15
+      rect:
+        serializedVersion: 2
+        x: 5175
+        y: 104
+        width: 272
+        height: 1133
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de4fdf6cad817e120800000000000000
+      internalID: 2442948650792252653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_16
+      rect:
+        serializedVersion: 2
+        x: 5473
+        y: 83
+        width: 395
+        height: 1154
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41fdf49a76ef92060800000000000000
+      internalID: 6929349222861889300
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_17
+      rect:
+        serializedVersion: 2
+        x: 5895
+        y: 104
+        width: 394
+        height: 1133
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fc7ec18d88eb8240800000000000000
+      internalID: 4795181922731850992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_18
+      rect:
+        serializedVersion: 2
+        x: 6311
+        y: 83
+        width: 394
+        height: 1154
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6cbb510f763a932f0800000000000000
+      internalID: -992582576053568570
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_19
+      rect:
+        serializedVersion: 2
+        x: 6732
+        y: 104
+        width: 394
+        height: 1133
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cde27126ea4043860800000000000000
+      internalID: 7508631625749966556
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_20
+      rect:
+        serializedVersion: 2
+        x: 7153
+        y: 72
+        width: 293
+        height: 1165
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0358fde87199daa0800000000000000
+      internalID: -6135713068741012721
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_21
+      rect:
+        serializedVersion: 2
+        x: 7473
+        y: 104
+        width: 272
+        height: 1133
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a9387e801c175560800000000000000
+      internalID: 7302336178239846822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_22
+      rect:
+        serializedVersion: 2
+        x: 7772
+        y: 123
+        width: 303
+        height: 1114
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d2f99f8bf2323a80800000000000000
+      internalID: -8488666291612552493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_23
+      rect:
+        serializedVersion: 2
+        x: 8102
+        y: 104
+        width: 277
+        height: 1133
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41f6895237f5f46d0800000000000000
+      internalID: -3004077478276206828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_24
+      rect:
+        serializedVersion: 2
+        x: 8401
+        y: 72
+        width: 256
+        height: 1165
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc35f9ac482664010800000000000000
+      internalID: 1172733075451237323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_25
+      rect:
+        serializedVersion: 2
+        x: 8683
+        y: 72
+        width: 235
+        height: 1165
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6395c0db197542aa0800000000000000
+      internalID: -6186723704646641354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_26
+      rect:
+        serializedVersion: 2
+        x: 8945
+        y: 104
+        width: 261
+        height: 1133
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb01bce959bb79c20800000000000000
+      internalID: 3213243110440767678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_27
+      rect:
+        serializedVersion: 2
+        x: 9232
+        y: 72
+        width: 235
+        height: 1165
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 832d0bc0020dacc30800000000000000
+      internalID: 4380542423641674296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_28
+      rect:
+        serializedVersion: 2
+        x: 9494
+        y: 83
+        width: 334
+        height: 1154
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ca417123e7bc67ed0800000000000000
+      internalID: -2416520407171001172
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_29
+      rect:
+        serializedVersion: 2
+        x: 9851
+        y: 35
+        width: 325
+        height: 1202
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d297a0e9352c408e0800000000000000
+      internalID: -1728042692613867219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_30
+      rect:
+        serializedVersion: 2
+        x: 10203
+        y: 45
+        width: 352
+        height: 1192
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 289f452733e80de40800000000000000
+      internalID: 5679195481726843266
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: temp_M_walk_31
+      rect:
+        serializedVersion: 2
+        x: 10582
+        y: 35
+        width: 325
+        height: 1202
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18dbc8fd16091eb20800000000000000
+      internalID: 3161967163427569025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 656fae575691132468a47276a862571e
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      temp_M_walk_0: 7105174831786968805
+      temp_M_walk_1: -3102243226911551016
+      temp_M_walk_10: 887329782223963179
+      temp_M_walk_11: -4989947186970057444
+      temp_M_walk_12: -5214295407616446461
+      temp_M_walk_13: -1600022067032319131
+      temp_M_walk_14: 888284737136502050
+      temp_M_walk_15: 2442948650792252653
+      temp_M_walk_16: 6929349222861889300
+      temp_M_walk_17: 4795181922731850992
+      temp_M_walk_18: -992582576053568570
+      temp_M_walk_19: 7508631625749966556
+      temp_M_walk_2: 7388963360454630891
+      temp_M_walk_20: -6135713068741012721
+      temp_M_walk_21: 7302336178239846822
+      temp_M_walk_22: -8488666291612552493
+      temp_M_walk_23: -3004077478276206828
+      temp_M_walk_24: 1172733075451237323
+      temp_M_walk_25: -6186723704646641354
+      temp_M_walk_26: 3213243110440767678
+      temp_M_walk_27: 4380542423641674296
+      temp_M_walk_28: -2416520407171001172
+      temp_M_walk_29: -1728042692613867219
+      temp_M_walk_3: 7145011250664428925
+      temp_M_walk_30: 5679195481726843266
+      temp_M_walk_31: 3161967163427569025
+      temp_M_walk_4: -5859195512581724166
+      temp_M_walk_5: -4601113138685856377
+      temp_M_walk_6: 6303640593330962602
+      temp_M_walk_7: 2671594648521331000
+      temp_M_walk_8: -4384020620783764090
+      temp_M_walk_9: 6609144648050450936
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,8 +1,3 @@
-// PlayerMover - goes on the player.
-// walks the player toward a floor click, or up to something (like a client) and then does something.
-// uses a Rigidbody2D so anything with a (non-trigger) collider, like the tables, blocks the way.
-// no pathfinding yet, so if something's in the way the player just stops against it.
-
 using System;
 using UnityEngine;
 
@@ -24,11 +19,18 @@ public class PlayerMover : MonoBehaviour
     float arriveDistance;
     Action onArrive;
 
+    // NEW: animation
+    Animator anim;
+    float facingAngle;   // remembered so we keep facing the same way when we stop
+    static readonly int FacingAngleHash = Animator.StringToHash("FacingAngle");
+    static readonly int SpeedHash = Animator.StringToHash("Speed");
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.gravityScale = 0f;      // top down, no falling
-        rb.freezeRotation = true;  // don't spin when bumping into stuff
+        rb.gravityScale = 0f;
+        rb.freezeRotation = true;
+        anim = GetComponentInChildren<Animator>();   // NEW (works if Animator is on a child sprite object too)
     }
 
     void Start()
@@ -41,15 +43,16 @@ public class PlayerMover : MonoBehaviour
     {
         if (!moving)
         {
+            Debug.Log($"moving pos={rb.position} target={target}", this);
             rb.linearVelocity = Vector2.zero;
+            UpdateAnimator(Vector2.zero);   // NEW
             return;
         }
 
         if (following)
         {
-            // the thing we were walking to got removed (client left)
             if (!follow) { Stop(); return; }
-            target = follow.position;   // keep up if it's still moving
+            target = follow.position;
         }
 
         Vector2 toTarget = target - rb.position;
@@ -57,16 +60,19 @@ public class PlayerMover : MonoBehaviour
         if (toTarget.magnitude <= arriveDistance)
         {
             Action done = onArrive;
+            Face(toTarget);                 // NEW: turn toward what we walked up to
             Stop();
             done?.Invoke();
             return;
         }
 
-        // slow down on the last step so we don't overshoot
         float step = Mathf.Min(speed, toTarget.magnitude / Time.fixedDeltaTime);
-        rb.linearVelocity = toTarget.normalized * step;
+        Vector2 dir = toTarget.normalized;
+        rb.linearVelocity = dir * step;
+        Debug.Log($"vel {rb.linearVelocity} moving {moving}");
 
-        // pushing into a table and not going anywhere -> give up
+        UpdateAnimator(dir);                // NEW
+
         if ((rb.position - lastPos).sqrMagnitude < 0.00001f)
         {
             stuckTimer += Time.fixedDeltaTime;
@@ -80,9 +86,9 @@ public class PlayerMover : MonoBehaviour
         lastPos = rb.position;
     }
 
-    // floor click - just walk there
     public void MoveTo(Vector2 point)
     {
+        Debug.Log("MoveTo called: " + point, this);
         following = false;
         follow = null;
         onArrive = null;
@@ -93,7 +99,6 @@ public class PlayerMover : MonoBehaviour
         stuckTimer = 0f;
     }
 
-    // walk until we're close enough to something, then call arrived
     public void WalkUpTo(Transform thing, float distance, Action arrived)
     {
         following = true;
@@ -112,5 +117,24 @@ public class PlayerMover : MonoBehaviour
         follow = null;
         onArrive = null;
         rb.linearVelocity = Vector2.zero;
+        UpdateAnimator(Vector2.zero);       // NEW
+    }
+
+    // NEW: remember which way we're facing (front = down on screen, clockwise)
+    void Face(Vector2 dir)
+    {
+        if (dir.sqrMagnitude < 0.0001f) return;
+        facingAngle = Mathf.Atan2(dir.x, -dir.y) * Mathf.Rad2Deg;
+        if (facingAngle < 0f) facingAngle += 360f;
+    }
+
+    // NEW: push values to the Animator
+    void UpdateAnimator(Vector2 dir)
+    {
+        if (!anim) return;
+        Face(dir);
+        anim.SetFloat(FacingAngleHash, facingAngle);
+        anim.SetFloat(SpeedHash, dir.magnitude);
+        anim.speed = dir.sqrMagnitude > 0.0001f ? 1f : 0f;   // freeze when not moving
     }
 }
