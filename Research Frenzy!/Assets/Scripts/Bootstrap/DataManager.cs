@@ -71,7 +71,7 @@ public class DataManager
 /// <param name="researchers"></param>
 /// <exception cref="ArgumentNullException"></exception>
 /// <exception cref="InvalidOperationException"></exception>
-public async Awaitable SetResearchers(IEnumerable<ResearcherData> researchers)
+public void SetResearchers(IEnumerable<ResearcherData> researchers)
 {
     if (researchers == null)
         throw new ArgumentNullException(nameof(researchers));
@@ -79,7 +79,7 @@ public async Awaitable SetResearchers(IEnumerable<ResearcherData> researchers)
     if (SaveData == null)
         throw new InvalidOperationException(
             "Load or initialize SaveData before setting researchers.");
-    if ()
+   
     
 
     var savedResearchers = new List<ResearcherDataObject>();

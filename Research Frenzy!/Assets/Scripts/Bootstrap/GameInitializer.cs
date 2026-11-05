@@ -5,7 +5,6 @@ using Assets.Scripts.Interfaces;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using System;
 using Clients;
 using Researchers;
 using UnityEditor.SceneManagement;
@@ -84,8 +83,8 @@ public class GameInitializer : MonoBehaviour
     private ResearcherSpawner researcherSpawner;
     private readonly List<int> usedRequestIds = new List<int>();   //Requests already used
 
-    //For testing this is going to be referenced in the savesystem.
-    private readonly string _playerId = null;
+    //For testing this is going to be referenced in the savesystem. Test player id. 
+    private readonly string _playerId = "f003381a-be11-4f64-a83e-512b7da94484";
     private readonly string _apiUrl = "http://localhost:8080";
     //Going to get overwritten anyway
 
@@ -107,19 +106,26 @@ public class GameInitializer : MonoBehaviour
 
     private async Awaitable Start()
     {
-        var instance = await DataManager.CreateAsync(new SaveSystem(_apiUrl, _playerId, GameSeed.EnsureInitialized()));
-        systems = new GameSystems(instance);
- 
-        //Should this be here?
-        systems.DataManager.Load();
+        //Create the data manager
+        var dataManager = await DataManager.CreateAsync(new SaveSystem(_apiUrl, _playerId, GameSeed.EnsureInitialized()));
+        systems = new GameSystems(dataManager);
+    
         var components = await systems.SceneLoader.AddScenes();
         //This is where persistent systems accessor is sent to the other scenes.
         //A scene without an ISceneInitializable comes back null, so check before calling.
         components.first?.InitializeScene(systems);
         components.second?.InitializeScene(systems);
 
+        //Only initializer researchers if we need to!
+        if (dataManager.SaveData.IsEmpty)
+        {
+            InitializeResearchers();
+        }
+        
         InitializeClients();
-        InitializeResearchers();
+        
+
+        
     }
     
     /// <summary>
@@ -201,7 +207,7 @@ public class GameInitializer : MonoBehaviour
         if (researcherSpawner.CubicleCount == 0)
             Debug.LogWarning("GameInitializer: the ResearcherSpawner has no Cubicle Spots, so nobody can be hired.");
 
-        //Send generates researchers to data manager
+        //Send generated researchers to data manager 
         systems.DataManager.SetResearchers(researcherGenerator.Researchers);
 
         Debug.Log("Researchers initialized");

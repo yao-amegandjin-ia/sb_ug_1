@@ -94,7 +94,7 @@ namespace Assets.Scripts.Bootstrap
                 {
                     return new SaveData()
                     {
-                        IsEmpty = false
+                        IsEmpty = true
                     };
                 }
                 if (webRequest.result != UnityWebRequest.Result.Success)
