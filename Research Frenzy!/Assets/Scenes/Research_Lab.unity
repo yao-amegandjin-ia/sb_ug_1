@@ -60275,6 +60275,7 @@ GameObject:
   - component: {fileID: 1315803815}
   - component: {fileID: 1315803819}
   - component: {fileID: 1315803818}
+  - component: {fileID: 1315803820}
   m_Layer: 0
   m_Name: LabSystems
   m_TagString: Untagged
@@ -60312,7 +60313,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ClientGenerator
   startingClients: 3
   clientsAddedPerDay: 2
-  patience: 30
   headCount: 12
   bodyCount: 6
   legCount: 8
@@ -60409,6 +60409,27 @@ MonoBehaviour:
   - {fileID: 223675195}
   - {fileID: 1585593253}
   spawnParent: {fileID: 0}
+--- !u!114 &1315803820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315803814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30ecf4aad34647c6b30d5e13d1fa1427, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NewAssembly::GameLogic.FirmController
+  bestReward: 100
+  goodReward: 50
+  correctRejectReward: 50
+  unlockedMethods: 2
+  baseWaitingSeats: 3
+  clientGenerator: {fileID: 0}
+  researcherGenerator: {fileID: 0}
+  clientSpawner: {fileID: 0}
+  researcherSpawner: {fileID: 0}
 --- !u!1 &1585593252
 GameObject:
   m_ObjectHideFlags: 0

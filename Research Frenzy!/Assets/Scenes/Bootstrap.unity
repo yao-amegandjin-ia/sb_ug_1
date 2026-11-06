@@ -179,7 +179,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1547386712}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 30ecf4aad34647c6b30d5e13d1fa1427, type: 3}
   m_Name: 
@@ -189,6 +189,10 @@ MonoBehaviour:
   correctRejectReward: 50
   unlockedMethods: 2
   baseWaitingSeats: 3
+  clientGenerator: {fileID: 0}
+  researcherGenerator: {fileID: 0}
+  clientSpawner: {fileID: 0}
+  researcherSpawner: {fileID: 0}
 --- !u!114 &1547386716
 MonoBehaviour:
   m_ObjectHideFlags: 0

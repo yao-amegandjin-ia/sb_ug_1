@@ -2,14 +2,15 @@ using Assets;
 using Assets.Scripts.Bootstrap;
 using Assets.Scripts.GameDataObjects;
 using Assets.Scripts.Interfaces;
-using UnityEngine;
+using Clients;
+using Codice.Client.BaseCommands.LayoutFilters;
+using GameLogic;
+using GameLogic.Upgrades;
+using Researchers;
 using System;
 using System.Collections.Generic;
-using Clients;
-using Researchers;
 using UnityEditor.SceneManagement;
-using GameLogic.Upgrades;
-using Codice.Client.BaseCommands.LayoutFilters;
+using UnityEngine;
 
 
 /// <summary>One finished study: which methodology the player matched a request with.</summary>
@@ -120,44 +121,7 @@ public class GameInitializer : MonoBehaviour
         //A scene without an ISceneInitializable comes back null, so check before calling.
         components.first?.InitializeScene(systems);
         components.second?.InitializeScene(systems);
-        //Send researchers to the researcher generator
-        researcherGenerator = FindAnyObjectByType<ResearcherGenerator>();
-
-        researcherGenerator.Initialize(dataManager.GetResearchers());
-
-        InitializeClients();
-
-        //Only initialize researchers if we need to! This should only be zero on day one but if not initialize anyway. 
-        if (dataManager.Researchers.Count == 0)
-        {
-            InitializeResearchers();
-        }
-        else
-        {
-            //Since we set the seed from the load will generate the proper researchers for the generator!
-            researcherGenerator.Generate();
-        }
-        /*
-        //Returning clients on load!
-        if (dataManager.Clients.Count != 0)
-        {
-            
-        }
-        */
-
-        //Assume day 1 
-        if (dataManager.PlayerData.CurrentDay == 1)
-        {
-            
-
-
-
-        }
-        
-        
-        
-
-        
+      
     }
     
     /// <summary>

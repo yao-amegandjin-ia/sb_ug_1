@@ -11,18 +11,23 @@ using Researchers;
 using UnityEngine;
 using GameLogic.Upgrades;
 using Clients;
+using System.Linq;
 
 namespace GameLogic
 {
+    using Assets.Scripts.Bootstrap;
     // inside the namespace so this MethodologiesEnum wins over any old global copy still in the project
     using Assets.Scripts.GameDataObjects;
+    using Assets.Scripts.Interfaces;
+
+
 
     /// <summary>
     /// FirmController has the game logic for the game
     /// Goes on bootstrap scene with GameInitializer
     /// All UI clicks call functions here, instead of living in the UI screens
     /// </summary>
-    public class FirmController : MonoBehaviour
+    public class FirmController : MonoBehaviour, ISceneInitializable
     {
         [Header("Rewards")]
         [SerializeField] private int bestReward = 100;
@@ -46,24 +51,113 @@ namespace GameLogic
         
         /// <summary>A client left dissatisfied (patience ran out, or no seat to wait in). The HUD counts these.</summary>
         public event Action<Client> ClientLost;
+        private DataManager dataManager;
+        //Clients from a save 
+        private readonly HashSet<ClientData> trackedClients = new();
 
-        private GameInitializer game;
-        private ResearcherGenerator researcherGenerator;   // in the Research_Lab scene, so found when first needed
-        private ClientSpawner clientSpawner;   // same
+        //private GameInitializer game;
+
+        [Header("Lab scene components")]
+        [SerializeField] private ClientGenerator clientGenerator;
+        [SerializeField] private ResearcherGenerator researcherGenerator;
+        [SerializeField] private ClientSpawner clientSpawner;
+        [SerializeField] private ResearcherSpawner researcherSpawner;
+
+        /// <summary>
+        /// Triggered when money is added. HUD listens to this to update
+        /// </summary>
+        public event Action<int> MoneyEarned;
+
+        /// <summary>
+        /// Triggered when money is spent.
+        /// </summary>
+        public event Action<int> MoneySpent;
         private UpgradeController upgrades;    // on this same GameObject
         private Client following;  // the one client the player is helping right now
         /// <summary>The client following the player, or null. Only one at a time.</summary>
         public Client FollowingClient => following && following.IsFollowing ? following : null;
 
+     
+        public void InitializeScene(GameSystems gameSystems)
+        {
+            dataManager = gameSystems.DataManager;
+            //Perform initialization duties for the scene!
+            researcherGenerator.Initialize(gameSystems.DataManager.GetResearchers());
+
+            if (gameSystems == null || gameSystems.DataManager == null)
+                throw new ArgumentNullException(nameof(gameSystems));
+
+            ResolveLabComponents();
+
+            if (researcherGenerator == null || researcherSpawner == null ||
+                clientGenerator == null || clientSpawner == null)
+                throw new InvalidOperationException(
+                    "FirmController: assign the lab generators and spawners in the Inspector.");
+
+            researcherGenerator.Initialize(dataManager.GetResearchers());
+            clientGenerator.Initialize(dataManager.RequestList.Requests);
+            ApplyClientUpgrades();
+
+            if (upgrades != null)
+                upgrades.UpgradesChanged += ApplyClientUpgrades;
+
+        }
+        private void ResolveLabComponents()
+        {
+            // Inspector references also support components on other lab GameObjects.
+            // Fall back to GetComponent when they share Lab Systems with this controller.
+            if (clientGenerator == null) clientGenerator = GetComponent<ClientGenerator>();
+            if (researcherGenerator == null) researcherGenerator = GetComponent<ResearcherGenerator>();
+            if (clientSpawner == null) clientSpawner = GetComponent<ClientSpawner>();
+            if (researcherSpawner == null) researcherSpawner = GetComponent<ResearcherSpawner>();
+        }
+
+        private void ApplyClientUpgrades()
+        {
+            if (clientGenerator != null)
+                clientGenerator.ExtraPatience = upgrades != null ? upgrades.ExtraPatienceSeconds : 0f;
+        }
+        private void OnClientSpawned(Client client)
+        {
+            if (client != null) TrackClient(client.Data);
+        }
+
+        //Unsubscribe from events
+        private void OnDestroy()
+        {
+            if (upgrades != null)
+                upgrades.UpgradesChanged -= ApplyClientUpgrades;
+            if (clientSpawner != null)
+                clientSpawner.ClientSpawned -= OnClientSpawned;
+            foreach (ClientData client in trackedClients)
+                client.OnStateChanged -= OnClientStateChanged;
+            trackedClients.Clear();
+        }
+
+        public void TrackClient(ClientData client)
+        {
+            // Prevent subscribing twice to the same object.
+            if (client == null || !trackedClients.Add(client))
+                return;
+
+            client.OnStateChanged += OnClientStateChanged;
+        }
+
+        private void OnClientStateChanged(ClientData client)
+        {
+
+            if (client.State == ClientState.Returning)
+            {
+                //Track the client for tomorrow!
+            }
+        }
+
         private void Awake()
         {
-            game = GetComponent<GameInitializer>();
-            if (game == null) game = FindAnyObjectByType<GameInitializer>();
-            if (game == null) Debug.LogError("FirmController: no GameInitializer found. Put this on the GameInitializer object.");
-            
-            upgrades = GetComponent<UpgradeController>();
-            if (upgrades == null) upgrades = FindAnyObjectByType<UpgradeController>();
+            ResolveLabComponents();
+
         }
+
 
         // Request Screen
         /// <summary>
@@ -80,7 +174,7 @@ namespace GameLogic
             int reward = correct ? correctRejectReward : 0;
 
             if (request != null)
-                game.RecordStudy(request.RequestId, (int)MethodologiesEnum.None, reward);
+                RecordStudy(request.RequestId, (int)MethodologiesEnum.None, reward);
             Debug.Log($"{client.Data.Name} denied: {(correct ? "correct" : "wrong, this one was researchable")}, +${reward}");
 
             client.Data.Complete();   // "request was rejected"
@@ -178,7 +272,7 @@ namespace GameLogic
 
             RequestData request = client.Data.Request;
             if (request != null)
-                game.RecordStudy(request.RequestId, (int)MethodologiesEnum.None, 0);
+                RecordStudy(request.RequestId, (int)MethodologiesEnum.None, 0);
             Debug.Log($"{client.Data.Name} left dissatisfied. Saved as a rejection, +$0");
 
             StopFollowing(client);
@@ -194,7 +288,8 @@ namespace GameLogic
             client.Data.AskToReturnTomorrow();
             client.Leave();
         }
- 
+
+        
         // frees the "one client at a time" slot if this was the client following
         private void StopFollowing(Client client)
         {
@@ -225,7 +320,7 @@ namespace GameLogic
             int reward = RewardFor(outcome);
 
             if (request != null)
-                game.RecordStudy(request.RequestId, methodologyId, reward);
+                RecordStudy(request.RequestId, methodologyId, reward);
             Debug.Log($"{client.Data.Name} matched with {researcher.Data.Name} using {picked} ({outcome}): +${reward}");
 
             client.Data.AssignTo(researcher.Data.Id, methodologyId);
@@ -251,23 +346,116 @@ namespace GameLogic
         /// <summary>Researchers the player can hire right now (everyone not hired yet).</summary>
         public IReadOnlyList<ResearcherData> GetHireCandidates()
         {
-            if (researcherGenerator == null) researcherGenerator = FindAnyObjectByType<ResearcherGenerator>();
-            if (researcherGenerator == null)
-            {
-                Debug.LogWarning("FirmController: no ResearcherGenerator found. Is it in the Research_Lab scene?");
-                return Array.Empty<ResearcherData>();
-            }
             return researcherGenerator.GetUnhired();
         }
-        
+
         /// <summary>True if there's an empty cubicle. The hire tab greys out HIRE when there isn't.</summary>
-        public bool HasFreeCubicle => game.HasFreeCubicle();
+        
+
+        public bool HasFreeCubicle()
+        {
+            if (researcherSpawner == null) return false;
+            for (int cubicle = 1; cubicle <= researcherSpawner.CubicleCount; cubicle++)
+                if (researcherSpawner.IsCubicleFree(cubicle)) return true;
+            return false;
+        }
 
         /// <summary>HIRE. Puts the researcher in the first free cubicle.</summary>
         /// <returns>False if there was no free cubicle.</returns>
         public bool Hire(ResearcherData researcher)
         {
-            return game.HireResearcher(researcher) != null;
+            return HireResearcher(researcher) != null;
         }
+
+        // hires a researcher into the first free cubicle. called by the HIRE buttons on the hire screen
+        public Researcher HireResearcher(ResearcherData data)
+        {
+
+            if (researcherSpawner == null || data == null) return null;
+
+            for (int cubicle = 1; cubicle <= researcherSpawner.CubicleCount; cubicle++)
+            {
+                if (researcherSpawner.IsCubicleFree(cubicle))
+                    return researcherSpawner.Hire(data, cubicle);
+            }
+
+            Debug.Log("No free cubicles left.");
+            return null;
+        }
+
+
+
+        // called by the match screen after MATCH. adds the reward and remembers which method was used
+
+        /// <summary>
+        /// Called after Match. This will add the reward and stores the study result.
+        ///Also invokes the money earned event
+        /// </summary>
+        /// <param name="requestId">Request ID</param>
+        /// <param name="methodologyId">Methodology ID</param>
+        /// <param name="reward">Reward amount</param>
+        public void RecordStudy(int requestId, int methodologyId, int reward)
+        {
+            var existing = dataManager.PlayerData.StudyResults.GetValueOrDefault(requestId, -1);
+
+            if (existing != -1)
+            {
+                // same request matched again
+                dataManager.PlayerData.StudyResults[requestId] = methodologyId;
+                return;
+            }
+
+
+            dataManager.PlayerData.StudyResults.Add(requestId, methodologyId);
+            dataManager.PlayerData.CurrentMoney += reward;
+            dataManager.PlayerData.TotalMoneyEarned += reward;
+            
+           
+            MoneyEarned?.Invoke(reward);
+            
+           
+
+            Debug.Log($"Study recorded: request {requestId} -> methodology {methodologyId}, +${reward} " +
+                      $"(current ${dataManager.PlayerData.CurrentMoney}, total ${dataManager.PlayerData.TotalMoneyEarned})");
+        }
+   
+
+        /// <summary>
+        /// Converts study results to JSON, so it can be saved in DB
+        /// </summary>
+        /// <param name="prettyPrint"></param>
+        /// <returns></returns>
+        public string StudyResultsToJson(bool prettyPrint = false)
+        {
+            return JsonUtility.ToJson(dataManager.PlayerData.StudyResults, prettyPrint);
+        }
+
+        
+        // methodology used for a request, or -1 if it hasn't been studied
+        /// <summary>
+        /// Gets the methodology used for a request, or -1 if it hasn't been studied
+        /// </summary>
+        /// <param name="requestId"> Request ID used to find methodology</param>
+        /// <returns></returns>
+        public int GetStudyMethodology(int requestId)
+        {
+            return dataManager.PlayerData.StudyResults.GetValueOrDefault(requestId, -1);
+        }
+
+        /// <summary>
+        /// Takes money out of currentMoney
+        /// Used when making a purchase
+        /// </summary>
+        /// <returns>False (and nothing is taken) if the player doesn't have enough.</returns>
+        public bool TrySpend(int amount)
+        {
+            var player = dataManager.PlayerData;
+            if (amount < 0 || player.CurrentMoney < amount) return false;
+            player.CurrentMoney -= amount;
+            MoneySpent?.Invoke(amount);
+            return true;
+        }
+
+
     }
 }

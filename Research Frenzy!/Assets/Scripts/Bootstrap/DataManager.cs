@@ -25,10 +25,18 @@ public class DataManager
 
     public PlayerData PlayerData => _saveData.Player;
 
+    /// <summary>
+    /// List of clients for a particular day. 
+    /// </summary>
+    public IReadOnlyList<ClientData> Clients => clientData;
+    private List<ClientData> clientData = new();
+
     public IReadOnlyList<ResearcherData> Researchers =>
         _saveData.Researchers;
-
-    public IReadOnlyList<ClientData> Clients =>
+    /// <summary>
+    /// Returning clients from a particular day/save
+    /// </summary>
+    public IReadOnlyList<ClientData> ReturningClients =>
         _saveData.Clients;
 
     // Examples of modifications inside DataManager:

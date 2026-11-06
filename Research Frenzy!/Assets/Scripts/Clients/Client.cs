@@ -70,6 +70,7 @@ public class Client : MonoBehaviour, IPointerClickHandler
 
         // patience ran out (timer, or no seat in the waiting area). the FirmController decides what that means
         clientData.OnLeftDissatisfied += OnLeftDissatisfied;
+        
     }
     
     void OnDestroy()
