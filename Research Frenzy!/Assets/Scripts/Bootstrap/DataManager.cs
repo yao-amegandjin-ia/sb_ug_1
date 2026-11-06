@@ -23,8 +23,6 @@ public class DataManager
 
     public RequestList RequestList { get; private set; }
 
-    public bool SaveDataEmpty => _saveData.IsEmpty;
-
     public PlayerData PlayerData => _saveData.Player;
 
     public IReadOnlyList<ResearcherData> Researchers =>
@@ -62,7 +60,10 @@ public class DataManager
         return instance;
     }
 
-    
+    public List<ResearcherData> GetResearchers()
+    {
+        return _saveData.Researchers;
+    }
     
 
     /// <summary>
@@ -73,6 +74,25 @@ public class DataManager
     public async Awaitable<SaveData> Load()
     {
         SaveData saveData = await _saveSystem.LoadGame();
+        
+        //If on day one there should be no game data loaded!
+        if (PlayerData.CurrentDay == 1)
+        {
+            saveData.Clients.Clear();
+            saveData.Researchers.Clear();
+            saveData.Player.CurrentMoney = 0;
+            saveData.Player.OwnedUpgrades.Clear();
+            saveData.Player.StudyResults.Clear();
+            saveData.Player.TotalMoneyEarned = 0;
+        }
+        //Clear out for regeneration if not the proper amount of researchers!
+        if (Researchers.Count != 10)
+        {
+            saveData.Researchers.Clear();
+        }
+
+
+        
         _saveData = saveData;
         return saveData;
     }

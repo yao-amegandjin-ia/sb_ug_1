@@ -9,6 +9,7 @@ using Clients;
 using Researchers;
 using UnityEditor.SceneManagement;
 using GameLogic.Upgrades;
+using Codice.Client.BaseCommands.LayoutFilters;
 
 
 /// <summary>One finished study: which methodology the player matched a request with.</summary>
@@ -84,12 +85,13 @@ public class GameInitializer : MonoBehaviour
     private readonly List<int> usedRequestIds = new List<int>();   //Requests already used
 
     //For testing this is going to be referenced in the savesystem. Test player id. 
-    private readonly string _playerId = "f003381a-be11-4f64-a83e-512b7da94484";
+    
     private readonly string _apiUrl = "http://localhost:8080";
     //Going to get overwritten anyway
 
     private void Awake()
     {
+
         EditorSceneManager.playModeStartScene = null;
         
         upgrades = GetComponent<UpgradeController>();
@@ -106,6 +108,7 @@ public class GameInitializer : MonoBehaviour
 
     private async Awaitable Start()
     {
+        string _playerId = "e0a63563-3f66-4407-b6b2-6529f9a17e56";
         //Create the data manager
         var dataManager = await DataManager.CreateAsync(new SaveSystem(_apiUrl, _playerId, GameSeed.EnsureInitialized()));
         systems = new GameSystems(dataManager);
@@ -117,15 +120,14 @@ public class GameInitializer : MonoBehaviour
         //A scene without an ISceneInitializable comes back null, so check before calling.
         components.first?.InitializeScene(systems);
         components.second?.InitializeScene(systems);
+        //Send researchers to the researcher generator
+        researcherGenerator = FindAnyObjectByType<ResearcherGenerator>();
+
+        researcherGenerator.Initialize(dataManager.GetResearchers());
 
         InitializeClients();
-        if (dataManager.SaveDataEmpty)
-        {
-            InitializeResearchers();
-        
-            
-        }
-        //Only initialize researchers if we need to!
+
+        //Only initialize researchers if we need to! This should only be zero on day one but if not initialize anyway. 
         if (dataManager.Researchers.Count == 0)
         {
             InitializeResearchers();
@@ -135,12 +137,22 @@ public class GameInitializer : MonoBehaviour
             //Since we set the seed from the load will generate the proper researchers for the generator!
             researcherGenerator.Generate();
         }
+        /*
         //Returning clients on load!
         if (dataManager.Clients.Count != 0)
         {
             
         }
-        
+        */
+
+        //Assume day 1 
+        if (dataManager.PlayerData.CurrentDay == 1)
+        {
+            
+
+
+
+        }
         
         
         
@@ -214,7 +226,6 @@ public class GameInitializer : MonoBehaviour
     // untick Generate On Start on the ResearcherGenerator, otherwise it makes a second pool on its own Start
     private void InitializeResearchers()
     {
-        researcherGenerator = FindAnyObjectByType<ResearcherGenerator>();
         researcherSpawner = FindAnyObjectByType<ResearcherSpawner>();
  
         if (researcherGenerator == null || researcherSpawner == null)
@@ -228,7 +239,8 @@ public class GameInitializer : MonoBehaviour
             Debug.LogWarning("GameInitializer: the ResearcherSpawner has no Cubicle Spots, so nobody can be hired.");
 
         //Send generated researchers to data manager 
-        systems.DataManager.SetResearchers(researchers);
+        
+        //systems.DataManager.SetResearchers(researchers);
 
         Debug.Log("Researchers initialized");
     }

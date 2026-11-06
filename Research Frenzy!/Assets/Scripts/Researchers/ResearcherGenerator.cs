@@ -47,11 +47,15 @@ public class ResearcherGenerator : MonoBehaviour
     {
         "Lathrop", "Gilbert", "D'Costa","Amegandjin", "Kim", "Finders","King", "Flynn", "Smith", "Johnson", "Anderson", "Gonzalez", "Garcia"
     };
-    
+
     [Header("Researcher List")]
-    [SerializeField] private List<ResearcherData> researchers = new List<ResearcherData>();
+    [SerializeField] private List<ResearcherData> researchers;
     public IReadOnlyList<ResearcherData> Researchers => researchers;
 
+    public void Initialize(List<ResearcherData> researchers)
+    {
+        this.researchers = researchers;
+    }
     private void Start()
     {
         if (generateOnStart)

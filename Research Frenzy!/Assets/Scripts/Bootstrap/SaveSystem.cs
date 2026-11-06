@@ -89,14 +89,22 @@ namespace Assets.Scripts.Bootstrap
             {
                 await webRequest.SendWebRequest();
 
-                //Empty save data if no session exists yet.
+                //Try to load before first save = Day one!
                 if (webRequest.responseCode == 404)
                 {
+
                     return new SaveData()
                     {
-                        IsEmpty = true,
-                        Seed = _seed
 
+                        Seed = _seed,
+                        Player = new PlayerData
+                        {
+
+                            CurrentDay = 1,
+                            CurrentMoney = 0,
+                            TotalMoneyEarned = 0
+
+                        },
                     };
                 }
                 if (webRequest.result != UnityWebRequest.Result.Success)

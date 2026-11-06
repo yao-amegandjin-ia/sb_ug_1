@@ -11,7 +11,6 @@ namespace Assets.Scripts.GameDataObjects
     {
         public int Seed { get; set; }
 
-        public bool IsEmpty { get; set; }
         public PlayerData Player { get; set; } = new();
 
         public List<ResearcherData> Researchers { get; set; } = new();
