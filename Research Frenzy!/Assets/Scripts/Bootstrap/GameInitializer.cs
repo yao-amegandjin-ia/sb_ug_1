@@ -109,26 +109,38 @@ public class GameInitializer : MonoBehaviour
         //Create the data manager
         var dataManager = await DataManager.CreateAsync(new SaveSystem(_apiUrl, _playerId, GameSeed.EnsureInitialized()));
         systems = new GameSystems(dataManager);
-    
+        //Set with seed grabbed from session creation
+        GameSeed.Set(dataManager.Seed);
+
         var components = await systems.SceneLoader.AddScenes();
         //This is where persistent systems accessor is sent to the other scenes.
         //A scene without an ISceneInitializable comes back null, so check before calling.
         components.first?.InitializeScene(systems);
         components.second?.InitializeScene(systems);
 
-        //Only initialize researchers (and clients) if we need to!
-        if (dataManager.SaveData.IsEmpty || dataManager.SaveData.Researchers.Count == 0)
+        InitializeClients();
+        if (dataManager.SaveDataEmpty)
         {
-            
             InitializeResearchers();
+        
             
         }
-        if (dataManager.SaveData.IsEmpty || )
-        //Initialize researchers based off what was loaded!
+        //Only initialize researchers if we need to!
+        if (dataManager.Researchers.Count == 0)
+        {
+            InitializeResearchers();
+        }
         else
         {
-
+            //Since we set the seed from the load will generate the proper researchers for the generator!
+            researcherGenerator.Generate();
         }
+        //Returning clients on load!
+        if (dataManager.Clients.Count != 0)
+        {
+            
+        }
+        
         
         
         
@@ -211,12 +223,12 @@ public class GameInitializer : MonoBehaviour
             return;
         }
  
-        researcherGenerator.Generate();
+        var researchers = researcherGenerator.Generate();
         if (researcherSpawner.CubicleCount == 0)
             Debug.LogWarning("GameInitializer: the ResearcherSpawner has no Cubicle Spots, so nobody can be hired.");
 
         //Send generated researchers to data manager 
-        systems.DataManager.SetResearchers(researcherGenerator.GetState());
+        systems.DataManager.SetResearchers(researchers);
 
         Debug.Log("Researchers initialized");
     }

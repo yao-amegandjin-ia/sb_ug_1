@@ -59,9 +59,9 @@ public class ResearcherGenerator : MonoBehaviour
     }
 
     /// <summary>Destroys any existing generated researchers and creates a fresh set from the seed.</summary>
-    public void Generate()
+    public List<ResearcherData> Generate()
     {
-        if (!ValidateSettings()) return;
+        if (!ValidateSettings()) return null;
         
         researchers.Clear();
         
@@ -99,7 +99,9 @@ public class ResearcherGenerator : MonoBehaviour
             researchers.Add(r);
             
             Debug.Log($"ResearcherGenerator: Researcher generated: " + r.Name);
+            
         }
+        return researchers;
     }
     
     /// <summary>Finds a researcher by ID (1-10), or null.</summary>

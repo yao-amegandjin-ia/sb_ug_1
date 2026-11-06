@@ -81,8 +81,7 @@ namespace Assets.Scripts.Bootstrap
             _lastPlayed = response["last_played"]?.Value<DateTime>()
               ?? DateTime.Now;
             _seed = response["seed"].Value<int>();
-            //We set the seed in the static class as well so that it is not mismatched!
-            GameSeed.Set(_seed);
+            
 
             string endpointURL = apiBaseUrl + $"/sessions/{_sessionId}/save";
 
@@ -95,7 +94,9 @@ namespace Assets.Scripts.Bootstrap
                 {
                     return new SaveData()
                     {
-                        IsEmpty = true
+                        IsEmpty = true,
+                        Seed = _seed
+
                     };
                 }
                 if (webRequest.result != UnityWebRequest.Result.Success)
@@ -115,7 +116,7 @@ namespace Assets.Scripts.Bootstrap
                 }
 
 
-                return SaveDataMapper.FromApiDto(apiSave);
+                return SaveDataMapper.FromApiDto(apiSave, _seed);
                 
             }
         }

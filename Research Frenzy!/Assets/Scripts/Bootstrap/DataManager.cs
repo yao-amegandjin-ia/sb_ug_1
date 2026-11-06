@@ -18,20 +18,31 @@ using UnityEngine;
 /// </summary>
 public class DataManager
 {
+    public int Seed => _saveData.Seed ;
+    private SaveData _saveData = new SaveData();
 
     public RequestList RequestList { get; private set; }
 
-
-
-    private SaveData _saveData;
+    public bool SaveDataEmpty => _saveData.IsEmpty;
 
     public PlayerData PlayerData => _saveData.Player;
 
-    public List<ResearcherData> Researchers => _saveData.Researchers;
+    public IReadOnlyList<ResearcherData> Researchers =>
+        _saveData.Researchers;
 
-    public List<ClientData> Clients => _saveData.Clients;
+    public IReadOnlyList<ClientData> Clients =>
+        _saveData.Clients;
 
-     
+    // Examples of modifications inside DataManager:
+    public void AddResearcher(ResearcherData researcher)
+    {
+        _saveData.Researchers.Add(researcher);
+    }
+
+    public void AddClient(ClientData client)
+    {
+        _saveData.Clients.Add(client);
+    }
 
     private readonly BaseSaveSystem _saveSystem;
 
@@ -82,7 +93,7 @@ public class DataManager
 /// <param name="researchers"></param>
 /// <exception cref="ArgumentNullException"></exception>
 /// <exception cref="InvalidOperationException"></exception>
-public void SetResearchers(ResearcherList researchers)
+public void SetResearchers(List<ResearcherData> researchers)
 {
     if (researchers == null)
         throw new ArgumentNullException(nameof(researchers));
@@ -90,40 +101,9 @@ public void SetResearchers(ResearcherList researchers)
     if (_saveData == null)
         throw new InvalidOperationException(
             "Load or initialize SaveData before setting researchers.");
-   
+
+        _saveData.Researchers = researchers;
     
-
-    var savedResearchers = new List<ResearcherDataObject>();
-
-    foreach (ResearcherData researcher in researchers.researchers)
-    {
-        var methodologies = new List<MethodologiesEnum>();
-
-        foreach (int id in researcher.KnownMethodologyIds)
-        {
-            methodologies.Add((MethodologiesEnum)id);
-        }
-
-        savedResearchers.Add(new ResearcherDataObject
-        {
-            ResearcherId = researcher.Id,
-            ClientId = researcher.CurrentClientId,
-            Name = researcher.Name,
-            Postion = researcher.Position,
-            Experience = researcher.Experience,
-            Speed = researcher.Speed,
-            Quality = researcher.Quality,
-            Methodologies = methodologies,
-            Skin = new List<int>
-            {
-                researcher.Appearance.x, // Head
-                researcher.Appearance.y, // Torso
-                researcher.Appearance.z  // Legs
-            }
-        });
-    }
-
-    _saveData.Researchers = savedResearchers;
 }
 
 

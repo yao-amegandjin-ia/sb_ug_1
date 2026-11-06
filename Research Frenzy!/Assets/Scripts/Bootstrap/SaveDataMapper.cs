@@ -16,9 +16,9 @@ namespace Assets.Scripts.Bootstrap
     {
 
         //Convert to the api dtos
-        public static SaveData FromApiDto(ApiSaveDto api) => new SaveData
+        public static SaveData FromApiDto(ApiSaveDto api, int seed) => new SaveData
         {
-
+            Seed = seed,
             Player = api.Player == null ? null : new PlayerData
             {
                 CurrentMoney = api.Player.CurrentMoney,
