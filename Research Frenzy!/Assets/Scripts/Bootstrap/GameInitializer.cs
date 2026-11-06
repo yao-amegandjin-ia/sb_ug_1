@@ -116,13 +116,21 @@ public class GameInitializer : MonoBehaviour
         components.first?.InitializeScene(systems);
         components.second?.InitializeScene(systems);
 
-        //Only initializer researchers if we need to!
-        if (dataManager.SaveData.IsEmpty)
+        //Only initialize researchers (and clients) if we need to!
+        if (dataManager.SaveData.IsEmpty || dataManager.SaveData.Researchers.Count == 0)
         {
+            
             InitializeResearchers();
+            
+        }
+        if (dataManager.SaveData.IsEmpty || )
+        //Initialize researchers based off what was loaded!
+        else
+        {
+
         }
         
-        InitializeClients();
+        
         
 
         
@@ -208,7 +216,7 @@ public class GameInitializer : MonoBehaviour
             Debug.LogWarning("GameInitializer: the ResearcherSpawner has no Cubicle Spots, so nobody can be hired.");
 
         //Send generated researchers to data manager 
-        systems.DataManager.SetResearchers(researcherGenerator.Researchers);
+        systems.DataManager.SetResearchers(researcherGenerator.GetState());
 
         Debug.Log("Researchers initialized");
     }

@@ -61,7 +61,7 @@ namespace Assets.Scripts.Bootstrap.ApiDtos
         public int Quality { get; set; }
 
         [JsonProperty("methodologies")]
-        public List<MethodologiesEnum> Methodologies { get; set; }
+        public List<int> Methodologies { get; set; }
 
         [JsonProperty("skin")]
         public List<int> Skin { get; set; }

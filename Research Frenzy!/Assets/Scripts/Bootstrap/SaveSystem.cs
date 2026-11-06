@@ -4,6 +4,7 @@ using Assets.Scripts.GameDataObjects;
 using Assets.Scripts.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PlasticGui.Help.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -99,6 +100,7 @@ namespace Assets.Scripts.Bootstrap
                 }
                 if (webRequest.result != UnityWebRequest.Result.Success)
                 {
+                    
                     throw new Exception(
                    $"{webRequest.responseCode}: {webRequest.error}\n" +
                    $"{webRequest.downloadHandler?.text}");
@@ -111,6 +113,8 @@ namespace Assets.Scripts.Bootstrap
                     throw new Exception("The API returned an empty save response.");
 
                 }
+
+
                 return SaveDataMapper.FromApiDto(apiSave);
                 
             }

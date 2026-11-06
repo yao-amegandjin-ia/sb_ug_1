@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Clients;
+using Researchers;
 using System.Text;
 
 namespace Assets.Scripts.GameDataObjects
@@ -9,9 +11,9 @@ namespace Assets.Scripts.GameDataObjects
         public bool IsEmpty { get; set; }
         public PlayerData Player { get; set; } = new();
 
-        public List<ResearcherDataObject> Researchers { get; set; } = new();
+        public List<ResearcherData> Researchers { get; set; } = new();
 
-        public List<ClientDataObject> Clients { get; set; } = new();
+        public List<ClientData> Clients { get; set; } = new();
 
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Bootstrap;
 using Assets.Scripts.GameDataObjects;
 using Assets.Scripts.Interfaces;
+using Clients;
 using Researchers;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,17 @@ public class DataManager
 
     public RequestList RequestList { get; private set; }
 
-    public SaveData SaveData { get; private set; }
+
+
+    private SaveData _saveData;
+
+    public PlayerData PlayerData => _saveData.Player;
+
+    public List<ResearcherData> Researchers => _saveData.Researchers;
+
+    public List<ClientData> Clients => _saveData.Clients;
+
+     
 
     private readonly BaseSaveSystem _saveSystem;
 
@@ -51,7 +62,7 @@ public class DataManager
     public async Awaitable<SaveData> Load()
     {
         SaveData saveData = await _saveSystem.LoadGame();
-        SaveData = saveData;
+        _saveData = saveData;
         return saveData;
     }
 
@@ -61,7 +72,7 @@ public class DataManager
     /// <returns></returns>
     public async Awaitable SaveGame()
     {
-        await _saveSystem.SaveGame(SaveData);
+        await _saveSystem.SaveGame(_saveData);
     }
 
     
@@ -71,12 +82,12 @@ public class DataManager
 /// <param name="researchers"></param>
 /// <exception cref="ArgumentNullException"></exception>
 /// <exception cref="InvalidOperationException"></exception>
-public void SetResearchers(IEnumerable<ResearcherData> researchers)
+public void SetResearchers(ResearcherList researchers)
 {
     if (researchers == null)
         throw new ArgumentNullException(nameof(researchers));
 
-    if (SaveData == null)
+    if (_saveData == null)
         throw new InvalidOperationException(
             "Load or initialize SaveData before setting researchers.");
    
@@ -84,7 +95,7 @@ public void SetResearchers(IEnumerable<ResearcherData> researchers)
 
     var savedResearchers = new List<ResearcherDataObject>();
 
-    foreach (ResearcherData researcher in researchers)
+    foreach (ResearcherData researcher in researchers.researchers)
     {
         var methodologies = new List<MethodologiesEnum>();
 
@@ -112,7 +123,7 @@ public void SetResearchers(IEnumerable<ResearcherData> researchers)
         });
     }
 
-    SaveData.Researchers = savedResearchers;
+    _saveData.Researchers = savedResearchers;
 }
 
 

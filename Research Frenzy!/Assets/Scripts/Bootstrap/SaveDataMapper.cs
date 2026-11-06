@@ -1,5 +1,8 @@
 ﻿using Assets.Scripts.Bootstrap.ApiDtos;
 using Assets.Scripts.GameDataObjects;
+using Researchers;
+using UnityEngine;
+using Clients;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +15,10 @@ namespace Assets.Scripts.Bootstrap
     public static class SaveDataMapper
     {
 
-
-
-
         //Convert to the api dtos
         public static SaveData FromApiDto(ApiSaveDto api) => new SaveData
         {
+
             Player = api.Player == null ? null : new PlayerData
             {
                 CurrentMoney = api.Player.CurrentMoney,
@@ -26,25 +27,52 @@ namespace Assets.Scripts.Bootstrap
                 StudyResults = api.Player.StudyResults ?? new Dictionary<int, int>(),
                 OwnedUpgrades = api.Player.OwnedUpgrades ?? new Dictionary<string, int>()
             },
-            Researchers = api.Researchers?.Select(r => new ResearcherDataObject
+
+
+            Researchers = api.Researchers?.Select(r =>
             {
-                ResearcherId = r.ResearcherId,
-                Name = r.Name,
-                Postion = r.Position,
-                Experience = r.Experience,
-                Speed = r.Speed,
-                Quality = r.Quality,
-                Methodologies = r.Methodologies ?? new List<MethodologiesEnum>(),
-                Skin = r.Skin ?? new List<int>(),
-                ClientId = r.CurrentClientId
-            }).ToList() ?? new List<ResearcherDataObject>(),
-            Clients = api.Clients?.Select(c => new ClientDataObject
+                var researcher = new ResearcherData();
+                var skin = r.Skin ?? new List<int>();
+
+                var appearance = skin.Count >= 3
+                    ? new Vector3Int(skin[0], skin[1], skin[2])
+                    : Vector3Int.zero;
+
+                researcher.Init(
+                    r.ResearcherId,
+                    r.Name,
+                    appearance,
+                    r.Experience,
+                    r.Speed,
+                    r.Quality,
+                    r.Methodologies
+                );
+
+
+                return researcher;
+            }).ToList() ?? new List<ResearcherData>(),
+
+            Clients = api.Clients?.Select(c =>
             {
-                ClientId = c.ClientId,
-                RequestId = c.RequestId,
-                Skin = c.Skin ?? new List<int>()
-            }).ToList() ?? new List<ClientDataObject>()
+                var client = new ClientData();
+                var skin = c.Skin ?? new List<int>();
+
+                var appearance = skin.Count >= 3
+                    ? new Vector3Int(skin[0], skin[1], skin[2])
+                    : Vector3Int.zero;
+
+                //Use default patience
+                client.Init(
+                    c.ClientId, c.RequestId, appearance
+                    );
+                return client;
+
+
+            }).ToList() ?? new List<ClientData>()
         };
+
+
+
 
 
         public static ApiSaveDto ToApiDto(SaveData save) => new ApiSaveDto
@@ -52,22 +80,34 @@ namespace Assets.Scripts.Bootstrap
             Player = save.Player == null ? null : ToApiPlayer(save.Player),
             Researchers = save.Researchers?.Select(r => new ApiResearcherDto
             {
-                ResearcherId = r.ResearcherId,
+                
+                ResearcherId = r.Id,
                 Name = r.Name,
-                Position = r.Postion, // Rename to r.Position if the game model typo is fixed.
+                Position = r.Position, 
                 Experience = r.Experience,
                 Speed = r.Speed,
                 Quality = r.Quality,
-                Methodologies = r.Methodologies,
-                CurrentClientId = r.ClientId,
-                Skin = r.Skin
+                Methodologies = r.KnownMethodologyIds?.ToList() ?? new List<int>(),
+                CurrentClientId = r.CurrentClientId,
+                Skin = new List<int>
+                {
+                    r.Appearance.x,
+                    r.Appearance.y,
+                    r.Appearance.z
+                }
 
             }).ToList(),
+
             Clients = save.Clients?.Select(c => new ApiClientDto
             {
-                ClientId = c.ClientId,
+                ClientId = c.Id,
                 RequestId = c.RequestId,
-                Skin = c.Skin
+                Skin = new List<int>
+                {
+                    c.Appearance.x,
+                    c.Appearance.y,
+                    c.Appearance.z
+                }
             }).ToList()
         };
         public static ApiPlayerDto ToApiPlayer(PlayerData player) => new ApiPlayerDto
