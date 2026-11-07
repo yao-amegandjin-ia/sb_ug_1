@@ -9,13 +9,14 @@ using GameLogic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using GameLogic.Upgrades;
+using Assets.Scripts.Bootstrap;
 
 [RequireComponent(typeof(UIDocument), typeof(StartScreen), typeof(DaySummary))]
 [RequireComponent(typeof(CodexPanel), typeof(ManageFirmPanel))]
 public class HUD : MonoBehaviour
 {
     // read straight from GameInitializer, so there is only one money value. DaySummary and ManageFirmPanel still use hud.money
-    public int money => game != null ? game.currentMoney : 0;
+    public int money => dataManager != null ? dataManager.PlayerData.CurrentMoney : 0;
     public int day = 1;
     public int totalDays = 7;
     public float dayLength = 180f; // seconds before upgrades, placeholder until we decide
@@ -31,15 +32,18 @@ public class HUD : MonoBehaviour
 
     public event Action<int> DayEnded;
 
+    private DataManager dataManager;
+
+    
     float timeLeft;
     bool running = false;
 
     Label moneyText, dayText, timerText;
     Label bestText, partialText, wrongText, ongoingText;
     CodexPanel codex;
-    GameInitializer game;
+    //GameInitializer game;
     FirmController firmRules;   // game rules, in the Bootstrap scene. not the ManageFirmPanel below
-    ManageFirmPanel firm;
+    private ManageFirmPanel firm;
     UpgradeController upgrades;
 
     void Start()
@@ -54,21 +58,16 @@ public class HUD : MonoBehaviour
         wrongText = root.Q<Label>("wrong-count");
         ongoingText = root.Q<Label>("ongoing-count");
         
-        game = FindAnyObjectByType<GameInitializer>();
-        if (game != null)
-        {
-            game.MoneyEarned += OnMoneyEarned;
-            game.MoneySpent += OnMoneySpent;
-        }
-        else Debug.LogWarning("HUD: no GameInitializer found, money will show $0. Did you press Play from the Bootstrap scene?");
-
-        firmRules = FindAnyObjectByType<FirmController>();
+        
         if (firmRules != null)
         {
+            firmRules.MoneyEarned += OnMoneyEarned;
+            firmRules.MoneySpent += OnMoneySpent;
             firmRules.StudyFinished += OnStudyFinished;
             firmRules.RequestRejected += OnRequestRejected;
             firmRules.ClientLost += OnClientLost;
         }
+
         else Debug.LogWarning("HUD: no FirmController found, study counts won't update. Is it on the GameInitializer object?");
 
         upgrades = FindAnyObjectByType<UpgradeController>();
@@ -118,6 +117,14 @@ public class HUD : MonoBehaviour
         }
     }
 
+    public void Initialize(GameSystems systems)
+    {
+        dataManager = systems.DataManager;
+    }
+    public void Initialize(FirmController firm)
+    {
+        firmRules = firm;
+    }
     public void StartDay()
     {
         bestToday = 0;
@@ -144,10 +151,10 @@ public class HUD : MonoBehaviour
 
     void OnDestroy()
     {
-        if (game != null)
+        if (firmRules != null)
         {
-            game.MoneyEarned -= OnMoneyEarned;
-            game.MoneySpent -= OnMoneySpent;
+            firmRules.MoneyEarned -= OnMoneyEarned;
+            firmRules.MoneySpent -= OnMoneySpent;
         }
         if (firmRules != null)
         {

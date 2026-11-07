@@ -142,6 +142,7 @@ public void SetResearchers(List<ResearcherData> researchers)
     }
     
     
+    
 
     
     
@@ -159,10 +160,6 @@ public void SetResearchers(List<ResearcherData> researchers)
         {
             Debug.Log($"JSON file failed to load/not found. {filePath}");
         }
-
-
-
-
 
 
     }

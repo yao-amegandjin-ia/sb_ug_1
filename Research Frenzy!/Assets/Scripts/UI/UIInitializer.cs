@@ -4,18 +4,38 @@
 
 using Assets.Scripts.Bootstrap;
 using Assets.Scripts.Interfaces;
+using GameLogic;
+using UI;
 using UnityEngine;
 
 public class UIInitializer : MonoBehaviour, ISceneInitializable
 {
-    public StartScreen startScreen;
 
-    GameSystems systems;
+  
+
+    public GameObject UI;
+
+    
+    private GameSystems systems;
 
     public void InitializeScene(GameSystems gameSystems)
     {
         systems = gameSystems;
         Debug.Log("UI scene initialized");
         // TODO: hand systems to the HUD so it can show money / day
+        var hud = UI.GetComponent<HUD>();
+        var shop = UI.GetComponent<ShopScreen>();
+        hud.Initialize(gameSystems);
+        shop.Initialize(gameSystems);
+
+
+    }
+
+    public void SendFirm(FirmController firm)
+    {
+        var hud = UI.GetComponent<HUD>();
+        var shop = UI.GetComponent<ShopScreen>();
+        shop.Initialize(firm);
+        hud.Initialize(firm);
     }
 }

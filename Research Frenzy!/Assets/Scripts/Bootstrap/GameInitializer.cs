@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using static Codice.Client.Common.EventTracking.TrackFeatureUseEvent.Features;
 
 
 /// <summary>One finished study: which methodology the player matched a request with.</summary>
@@ -42,6 +43,7 @@ public class GameInitializer : MonoBehaviour
     [SerializeField] private bool overrideSeed = false;
     [SerializeField] private int seedOverride = 12345;
  
+    /*
     /// <summary>
     /// Current money is the current money the player has
     /// Total money is the total amount earned in the game. THIS DOES NOT GO DOWN.
@@ -72,20 +74,12 @@ public class GameInitializer : MonoBehaviour
     /// Triggered when money is spent.
     /// </summary>
     public event Action<int> MoneySpent;
+    */
 
     private GameSystems systems;
-    private UpgradeController upgrades;   // on this same GameObject. gives the bonus clients and patience
 
-    //These are in the Research_Lab scene, so they're found after it loads instead of set in the Inspector
     
-    //TODO: not sure if these should be added here or as components
-    private ClientGenerator clientGenerator;
-    private ClientSpawner clientSpawner;
-    private ResearcherGenerator researcherGenerator;
-    private ResearcherSpawner researcherSpawner;
-    private readonly List<int> usedRequestIds = new List<int>();   //Requests already used
 
-    //For testing this is going to be referenced in the savesystem. Test player id. 
     
     private readonly string _apiUrl = "http://localhost:8080";
     //Going to get overwritten anyway
@@ -95,9 +89,10 @@ public class GameInitializer : MonoBehaviour
 
         EditorSceneManager.playModeStartScene = null;
         
-        upgrades = GetComponent<UpgradeController>();
+        var upgrades = GetComponent<UpgradeController>();
         if (upgrades == null) Debug.LogWarning("GameInitializer: no UpgradeController on this object, so upgrades won't do anything.");
- 
+        //Remember to fix upgradeController
+        
         // set the seed before any generator uses it (clients and researchers both draw from it)
         if (overrideSeed)
             GameSeed.Set(seedOverride);
@@ -124,6 +119,7 @@ public class GameInitializer : MonoBehaviour
       
     }
     
+    /*
     /// <summary>
     /// Gives the client generator the requests from DataManager
     /// Also finds the generator and spawner
@@ -301,7 +297,7 @@ public class GameInitializer : MonoBehaviour
         return true;
     }
     
-    
+    */
 
 
 }

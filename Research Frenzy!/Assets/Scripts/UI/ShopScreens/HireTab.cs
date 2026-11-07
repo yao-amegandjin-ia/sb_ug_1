@@ -23,7 +23,7 @@ namespace UI
                 return;
             }
 
-            bool hasDesk = Firm.HasFreeCubicle;
+            bool hasDesk = Firm.HasFreeCubicle();
             int shown = 0;
             foreach (ResearcherData r in Firm.GetHireCandidates())
             {
