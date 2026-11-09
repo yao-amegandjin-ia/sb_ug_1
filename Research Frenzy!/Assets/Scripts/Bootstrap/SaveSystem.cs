@@ -4,6 +4,7 @@ using Assets.Scripts.GameDataObjects;
 using Assets.Scripts.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PlasticGui.Help.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -80,8 +81,7 @@ namespace Assets.Scripts.Bootstrap
             _lastPlayed = response["last_played"]?.Value<DateTime>()
               ?? DateTime.Now;
             _seed = response["seed"].Value<int>();
-            //We set the seed in the static class as well so that it is not mismatched!
-            GameSeed.Set(_seed);
+            
 
             string endpointURL = apiBaseUrl + $"/sessions/{_sessionId}/save";
 
@@ -89,13 +89,27 @@ namespace Assets.Scripts.Bootstrap
             {
                 await webRequest.SendWebRequest();
 
-                //Empty save data if no session exists yet.
+                //Try to load before first save = Day one!
                 if (webRequest.responseCode == 404)
                 {
-                    return new SaveData();
+
+                    return new SaveData()
+                    {
+
+                        Seed = _seed,
+                        Player = new PlayerData
+                        {
+
+                            CurrentDay = 1,
+                            CurrentMoney = 0,
+                            TotalMoneyEarned = 0
+
+                        },
+                    };
                 }
                 if (webRequest.result != UnityWebRequest.Result.Success)
                 {
+                    
                     throw new Exception(
                    $"{webRequest.responseCode}: {webRequest.error}\n" +
                    $"{webRequest.downloadHandler?.text}");
@@ -108,7 +122,9 @@ namespace Assets.Scripts.Bootstrap
                     throw new Exception("The API returned an empty save response.");
 
                 }
-                return SaveDataMapper.FromApiDto(apiSave);
+
+
+                return SaveDataMapper.FromApiDto(apiSave, _seed);
                 
             }
         }

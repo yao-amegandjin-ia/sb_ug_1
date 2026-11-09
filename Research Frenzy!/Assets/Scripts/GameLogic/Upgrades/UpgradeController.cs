@@ -4,6 +4,7 @@
 // the scripts that use a bonus ask for it (HUD for day time, ClientGenerator for patience, ...),
 // so this script never has to change when a new upgrade asset is added.
 
+using Assets.Scripts.Bootstrap;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,17 +40,22 @@ namespace GameLogic.Upgrades
         /// <summary>Any level changed (bought, or loaded from a save). Listen to this to re-read a bonus.</summary>
         public event Action UpgradesChanged;
 
-        private GameInitializer game;
+        private FirmController firmController;
+        private DataManager dataManager;
 
         public IReadOnlyList<UpgradeDefinition> All => upgrades;
 
         private void Awake()
         {
-            game = GetComponent<GameInitializer>();
-            if (game == null) game = FindAnyObjectByType<GameInitializer>();
-            if (game == null) Debug.LogError("UpgradeController: no GameInitializer found. Put this on the GameInitializer object.");
+            if (firmController == null) firmController = FindAnyObjectByType<FirmController>();
+            if (firmController == null) Debug.LogError("UpgradeController: no GameInitializer found. Put this on the GameInitializer object.");
 
             CheckList();
+        }
+        public void Initialize(GameSystems systems, FirmController controller)
+        {
+            dataManager = systems.DataManager;
+            firmController = controller;
         }
 
         // --- levels and prices ---
@@ -75,8 +81,8 @@ namespace GameLogic.Upgrades
         /// <summary>True if the next level can be bought right now (not maxed and the player has the money).</summary>
         public bool CanBuy(UpgradeDefinition upgrade)
         {
-            if (upgrade == null || game == null || IsMaxed(upgrade)) return false;
-            return game.currentMoney >= GetNextCost(upgrade);
+            if (upgrade == null || firmController == null || IsMaxed(upgrade)) return false;
+            return dataManager.PlayerData.CurrentMoney >= GetNextCost(upgrade);
         }
 
         /// <summary>BUY. Takes the money and adds one level.</summary>
@@ -86,11 +92,11 @@ namespace GameLogic.Upgrades
             if (!CanBuy(upgrade)) return false;
 
             int cost = GetNextCost(upgrade);
-            if (!game.TrySpend(cost)) return false;
+            if (!firmController.TrySpend(cost)) return false;
 
             int newLevel = GetLevel(upgrade) + 1;
             SetLevel(upgrade.Id, newLevel);
-            Debug.Log($"Bought {upgrade.DisplayName} level {newLevel}/{upgrade.MaxLevel} for ${cost} (${game.currentMoney} left)");
+            Debug.Log($"Bought {upgrade.DisplayName} level {newLevel}/{upgrade.MaxLevel} for ${cost} (${dataManager.PlayerData.CurrentMoney} left)");
 
             UpgradePurchased?.Invoke(upgrade, newLevel);
             UpgradesChanged?.Invoke();

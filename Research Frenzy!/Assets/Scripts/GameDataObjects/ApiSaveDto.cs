@@ -42,8 +42,7 @@ namespace Assets.Scripts.Bootstrap.ApiDtos
     {
         [JsonProperty("researcher_id")]
         public int ResearcherId { get; set; }
-        [JsonProperty("current_client_id")]
-        public int CurrentClientId { get; set; }
+        
 
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -61,7 +60,7 @@ namespace Assets.Scripts.Bootstrap.ApiDtos
         public int Quality { get; set; }
 
         [JsonProperty("methodologies")]
-        public List<MethodologiesEnum> Methodologies { get; set; }
+        public List<int> Methodologies { get; set; }
 
         [JsonProperty("skin")]
         public List<int> Skin { get; set; }

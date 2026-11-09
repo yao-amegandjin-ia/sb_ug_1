@@ -696,7 +696,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf9d0942438832458198aa8bdbccc5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIInitializer
-  startScreen: {fileID: 1571892143}
+  UI: {fileID: 1571892137}
+  shopUI: {fileID: 1559369278}
 --- !u!4 &1926409701
 Transform:
   m_ObjectHideFlags: 0

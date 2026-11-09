@@ -1,8 +1,9 @@
 namespace UI
 {
-    // DemoSpawnButton - goes on the GameUI object (the one with the HUD's PanelRenderer and GameUIPanel).
-// temporary "Spawn Client" button for the demo.
-// the lab is a different scene, so it finds the LabInitializer at runtime instead of through the Inspector.
+    using GameLogic;
+    // DemoSpawnButton - goes on the GameUI object (the one with the HUD's UIDocument).
+    // temporary "Spawn Client" button for the demo.
+    // the lab is a different scene, so it finds the LabInitializer at runtime instead of through the Inspector.
 
     using UnityEngine;
     using UnityEngine.UIElements;
@@ -36,16 +37,15 @@ namespace UI
             upgradesButton.style.right = 16;
             root.Add(upgradesButton);
         }
-
+        
         void SpawnClicked()
         {
-            GameInitializer lab = FindAnyObjectByType<GameInitializer>();
-            if (lab == null)
+           
+            if (true)
             {
                 Debug.LogWarning("DemoSpawnButton: no LabInitializer found. Is the Research_Lab scene loaded?");
                 return;
             }
-            lab.SpawnNextClient();
         }
         
         void UpgradesClicked()

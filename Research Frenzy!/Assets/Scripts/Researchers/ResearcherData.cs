@@ -76,7 +76,7 @@ namespace Researchers
         ///     Sets up a researcher's data in code (e.g. when generating from a hiring pool).
         /// </summary>
         public void Init(int newId, string newName, Vector3Int newAppearance, int newExperience,
-            int newSpeed, int newQuality, IEnumerable<int> methodologies = null)
+            int newSpeed, int newQuality, IEnumerable<int> methodologies = null, int newPosition = 0)
         {
             id = newId;
 
@@ -90,10 +90,12 @@ namespace Researchers
             if (methodologies != null)
                 knownMethodologyIds.AddRange(methodologies);
 
-            position = 0;
+            position = newPosition;
             currentState = ResearcherState.Available;
             currentClientId = 0;
         }
+
+      
 
         /// <summary>Buys the researcher and places them in the given cubicle (must be >= 1).</summary>
         public bool Purchase(int cubicle)

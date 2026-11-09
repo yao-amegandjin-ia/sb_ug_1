@@ -90,12 +90,13 @@ namespace Clients
         // called when the client is created (by the ClientGenerator). Also stores the Request itself.
         public void Init(int id, RequestData request, float patience, Vector3Int appearance)
         {
-            Init(id, request?.RequestId ?? 0, patience, appearance);
+            Init(id, request?.RequestId ?? 0, appearance, patience);
             this.request = request;
         }
 
-        // Same as above, when you only have the request's ID (Request stays null).
-        public void Init(int id, int requestId, float patience, Vector3Int appearance)
+        // Same as above, when you only have the request's ID (Request stays null). Remember if max patience changes
+        //the default value here needs to change as well. 
+        public void Init(int id, int requestId, Vector3Int appearance, float patience = 30f)
         {
             this.id = id;
             this.requestId = requestId;

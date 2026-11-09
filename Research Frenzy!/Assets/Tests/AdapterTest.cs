@@ -93,7 +93,7 @@ public class SaveSystemIntegrationTests
 
         // Deserialize using the API DTO and the same mapping as SaveGame/LoadGame.
         ApiSaveDto finalApiSave = new ApiSaveDto { Player = finalPlayerJson.ToObject<ApiPlayerDto>() };
-        PlayerData finalPlayer = SaveDataMapper.FromApiDto(finalApiSave).Player;
+        PlayerData finalPlayer = SaveDataMapper.FromApiDto(finalApiSave, GameSeed.Seed).Player;
         Assert.That(finalPlayer.CurrentMoney, Is.EqualTo(finalPlayerJson["current_money"]?.Value<int>()));
         await adapter.EndGame(finalPlayer);
 
@@ -141,7 +141,7 @@ public class SaveSystemIntegrationTests
 
     private static SaveData ToSaveData(JObject body)
     {
-        return SaveDataMapper.FromApiDto(body.ToObject<ApiSaveDto>());
+        return SaveDataMapper.FromApiDto(body.ToObject<ApiSaveDto>(), GameSeed.Seed);
     }
 
     private static JObject ToApiJson(SaveData save)
@@ -165,11 +165,11 @@ public class SaveSystemIntegrationTests
         Assert.That(mapped.Player.CurrentMoney, Is.EqualTo(fixture["player"]?["current_money"]?.Value<int>()));
         Assert.That(mapped.Player.CurrentDay, Is.EqualTo(fixture["player"]?["current_day"]?.Value<int>()));
         if (mapped.Researchers.Count > 0)
-            Assert.That(mapped.Researchers[0].ResearcherId,
+            Assert.That(mapped.Researchers[0].Id,
                 Is.EqualTo(fixture["researchers"]?[0]?["researcher_id"]?.Value<int>()));
         if (mapped.Clients.Count > 0)
         {
-            Assert.That(mapped.Clients[0].ClientId,
+            Assert.That(mapped.Clients[0].Id,
                 Is.EqualTo(fixture["clients"]?[0]?["client_id"]?.Value<int>()));
             Assert.That(mapped.Clients[0].RequestId,
                 Is.EqualTo(fixture["clients"]?[0]?["request_id"]?.Value<int>()));

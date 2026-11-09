@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Researchers;
+using Assets.Scripts.GameDataObjects;
+using Unity.U2D.Physics;
 using UnityEngine;
 using Random = System.Random;
+using GluonGui.Dialog;
 
 /// <summary>
 /// Generates the starting pool of researchers from the game seed.
@@ -16,7 +19,7 @@ public class ResearcherGenerator : MonoBehaviour
 
     [Header("Generation")]
     [SerializeField] private bool generateOnStart = false;
-    [SerializeField, Min(1)] private int researcherCount = 10;
+    [SerializeField, Min(1)] private int researcherCount = 8;
     [Tooltip("Optional prefab with a Researcher component. If empty, a new GameObject is created.")]
     [SerializeField] private Researcher researcherPrefab;
     [SerializeField] private Transform spawnParent;
@@ -34,7 +37,10 @@ public class ResearcherGenerator : MonoBehaviour
     [Header("Methodologies")]
     [Tooltip("IDs of every methodology in the game.")]
     [SerializeField] private List<int> methodologyIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+
     
+    private ResearcherData startingResearcher0 = new();
+    private ResearcherData startingResearcher1 = new(); 
 
 
 
@@ -47,25 +53,34 @@ public class ResearcherGenerator : MonoBehaviour
     {
         "Lathrop", "Gilbert", "D'Costa","Amegandjin", "Kim", "Finders","King", "Flynn", "Smith", "Johnson", "Anderson", "Gonzalez", "Garcia"
     };
-    
+
     [Header("Researcher List")]
-    [SerializeField] private List<ResearcherData> researchers = new List<ResearcherData>();
+    private IReadOnlyList<ResearcherData> researchers = Array.Empty<ResearcherData>();
     public IReadOnlyList<ResearcherData> Researchers => researchers;
 
+    public void Initialize(IReadOnlyList<ResearcherData> researchers)
+    {
+        this.researchers = researchers;
+    }
     private void Start()
     {
         if (generateOnStart)
             Generate();
+        //Placeholder starters
+        startingResearcher0.Init(9, "Steven", Vector3Int.zero, 0, 0, 0, new List<int> { (int)MethodologiesEnum.Product });
+        startingResearcher1.Init(10, "Maya", Vector3Int.one, 0, 0, 0, new List<int> { (int)MethodologiesEnum.Qualitative});
+
     }
 
     /// <summary>Destroys any existing generated researchers and creates a fresh set from the seed.</summary>
-    public void Generate()
+    public List<ResearcherData> Generate()
     {
-        if (!ValidateSettings()) return;
-        
-        researchers.Clear();
-        
-        
+        if (!ValidateSettings()) return null;
+
+        var researchers = new List<ResearcherData>();
+
+
+
         Random rng = GameSeed.CreateRandom(RandomStreamId);
         Debug.Log($"ResearcherGenerator: generating with seed {GameSeed.Seed}");
 
@@ -79,7 +94,7 @@ public class ResearcherGenerator : MonoBehaviour
         RefillPool(unused, rng);
 
         HashSet<string> usedNames = new HashSet<string>();
-
+        
         for (int i = 0; i < researcherCount; i++)
         {
             string fullName = GenerateUniqueName(rng, usedNames);
@@ -99,7 +114,12 @@ public class ResearcherGenerator : MonoBehaviour
             researchers.Add(r);
             
             Debug.Log($"ResearcherGenerator: Researcher generated: " + r.Name);
+            
         }
+        researchers.Add(startingResearcher0);
+        researchers.Add(startingResearcher1);
+        
+        return researchers;
     }
     
     /// <summary>Finds a researcher by ID (1-10), or null.</summary>
@@ -108,6 +128,19 @@ public class ResearcherGenerator : MonoBehaviour
         foreach (ResearcherData r in researchers)
             if (r.Id == id) return r;
         return null;
+    }
+
+    public List<ResearcherData> GetHiredResearchers()
+    {
+        List<ResearcherData> result = new List<ResearcherData>();
+        foreach (ResearcherData r in researchers)
+        {
+            if (r.IsPurchased)
+            {
+                result.Add(r);
+            }
+        }
+        return result;
     }
  
     /// <summary>Researchers who haven't been hired yet.</summary>
@@ -132,22 +165,6 @@ public class ResearcherGenerator : MonoBehaviour
         return researcherList;
     }
  
-    /// <summary>
-    /// This replaces the researcher list after loading.
-    /// </summary>
-    public void LoadState(ResearcherList researcherList)
-    {
-        if (researcherList == null)
-        {
-            Debug.LogError("ResearcherGenerator: cannot load a null state.");
-            return;
-        }
- 
-        researchers.Clear();
-        foreach (ResearcherData r in researcherList.researchers)
-            researchers.Add(r.Clone());
-    }
-
 
 
     // Methodology distribution
