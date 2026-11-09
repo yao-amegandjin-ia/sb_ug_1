@@ -60346,7 +60346,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResearcherGenerator
   generateOnStart: 0
-  researcherCount: 10
+  researcherCount: 8
   researcherPrefab: {fileID: 0}
   spawnParent: {fileID: 0}
   headCount: 12

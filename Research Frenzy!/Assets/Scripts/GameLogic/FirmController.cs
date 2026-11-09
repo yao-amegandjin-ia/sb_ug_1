@@ -105,8 +105,7 @@ namespace GameLogic
             {
                 
                 researcherGenerator.Generate();
-                Debug.Log(researcherGenerator.Researchers.Count);
-                Debug.Log(dataManager.Researchers.Count);
+               
             }
             clientGenerator.Initialize(dataManager.RequestList.Requests);
             ApplyClientUpgrades();
@@ -419,7 +418,7 @@ namespace GameLogic
                 if (researcherSpawner.IsCubicleFree(cubicle))
                 {
                     var researcher = researcherSpawner.Hire(data, cubicle);
-                    dataManager.PlayerData
+                    
 
                 }
 
@@ -511,8 +510,6 @@ namespace GameLogic
             if (selectedStarter != -1)
             {
                 Hire(researcherGenerator.GetById(9 + selectedStarter));
-                return;
-
             }
             else
             {
@@ -545,22 +542,22 @@ namespace GameLogic
             var client = clients[0];
             
             
-            dataManager.PlayerData.StudyResults.Add(client.RequestId, client.AssignedMethodologyId);
             //Track the clients state changes
             OnClientSpawned(clientSpawner.Spawn(client));
         }
 
+        //Used to fire the hud event early when the clients are done for the day but the timer still going
         public void EndDay()
         {
             DayEnded?.Invoke(dataManager.PlayerData.CurrentDay);
         }
 
-        //Day end when either: the hud fires an event for the timer expiring or 
-        public void OnDayEnded(int day)
+        //Called by the hud event!
+        public async void OnDayEnded(int day)
         {
             Debug.Log($"FirmController: day {day} ended.");
 
-            // Stop admitting clients, prepare saving, etc.
+            await dataManager.SaveGame();
 
 
         }

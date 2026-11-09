@@ -42,8 +42,7 @@ namespace Assets.Scripts.Bootstrap.ApiDtos
     {
         [JsonProperty("researcher_id")]
         public int ResearcherId { get; set; }
-        [JsonProperty("current_client_id")]
-        public int CurrentClientId { get; set; }
+        
 
         [JsonProperty("name")]
         public string Name { get; set; }

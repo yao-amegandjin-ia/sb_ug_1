@@ -118,7 +118,10 @@ public class DataManager
     /// <returns></returns>
     public async Awaitable SaveGame()
     {
+        
         await _saveSystem.SaveGame(_saveData);
+        PlayerData.CurrentDay += 1;
+        
     }
 
     
@@ -141,10 +144,7 @@ public void SetResearchers(List<ResearcherData> researchers)
     
 }
 
-   // public void AddResearcher(ResearcherData researcher)
-    //{
-
-   // }
+   
 
 
 

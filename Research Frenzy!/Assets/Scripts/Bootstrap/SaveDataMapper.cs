@@ -39,13 +39,15 @@ namespace Assets.Scripts.Bootstrap
                     : Vector3Int.zero;
 
                 researcher.Init(
+                    
                     r.ResearcherId,
                     r.Name,
                     appearance,
                     r.Experience,
                     r.Speed,
                     r.Quality,
-                    r.Methodologies
+                    r.Methodologies,
+                    r.Position
                 );
 
 
@@ -80,7 +82,7 @@ namespace Assets.Scripts.Bootstrap
             Player = save.Player == null ? null : ToApiPlayer(save.Player),
             Researchers = save.Researchers?.Select(r => new ApiResearcherDto
             {
-                
+               
                 ResearcherId = r.Id,
                 Name = r.Name,
                 Position = r.Position, 
@@ -88,7 +90,6 @@ namespace Assets.Scripts.Bootstrap
                 Speed = r.Speed,
                 Quality = r.Quality,
                 Methodologies = r.KnownMethodologyIds?.ToList() ?? new List<int>(),
-                CurrentClientId = r.CurrentClientId,
                 Skin = new List<int>
                 {
                     r.Appearance.x,

@@ -67,8 +67,8 @@ public class ResearcherGenerator : MonoBehaviour
         if (generateOnStart)
             Generate();
         //Placeholder starters
-        startingResearcher0.Init(9, "Steven", Vector3Int.zero, 0, 0, 0, new List<int>((int)MethodologiesEnum.Product));
-        startingResearcher1.Init(10, "Maya", Vector3Int.one, 0, 0, 0, new List<int>((int)MethodologiesEnum.Qualitative));
+        startingResearcher0.Init(9, "Steven", Vector3Int.zero, 0, 0, 0, new List<int> { (int)MethodologiesEnum.Product });
+        startingResearcher1.Init(10, "Maya", Vector3Int.one, 0, 0, 0, new List<int> { (int)MethodologiesEnum.Qualitative});
 
     }
 
