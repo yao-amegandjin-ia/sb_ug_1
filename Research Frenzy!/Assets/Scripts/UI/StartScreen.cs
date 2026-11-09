@@ -1,4 +1,4 @@
-// StartScreen - goes on the GameUI object (the one with the UIDocument).
+// StartScreen - goes on the GameUI object (the one with the PanelRenderer and GameUIPanel).
 // page 1 is the research link (intro), page 2 is picking the starting researcher.
 // when the player hits Start Day 1 the start screen hides and GameStarted fires.
 
@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using Assets.Scripts.GameDataObjects;
 
-public class StartScreen : MonoBehaviour
+public class StartScreen : MonoBehaviour, IGameUIPart
 {
     // placeholder until the real starting researchers are decided
     public string[] starterNames = { "Steven", "Maya" };
@@ -20,24 +20,23 @@ public class StartScreen : MonoBehaviour
     VisualElement screen;
     VisualElement introPage;
     VisualElement pickPage;
-    VisualElement[] cards;
+    VisualElement[] cards = new VisualElement[0];
+    bool started = false;   // so a UI reload in the middle of the game doesn't bring the start screen back
 
-    void Start()
+    // called by GameUIPanel once the UI has loaded (and again if it reloads)
+    public void Bind(VisualElement root)
     {
-        UIDocument doc = GetComponent<UIDocument>();
-        if (doc == null) return;
-        VisualElement root = doc.rootVisualElement;
-
         screen = root.Q("start-screen");
         introPage = root.Q("intro-page");
         pickPage = root.Q("pick-page");
 
-        root.Q<Button>("leave-button").clicked += LeaveClicked;
-        root.Q<Button>("continue-button").clicked += ContinueClicked;
-        root.Q<Button>("start-button").clicked += StartClicked;
+        HookButton(root, "leave-button", LeaveClicked);
+        HookButton(root, "continue-button", ContinueClicked);
+        HookButton(root, "start-button", StartClicked);
 
-        // build the two researcher cards
+        // build the researcher cards
         VisualElement cardRow = root.Q("starter-cards");
+        cardRow.Clear();
         cards = new VisualElement[starterNames.Length];
         for (int i = 0; i < starterNames.Length; i++)
         {
@@ -72,9 +71,22 @@ public class StartScreen : MonoBehaviour
         }
 
         SelectStarter(selectedStarter);
+
+        if (started)
+        {
+            screen.AddToClassList("hidden");
+            return;
+        }
         screen.RemoveFromClassList("hidden");
         introPage.RemoveFromClassList("hidden");
         pickPage.AddToClassList("hidden");
+    }
+
+    void HookButton(VisualElement root, string buttonName, Action onClick)
+    {
+        Button button = root.Q<Button>(buttonName);
+        if (button != null) button.clicked += onClick;
+        else Debug.LogWarning($"StartScreen: no Button named '{buttonName}' in the GameUI UXML.");
     }
 
     void ContinueClicked()
@@ -104,6 +116,7 @@ public class StartScreen : MonoBehaviour
     void StartClicked()
     {
         Debug.Log("Starting day 1 with " + starterNames[selectedStarter]);
+        started = true;
         screen.AddToClassList("hidden");
         GameStarted?.Invoke(selectedStarter);
     }

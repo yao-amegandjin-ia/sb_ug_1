@@ -16,12 +16,12 @@ namespace UI
     /// 
     /// </summary>
 
-    [RequireComponent(typeof(UIDocument))]
-    public class DemoSpawnButton : MonoBehaviour
+    [RequireComponent(typeof(GameUIPanel))]
+    public class DemoSpawnButton : MonoBehaviour, IGameUIPart
     {
-        void Start()
+        // called by GameUIPanel once the UI has loaded (and again if it reloads)
+        public void Bind(VisualElement root)
         {
-            VisualElement root = GetComponent<UIDocument>().rootVisualElement;
 
             Button button = new Button(SpawnClicked);
             button.text = "Spawn Client";

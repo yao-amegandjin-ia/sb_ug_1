@@ -3,6 +3,8 @@
 // other scripts should call AddMoney / AddStudyResult / SetOngoing instead of touching the labels.
 // study results and correct rejects come from FirmController's events, so the screens don't have to tell the HUD.
 // the day is dayLength seconds plus the Clock upgrade. a Clock bought during the day counts from the next day.
+// the labels are looked up in Bind (called by GameUIPanel when the PanelRenderer has built the UI),
+// the game systems are found in Start. either one can run first.
 
 using System;
 using GameLogic;
@@ -11,9 +13,9 @@ using UnityEngine.UIElements;
 using GameLogic.Upgrades;
 using Assets.Scripts.Bootstrap;
 
-[RequireComponent(typeof(UIDocument), typeof(StartScreen), typeof(DaySummary))]
+[RequireComponent(typeof(GameUIPanel), typeof(StartScreen), typeof(DaySummary))]
 [RequireComponent(typeof(CodexPanel), typeof(ManageFirmPanel))]
-public class HUD : MonoBehaviour
+public class HUD : MonoBehaviour, IGameUIPart
 {
     // read straight from GameInitializer, so there is only one money value. DaySummary and ManageFirmPanel still use hud.money
     public int money => dataManager != null ? dataManager.PlayerData.CurrentMoney : 0;
@@ -46,10 +48,16 @@ public class HUD : MonoBehaviour
     private ManageFirmPanel firm;
     UpgradeController upgrades;
 
-    void Start()
+    void Awake()
     {
-        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
+        codex = GetComponent<CodexPanel>();
+        firm = GetComponent<ManageFirmPanel>();
+        timeLeft = dayLength;
+    }
 
+    // called by GameUIPanel once the UI has loaded (and again if it reloads)
+    public void Bind(VisualElement root)
+    {
         moneyText = root.Q<Label>("money-text");
         dayText = root.Q<Label>("day-text");
         timerText = root.Q<Label>("timer-text");
@@ -57,8 +65,25 @@ public class HUD : MonoBehaviour
         partialText = root.Q<Label>("partial-count");
         wrongText = root.Q<Label>("wrong-count");
         ongoingText = root.Q<Label>("ongoing-count");
+<<<<<<< Research Frenzy!/Assets/Scripts/UI/HUD.cs
         
         
+=======
+
+        HookButton(root, "codex-button", ToggleCodex);
+        HookButton(root, "manage-button", ToggleFirm);
+        HookButton(root, "sound-button", () => Debug.Log("TODO: sound on/off"));
+        HookButton(root, "settings-button", () => Debug.Log("TODO: settings"));
+        HookButton(root, "help-button", () => Debug.Log("TODO: help"));
+
+        Refresh();
+    }
+
+    void Start()
+    {
+        
+        firmRules = FindAnyObjectByType<FirmController>();
+>>>>>>> Research Frenzy!/Assets/Scripts/UI/HUD.cs
         if (firmRules != null)
         {
             firmRules.MoneyEarned += OnMoneyEarned;
@@ -72,15 +97,6 @@ public class HUD : MonoBehaviour
 
         upgrades = FindAnyObjectByType<UpgradeController>();
         if (upgrades == null) Debug.LogWarning("HUD: no UpgradeController found, the Clock upgrade won't add time. Is it on the GameInitializer object?");
-
-        codex = GetComponent<CodexPanel>();
-        firm = GetComponent<ManageFirmPanel>();
-
-        HookButton(root, "codex-button", ToggleCodex);
-        HookButton(root, "manage-button", ToggleFirm);
-        HookButton(root, "sound-button", () => Debug.Log("TODO: sound on/off"));
-        HookButton(root, "settings-button", () => Debug.Log("TODO: settings"));
-        HookButton(root, "help-button", () => Debug.Log("TODO: help"));
 
         StartScreen startScreen = GetComponent<StartScreen>();
         if (startScreen != null) startScreen.GameStarted += (starter) => StartDay();
@@ -111,7 +127,7 @@ public class HUD : MonoBehaviour
             Refresh();
             DayEnded?.Invoke(day);
         }
-        else
+        else if (timerText != null)
         {
             timerText.text = FormatTime(timeLeft);
         }
@@ -178,9 +194,11 @@ public class HUD : MonoBehaviour
         AddStudyResult((int)outcome);
     }
 
+    // the design doc counts turning away a request that could be researched as an incorrect answer
     void OnRequestRejected(bool correct)
     {
         if (correct) AddCorrectReject();
+        else AddStudyResult(2);
     }
 
     // GameInitializer already added the money, this just counts it for today and updates the label
@@ -255,7 +273,7 @@ public class HUD : MonoBehaviour
 
     void Refresh()
     {
-        if (moneyText == null) return;
+        if (moneyText == null) return;   // the UI hasn't loaded yet
         moneyText.text = "$" + money.ToString("N0");
         dayText.text = day + "/" + totalDays;
         timerText.text = FormatTime(timeLeft);

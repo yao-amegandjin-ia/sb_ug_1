@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 
-public class ManageFirmPanel : MonoBehaviour
+public class ManageFirmPanel : MonoBehaviour, IGameUIPart
 {
     VisualElement panel;
     VisualElement researcherList;
@@ -17,21 +17,26 @@ public class ManageFirmPanel : MonoBehaviour
     HUD hud;
     StartScreen startScreen;
 
-    void Start()
+    void Awake()
     {
-        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
-        panel = root.Q("manage-firm");
-        researcherList = root.Q("firm-researchers");
-        upgradeList = root.Q("firm-upgrades");
-        statsGrid = root.Q("firm-stats");
-        root.Q<Button>("firm-close").clicked += Close;
-
         hud = GetComponent<HUD>();
         startScreen = GetComponent<StartScreen>();
     }
 
+    // called by GameUIPanel once the UI has loaded (and again if it reloads)
+    public void Bind(VisualElement root)
+    {
+        panel = root.Q("manage-firm");
+        researcherList = root.Q("firm-researchers");
+        upgradeList = root.Q("firm-upgrades");
+        statsGrid = root.Q("firm-stats");
+        Button close = root.Q<Button>("firm-close");
+        if (close != null) close.clicked += Close;
+    }
+
     public void Open()
     {
+        if (panel == null) return;   // the UI hasn't loaded yet
         RefreshResearchers();
         RefreshUpgrades();
         RefreshStats();
@@ -40,12 +45,12 @@ public class ManageFirmPanel : MonoBehaviour
 
     public void Close()
     {
-        panel.AddToClassList("hidden");
+        if (panel != null) panel.AddToClassList("hidden");
     }
 
     public bool IsOpen()
     {
-        return !panel.ClassListContains("hidden");
+        return panel != null && !panel.ClassListContains("hidden");
     }
 
     void RefreshResearchers()
@@ -134,7 +139,7 @@ public class ManageFirmPanel : MonoBehaviour
         AddStat("MONEY", "$" + hud.money.ToString("N0"));
         AddStat("ONGOING", hud.ongoing.ToString());
         AddStat("BEST", hud.best.ToString());
-        AddStat("PARTIAL", hud.partial.ToString());
+        AddStat("GOOD", hud.partial.ToString());
         AddStat("WRONG", hud.wrong.ToString());
     }
 
