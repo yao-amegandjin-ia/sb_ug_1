@@ -27,9 +27,6 @@ public class ClientGenerator : MonoBehaviour
     [Tooltip("New clients added for each day after day 1. With 3 and 2: day 1 = 3, day 2 = 5, day 3 = 7...")]
     [SerializeField, Min(0)] private int clientsAddedPerDay = 2;
  
-    [Header("Patience")]
-    [Tooltip("Patience in seconds. The same for every client.")]
-    [SerializeField, Min(1f)] private float patience = 30f;
     
     /// <summary>
     /// Seconds added to every new client's patience.
@@ -144,7 +141,7 @@ public class ClientGenerator : MonoBehaviour
             rng.Next(Mathf.Max(1, legCount)));
  
         ClientData client = new ClientData();
-        client.Init(requestId, request, patience + ExtraPatience, look);   // client ID = request ID (unique, needs no saving)
+        client.Init(requestId, request, client.Patience + ExtraPatience, look);   // client ID = request ID (unique, needs no saving)
         return client;
     }
  

@@ -3,10 +3,12 @@
 // it always opens on the first tab. buying or hiring doesn't close it, the tab just rebuilds.
 // the player leaves with the CLOSE button. for now the HUD's Upgrades button opens it.
 
+using Assets.Scripts.Bootstrap;
+using GameLogic;
 using System.Collections.Generic;
+using UI.ClientScreens;
 using UnityEngine;
 using UnityEngine.UIElements;
-using UI.ClientScreens;
 
 namespace UI
 {
@@ -25,7 +27,9 @@ namespace UI
         private VisualElement tabBar;
         private ScrollView list;
         private Label moneyText;
-        private GameInitializer game;
+
+        private DataManager dataManager;
+        private FirmController firmController;
 
         protected override void Awake()
         {
@@ -35,25 +39,33 @@ namespace UI
                 Debug.LogWarning("ShopScreen: no tabs. Add UpgradesTab and HireTab to this GameObject.");
             base.Awake();
         }
+        public void Initialize(GameSystems systems)
+        {
+            dataManager = systems.DataManager;
+        }
+        public void Initialize(FirmController firm)
+        {
+            firmController = firm;
+        }
 
         private void Start()
         {
             // money changes while the shop is open (studies finishing in the lab), so the buttons and label follow it
-            game = FindAnyObjectByType<GameInitializer>();
-            if (game != null)
+            
+            if (firmController != null)
             {
-                game.MoneyEarned += OnMoneyChanged;
-                game.MoneySpent += OnMoneyChanged;
+                firmController.MoneyEarned += OnMoneyChanged;
+                firmController.MoneySpent += OnMoneyChanged;
             }
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            if (game != null)
+            if (firmController != null)
             {
-                game.MoneyEarned -= OnMoneyChanged;
-                game.MoneySpent -= OnMoneyChanged;
+                firmController.MoneyEarned -= OnMoneyChanged;
+                firmController.MoneySpent -= OnMoneyChanged;
             }
         }
 
@@ -136,7 +148,7 @@ namespace UI
 
         private void Rebuild(bool keepScroll)
         {
-            if (moneyText != null) moneyText.text = "$" + (game != null ? game.currentMoney : 0).ToString("N0");
+            if (moneyText != null) moneyText.text = "$" + (dataManager != null ? dataManager.PlayerData.CurrentMoney : 0).ToString("N0");
             if (list == null || tabs.Length == 0) return;
 
             Vector2 scroll = list.scrollOffset;
