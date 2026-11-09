@@ -129,8 +129,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1547386714}
   - component: {fileID: 1547386713}
-  - component: {fileID: 1547386715}
-  - component: {fileID: 1547386716}
   m_Layer: 0
   m_Name: GameInitializer
   m_TagString: Untagged
@@ -153,10 +151,6 @@ MonoBehaviour:
   day: 1
   overrideSeed: 1
   seedOverride: 12345
-  currentMoney: 0
-  totalMoney: 0
-  studyResults:
-    Results: []
 --- !u!4 &1547386714
 Transform:
   m_ObjectHideFlags: 0
@@ -172,45 +166,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1547386715
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1547386712}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30ecf4aad34647c6b30d5e13d1fa1427, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: NewAssembly::GameLogic.FirmController
-  bestReward: 100
-  goodReward: 50
-  correctRejectReward: 50
-  unlockedMethods: 2
-  baseWaitingSeats: 3
-  clientGenerator: {fileID: 0}
-  researcherGenerator: {fileID: 0}
-  clientSpawner: {fileID: 0}
-  researcherSpawner: {fileID: 0}
---- !u!114 &1547386716
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1547386712}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e26317044904892a4f00489bce86805, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: NewAssembly::GameLogic.Upgrades.UpgradeController
-  upgrades:
-  - {fileID: 11400000, guid: c7a1110a127610a44a98aca298322ffa, type: 2}
-  - {fileID: 11400000, guid: 614b4995e51d6fe409c84c2589ff9ff6, type: 2}
-  - {fileID: 11400000, guid: 77dc8a522c3672e44be685ace98c7e59, type: 2}
-  - {fileID: 11400000, guid: e32547f795cdf3149af54fb1c50ed443, type: 2}
-  owned: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

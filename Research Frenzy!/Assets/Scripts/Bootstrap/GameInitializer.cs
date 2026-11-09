@@ -89,8 +89,8 @@ public class GameInitializer : MonoBehaviour
 
         EditorSceneManager.playModeStartScene = null;
         
-        var upgrades = GetComponent<UpgradeController>();
-        if (upgrades == null) Debug.LogWarning("GameInitializer: no UpgradeController on this object, so upgrades won't do anything.");
+        
+        //if (upgrades == null) Debug.LogWarning("GameInitializer: no UpgradeController on this object, so upgrades won't do anything.");
         //Remember to fix upgradeController
         
         // set the seed before any generator uses it (clients and researchers both draw from it)
@@ -114,9 +114,26 @@ public class GameInitializer : MonoBehaviour
         var components = await systems.SceneLoader.AddScenes();
         //This is where persistent systems accessor is sent to the other scenes.
         //A scene without an ISceneInitializable comes back null, so check before calling.
-        components.first?.InitializeScene(systems);
-        components.second?.InitializeScene(systems);
-      
+        try
+        {
+            components.first?.InitializeScene(systems);
+            components.second?.InitializeScene(systems);
+        }
+        catch(Exception e)
+        {
+            Debug.Log(e.Message);
+        }
+        
+
+
+        //Extra initialization
+        if (components.first is FirmController firm &&
+        components.second is UIInitializer ui)
+        {
+            ui.SendFirm(firm);
+            
+        }
+
     }
     
     /*

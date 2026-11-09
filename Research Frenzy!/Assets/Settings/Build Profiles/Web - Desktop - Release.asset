@@ -22,7 +22,7 @@ MonoBehaviour:
   m_AdditionalPlatformBuildSettings: []
   m_OverrideGlobalSceneList: 1
   m_Scenes:
-  - m_enabled: 1
+  - m_enabled: 0
     m_path: Assets/Scenes/Bootstrap.unity
     m_guid: c70302da1f0c88248b4bbc25596d55e2
   - m_enabled: 1

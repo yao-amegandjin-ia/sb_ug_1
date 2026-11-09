@@ -81,12 +81,12 @@ namespace GameLogic
         public void InitializeScene(GameSystems gameSystems)
         {
             dataManager = gameSystems.DataManager;
-            //Perform initialization duties for the scene!
-            researcherGenerator.Initialize(gameSystems.DataManager.GetResearchers());
 
             if (gameSystems == null || gameSystems.DataManager == null)
                 throw new ArgumentNullException(nameof(gameSystems));
 
+            if (upgrades == null) upgrades = GetComponent<UpgradeController>();
+            upgrades.Initialize(gameSystems, this);
             ResolveLabComponents();
 
             if (researcherGenerator == null || researcherSpawner == null ||
@@ -94,7 +94,17 @@ namespace GameLogic
                 throw new InvalidOperationException(
                     "FirmController: assign the lab generators and spawners in the Inspector.");
 
+            
+            //Give datamanager reference to generator
             researcherGenerator.Initialize(dataManager.GetResearchers());
+            //If no researchers loaded in 
+            if (researcherGenerator.Researchers.Count == 0)
+            {
+                
+                researcherGenerator.Generate();
+                Debug.Log(researcherGenerator.Researchers.Count);
+                Debug.Log(dataManager.Researchers.Count);
+            }
             clientGenerator.Initialize(dataManager.RequestList.Requests);
             ApplyClientUpgrades();
 

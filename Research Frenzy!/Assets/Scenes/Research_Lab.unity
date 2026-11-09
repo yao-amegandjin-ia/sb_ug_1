@@ -60276,6 +60276,7 @@ GameObject:
   - component: {fileID: 1315803819}
   - component: {fileID: 1315803818}
   - component: {fileID: 1315803820}
+  - component: {fileID: 1315803821}
   m_Layer: 0
   m_Name: LabSystems
   m_TagString: Untagged
@@ -60430,6 +60431,24 @@ MonoBehaviour:
   researcherGenerator: {fileID: 0}
   clientSpawner: {fileID: 0}
   researcherSpawner: {fileID: 0}
+--- !u!114 &1315803821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1315803814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e26317044904892a4f00489bce86805, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NewAssembly::GameLogic.Upgrades.UpgradeController
+  upgrades:
+  - {fileID: 11400000, guid: c7a1110a127610a44a98aca298322ffa, type: 2}
+  - {fileID: 11400000, guid: 614b4995e51d6fe409c84c2589ff9ff6, type: 2}
+  - {fileID: 11400000, guid: 77dc8a522c3672e44be685ace98c7e59, type: 2}
+  - {fileID: 11400000, guid: e32547f795cdf3149af54fb1c50ed443, type: 2}
+  owned: []
 --- !u!1 &1585593252
 GameObject:
   m_ObjectHideFlags: 0

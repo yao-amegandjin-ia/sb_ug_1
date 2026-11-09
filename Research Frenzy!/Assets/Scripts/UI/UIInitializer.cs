@@ -14,7 +14,7 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
   
 
     public GameObject UI;
-
+    public GameObject shopUI;
     
     private GameSystems systems;
 
@@ -24,17 +24,17 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
         Debug.Log("UI scene initialized");
         // TODO: hand systems to the HUD so it can show money / day
         var hud = UI.GetComponent<HUD>();
-        var shop = UI.GetComponent<ShopScreen>();
+        var shop = shopUI.GetComponent<ShopScreen>();
         hud.Initialize(gameSystems);
         shop.Initialize(gameSystems);
-
+        
 
     }
 
     public void SendFirm(FirmController firm)
     {
         var hud = UI.GetComponent<HUD>();
-        var shop = UI.GetComponent<ShopScreen>();
+        var shop = shopUI.GetComponent<ShopScreen>();
         shop.Initialize(firm);
         hud.Initialize(firm);
     }
