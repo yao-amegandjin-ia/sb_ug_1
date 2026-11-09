@@ -5,8 +5,10 @@ using Clients;
 using Researchers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
@@ -19,40 +21,27 @@ using UnityEngine;
 /// </summary>
 public class DataManager
 {
-    public int Seed => _saveData.Seed ;
-    private SaveData _saveData = new SaveData();
+    public int Seed => state.Seed;
+    private SaveData state = new SaveData();
+    private readonly IReadOnlyList<ClientData> dailyClients = new List<ClientData>();
 
-    public RequestList RequestList { get; private set; }
+    private  IReadOnlyList<ResearcherData> researchers;
 
-    //Set study results methodology value to -1 if methodology not answered yet!
-    public PlayerData PlayerData => _saveData.Player;
+    private IReadOnlyList<ClientData> returningClients;
 
-    /// <summary>
-    /// List of clients for a particular day. 
-    /// </summary>
-    public IReadOnlyList<ClientData> Clients => clientData;
-    private List<ClientData> clientData = new();
+    private readonly RequestList Requests;
 
-    public IReadOnlyList<ResearcherData> Researchers =>
-        _saveData.Researchers;
-    /// <summary>
-    /// Returning clients from a particular day/save
-    /// </summary>
-    public IReadOnlyList<ClientData> ReturningClients =>
-        _saveData.Clients;
+    public event Action<int> MoneyEarned;
+    public event Action<int> MoneySpent;
 
-    // Examples of modifications inside DataManager:
-    public void AddResearcher(ResearcherData researcher)
-    {
-        _saveData.Researchers.Add(researcher);
-    }
+    public PlayerDataReadonly PlayerData { get; private set; }
+    
+    //Arrows make so cannot change reference!
+    public IReadOnlyList<ResearcherData> Researchers => researchers;
+    public IReadOnlyList<ClientData> Clients => dailyClients;
+    public IReadOnlyList<ClientData> ReturningClients => returningClients;
 
-    public void AddClient(ClientData client)
-    {
-        _saveData.Clients.Add(client);
-    }
-
-    private readonly BaseSaveSystem _saveSystem;
+    private readonly BaseSaveSystem saveSystem;
 
     public List<int> GetUsedRequestIds()
     {
@@ -62,55 +51,56 @@ public class DataManager
     
     private DataManager(BaseSaveSystem saveSystem)
     {
-        RequestList = new RequestList();
-        _saveSystem = saveSystem;
-        InitializeRequestData();
+        
+        this.saveSystem = saveSystem;
+        Requests = InitializeRequestData();
+        
     }
 
+    private void BindData()
+    {
+        PlayerData = new PlayerDataReadonly(state.Player);
+        researchers = state.Researchers.AsReadOnly();
+        returningClients = state.Clients.AsReadOnly();
+
+    }
     public static async Awaitable<DataManager> CreateAsync(BaseSaveSystem saveSystem)
     {
         var instance = new DataManager(saveSystem);
-        //perform async work
-        var saveData = await instance.Load();
+        var saveData = await saveSystem.LoadGame();
+        if (saveData == null) throw new InvalidOperationException("Save system returned null state.");
+
+        if (saveData.Player.CurrentDay < 1)
+        {
+            saveData.Player.CurrentDay = 1;
+        }
+
+        instance.state = saveData;
+        instance.BindData();
         return instance;
     }
 
-    public List<ResearcherData> GetResearchers()
+
+  public void SetResearchers(List<ResearcherData> researchers)
     {
-        return _saveData.Researchers;
+        this.researchers = researchers;
     }
-    
 
-    /// <summary>
-    /// Sets DataManager's SaveData and returns it. 
-    /// Note SaveData may have empty fields after a load meaning first load for player.
-    /// </summary>
-    /// <returns></returns>
-    public async Awaitable<SaveData> Load()
+    public void AddResearcher(ResearcherData researcher)
     {
-        SaveData saveData = await _saveSystem.LoadGame();
-        
-        //If on day one there should be no game data loaded!
-        if (PlayerData.CurrentDay == 1)
-        {
-            saveData.Clients.Clear();
-            saveData.Researchers.Clear();
-            saveData.Player.CurrentMoney = 0;
-            saveData.Player.OwnedUpgrades.Clear();
-            saveData.Player.StudyResults.Clear();
-            saveData.Player.TotalMoneyEarned = 0;
-        }
-        //Clear out for regeneration if not the proper amount of researchers!
-        if (Researchers.Count != 10)
-        {
-            saveData.Researchers.Clear();
-        }
+        if (researcher == null) throw new ArgumentNullException(nameof(researcher));
+        if (state.Researchers.Any(r => r.Id == researcher.Id))
+            throw new ArgumentException("Researcher ID already exists.", nameof(researcher));
+        state.Researchers.Add(researcher);
 
-
-        
-        _saveData = saveData;
-        return saveData;
     }
+    public void AdvanceDay()
+    {
+        state.Player.CurrentDay = checked(state.Player.CurrentDay + 1);
+    }
+
+
+
 
     /// <summary>
     /// Saves the DataManager's SaveData object.
@@ -119,62 +109,84 @@ public class DataManager
     public async Awaitable SaveGame()
     {
         
-        await _saveSystem.SaveGame(_saveData);
-        PlayerData.CurrentDay += 1;
+        await saveSystem.SaveGame(state);
         
     }
 
     
-/// <summary>
-/// Sets researcher savedata based off of ResearcherData. 
-/// </summary>
-/// <param name="researchers"></param>
-/// <exception cref="ArgumentNullException"></exception>
-/// <exception cref="InvalidOperationException"></exception>
-public void SetResearchers(List<ResearcherData> researchers)
-{
-    if (researchers == null)
-        throw new ArgumentNullException(nameof(researchers));
-
-    if (_saveData == null)
-        throw new InvalidOperationException(
-            "Load or initialize SaveData before setting researchers.");
-
-        _saveData.Researchers = researchers;
-    
-}
-
-   
 
 
 
-    public RequestData GetRequest(int index)
+    public IReadOnlyList<RequestData> GetRequests() => Requests.Requests;
+
+
+    public void DecreaseMoney(int byValue)
     {
-        return RequestList.Requests[index];
+        state.Player.CurrentMoney -= byValue;
     }
-    
-    
-    
 
-    
-    
-    private void InitializeRequestData()
+    public bool TryRecordStudy(int requestId, int methodologyId, int reward)
+    {
+        if (reward < 0) throw new ArgumentOutOfRangeException(nameof(reward));
+        if (methodologyId < 0) throw new ArgumentOutOfRangeException(nameof(methodologyId));
+        // -1 is a reserved/unanswered request, not a final answer.
+        if (state.Player.StudyResults.TryGetValue(requestId, out int method) && method != -1)
+        {
+            // Keep the latest choice without paying the same request twice.
+            state.Player.StudyResults[requestId] = methodologyId;
+            return false;
+        }
+        int money = checked(state.Player.CurrentMoney + reward);
+        int total = checked(state.Player.TotalMoneyEarned + reward);
+        state.Player.StudyResults[requestId] = methodologyId;
+        state.Player.CurrentMoney = money;
+        state.Player.TotalMoneyEarned = total;
+        state.Clients.RemoveAll(c => c.RequestId == requestId);
+        MoneyEarned?.Invoke(reward);
+        return true;
+    }
+
+
+
+
+
+    private RequestList InitializeRequestData()
     {
         string filePath = Path.Combine(Application.streamingAssetsPath, "Config", "requests.json");
         filePath = filePath.Replace('\\', '/');
-
+        var requests = new RequestList();
         if (File.Exists(filePath))
         {
             string jsonString = File.ReadAllText(filePath);
-            RequestList = JsonUtility.FromJson<RequestList>(jsonString);
+            requests = JsonUtility.FromJson<RequestList>(jsonString);
+            return requests;
         }
         else
         {
             Debug.Log($"JSON file failed to load/not found. {filePath}");
+            return requests;
         }
 
 
     }
 
+}
+
+/// <summary>Live read-only player data. </summary>
+public sealed class PlayerDataReadonly
+{
+    private readonly PlayerData player;
+    public int CurrentMoney => player.CurrentMoney;
+    public int TotalMoneyEarned => player.TotalMoneyEarned;
+    public int CurrentDay => player.CurrentDay;
+    public IReadOnlyDictionary<int, int> StudyResults { get; }
+    public IReadOnlyDictionary<string, int> OwnedUpgrades { get; }
+
+    internal PlayerDataReadonly(PlayerData player)
+    {
+        this.player = player;
+        StudyResults = new ReadOnlyDictionary<int, int>(player.StudyResults);
+        OwnedUpgrades = new ReadOnlyDictionary<string, int>(player.OwnedUpgrades);
+    }
 }
 

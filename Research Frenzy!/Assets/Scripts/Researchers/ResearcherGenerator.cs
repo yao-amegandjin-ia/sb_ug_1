@@ -55,10 +55,10 @@ public class ResearcherGenerator : MonoBehaviour
     };
 
     [Header("Researcher List")]
-    [SerializeField] private List<ResearcherData> researchers;
+    private IReadOnlyList<ResearcherData> researchers = Array.Empty<ResearcherData>();
     public IReadOnlyList<ResearcherData> Researchers => researchers;
 
-    public void Initialize(List<ResearcherData> researchers)
+    public void Initialize(IReadOnlyList<ResearcherData> researchers)
     {
         this.researchers = researchers;
     }
@@ -76,10 +76,11 @@ public class ResearcherGenerator : MonoBehaviour
     public List<ResearcherData> Generate()
     {
         if (!ValidateSettings()) return null;
-        
-        researchers.Clear();
-        
-        
+
+        var researchers = new List<ResearcherData>();
+
+
+
         Random rng = GameSeed.CreateRandom(RandomStreamId);
         Debug.Log($"ResearcherGenerator: generating with seed {GameSeed.Seed}");
 
@@ -117,6 +118,7 @@ public class ResearcherGenerator : MonoBehaviour
         }
         researchers.Add(startingResearcher0);
         researchers.Add(startingResearcher1);
+        
         return researchers;
     }
     
@@ -163,22 +165,6 @@ public class ResearcherGenerator : MonoBehaviour
         return researcherList;
     }
  
-    /// <summary>
-    /// This replaces the researcher list after loading.
-    /// </summary>
-    public void LoadState(ResearcherList researcherList)
-    {
-        if (researcherList == null)
-        {
-            Debug.LogError("ResearcherGenerator: cannot load a null state.");
-            return;
-        }
- 
-        researchers.Clear();
-        foreach (ResearcherData r in researcherList.researchers)
-            researchers.Add(r.Clone());
-    }
-
 
 
     // Methodology distribution

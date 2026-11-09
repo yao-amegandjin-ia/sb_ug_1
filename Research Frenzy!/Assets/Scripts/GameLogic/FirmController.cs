@@ -98,16 +98,18 @@ namespace GameLogic
                     "FirmController: assign the lab generators and spawners in the Inspector.");
 
             
-            //Give datamanager reference to generator
-            researcherGenerator.Initialize(dataManager.GetResearchers());
+            
+            
             //If no researchers loaded in 
             if (researcherGenerator.Researchers.Count == 0)
             {
                 
-                researcherGenerator.Generate();
-               
+                var researchers = researcherGenerator.Generate();
+                dataManager.SetResearchers(researchers);
+                researcherGenerator.Initialize(dataManager.Researchers);
+
             }
-            clientGenerator.Initialize(dataManager.RequestList.Requests);
+            clientGenerator.Initialize(dataManager.GetRequests());
             ApplyClientUpgrades();
 
             SetDailyClients();
@@ -441,27 +443,7 @@ namespace GameLogic
         /// <param name="reward">Reward amount</param>
         public void RecordStudy(int requestId, int methodologyId, int reward)
         {
-            var existing = dataManager.PlayerData.StudyResults.GetValueOrDefault(requestId, -1);
-
-            if (existing != -1)
-            {
-                // same request matched again
-                dataManager.PlayerData.StudyResults[requestId] = methodologyId;
-                return;
-            }
-
-
-            dataManager.PlayerData.StudyResults.Add(requestId, methodologyId);
-            dataManager.PlayerData.CurrentMoney += reward;
-            dataManager.PlayerData.TotalMoneyEarned += reward;
-            
-           
-            MoneyEarned?.Invoke(reward);
-            
-           
-
-            Debug.Log($"Study recorded: request {requestId} -> methodology {methodologyId}, +${reward} " +
-                      $"(current ${dataManager.PlayerData.CurrentMoney}, total ${dataManager.PlayerData.TotalMoneyEarned})");
+            dataManager.TryRecordStudy(requestId, methodologyId, reward);
         }
    
 
@@ -496,7 +478,7 @@ namespace GameLogic
         {
             var player = dataManager.PlayerData;
             if (amount < 0 || player.CurrentMoney < amount) return false;
-            player.CurrentMoney -= amount;
+            dataManager.DecreaseMoney(amount);
             MoneySpent?.Invoke(amount);
             return true;
         }
