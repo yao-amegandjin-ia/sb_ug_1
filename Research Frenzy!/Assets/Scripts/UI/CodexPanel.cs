@@ -5,20 +5,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class CodexPanel : MonoBehaviour
+public class CodexPanel : MonoBehaviour, IGameUIPart
 {
     VisualElement panel;
     List<Button> rows = new List<Button>();
     List<Label> texts = new List<Label>();
     int openIndex = -1;
 
-    void Start()
+    // called by GameUIPanel once the UI has loaded (and again if it reloads)
+    public void Bind(VisualElement root)
     {
-        VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         panel = root.Q("codex");
-        root.Q<Button>("codex-close").clicked += Close;
+        Button close = root.Q<Button>("codex-close");
+        if (close != null) close.clicked += Close;
 
         ScrollView list = root.Q<ScrollView>("codex-list");
+        list.Clear();
+        rows.Clear();
+        texts.Clear();
+        openIndex = -1;
+
         List<MethodEntry> methods = MethodLibrary.GetAll();
         for (int i = 0; i < methods.Count; i++)
         {
@@ -66,16 +72,16 @@ public class CodexPanel : MonoBehaviour
 
     public void Open()
     {
-        panel.RemoveFromClassList("hidden");
+        if (panel != null) panel.RemoveFromClassList("hidden");
     }
 
     public void Close()
     {
-        panel.AddToClassList("hidden");
+        if (panel != null) panel.AddToClassList("hidden");
     }
 
     public bool IsOpen()
     {
-        return !panel.ClassListContains("hidden");
+        return panel != null && !panel.ClassListContains("hidden");
     }
 }

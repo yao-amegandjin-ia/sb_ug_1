@@ -54,7 +54,7 @@
                         <ui:Label name="best-count" text="0" class="study-count" />
                     </ui:VisualElement>
                     <ui:VisualElement class="study">
-                        <ui:Label text="PARTIAL" class="study-label" />
+                        <ui:Label text="GOOD" class="study-label" />
                         <ui:Label name="partial-count" text="0" class="study-count" />
                     </ui:VisualElement>
                     <ui:VisualElement class="study">
@@ -82,15 +82,17 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
-        <!-- day summary (middle of the screen) -->
+        <!-- day summary (middle of the screen). DaySummary.cs fills the tiles and the client list -->
         <ui:VisualElement name="day-summary" class="modal-bg hidden">
-            <ui:VisualElement class="modal">
+            <ui:VisualElement class="modal summary-modal">
                 <ui:VisualElement class="panel-header">
                     <ui:Label name="summary-title" text="DAY 1 COMPLETE" class="panel-title" />
                 </ui:VisualElement>
-                <ui:VisualElement class="modal-body">
-                    <ui:VisualElement name="summary-rows" />
-                    <ui:VisualElement class="summary-money">
+                <ui:VisualElement class="modal-body summary-body">
+                    <ui:VisualElement name="summary-tiles" class="summary-tiles" />
+                    <ui:Label text="TODAY'S CLIENTS" class="section-title" />
+                    <ui:ScrollView name="summary-list" class="summary-list" />
+                    <ui:VisualElement class="summary-footer">
                         <ui:VisualElement class="money-box">
                             <ui:Label text="EARNED TODAY" class="card-label" />
                             <ui:Label name="summary-earned" text="$0" class="money-value" />
@@ -99,8 +101,8 @@
                             <ui:Label text="CURRENT MONEY" class="card-label" />
                             <ui:Label name="summary-total" text="$0" class="money-value" />
                         </ui:VisualElement>
+                        <ui:Button name="summary-continue" text="CONTINUE" class="big-button primary" />
                     </ui:VisualElement>
-                    <ui:Button name="summary-continue" text="CONTINUE" class="big-button primary" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>

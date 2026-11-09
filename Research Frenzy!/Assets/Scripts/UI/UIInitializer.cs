@@ -24,6 +24,9 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
     public StartScreen startScreen;
     private GameSystems systems;
 
+    // the persistent systems, once the bootstrap has handed them over. null before that
+    public GameSystems Systems => systems;
+
     public void InitializeScene(GameSystems gameSystems)
     {
         systems = gameSystems;
