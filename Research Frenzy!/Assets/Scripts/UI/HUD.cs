@@ -117,6 +117,15 @@ public class HUD : MonoBehaviour
         }
     }
 
+
+    public void EndDay(int day)
+    {
+        running = false;
+        timeLeft = 0;
+        Refresh();
+
+        DayEnded?.Invoke(day);
+    }
     public void Initialize(GameSystems systems)
     {
         dataManager = systems.DataManager;

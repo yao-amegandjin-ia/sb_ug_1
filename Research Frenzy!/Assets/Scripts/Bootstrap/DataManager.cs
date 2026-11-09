@@ -6,6 +6,7 @@ using Researchers;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
@@ -23,6 +24,7 @@ public class DataManager
 
     public RequestList RequestList { get; private set; }
 
+    //Set study results methodology value to -1 if methodology not answered yet!
     public PlayerData PlayerData => _saveData.Player;
 
     /// <summary>
@@ -52,7 +54,12 @@ public class DataManager
 
     private readonly BaseSaveSystem _saveSystem;
 
-
+    public List<int> GetUsedRequestIds()
+    {
+        return PlayerData.StudyResults.Keys.ToList();
+    }
+    
+    
     private DataManager(BaseSaveSystem saveSystem)
     {
         RequestList = new RequestList();
@@ -133,6 +140,11 @@ public void SetResearchers(List<ResearcherData> researchers)
         _saveData.Researchers = researchers;
     
 }
+
+   // public void AddResearcher(ResearcherData researcher)
+    //{
+
+   // }
 
 
 

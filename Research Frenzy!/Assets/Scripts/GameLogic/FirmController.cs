@@ -43,6 +43,8 @@ namespace GameLogic
         [Tooltip("Clients who can sit in the waiting area before any Couch upgrades.")]
         [SerializeField, Min(0)] private int baseWaitingSeats = 3;
 
+        public event Action<int> DayEnded;
+
         /// <summary>A study was finished with this result. The HUD counts these.</summary>
         public event Action<StudyOutcome> StudyFinished;
 
@@ -55,6 +57,7 @@ namespace GameLogic
         //Clients from a save 
         private readonly HashSet<ClientData> trackedClients = new();
 
+        private List<ClientData> clients;
         //private GameInitializer game;
 
         [Header("Lab scene components")]
@@ -108,10 +111,38 @@ namespace GameLogic
             clientGenerator.Initialize(dataManager.RequestList.Requests);
             ApplyClientUpgrades();
 
+            SetDailyClients();
+            
+
             if (upgrades != null)
                 upgrades.UpgradesChanged += ApplyClientUpgrades;
 
         }
+        
+        private void SetDailyClients()
+        {
+
+            var returningClients = dataManager.ReturningClients;
+            var day = dataManager.PlayerData.CurrentDay;
+            var clients = clientGenerator.GenerateDay(day, upgrades.ExtraDailyClients, dataManager.GetUsedRequestIds());
+            //Not the first day and there are returning clients (if returning clients on day 1 there shouldn't be so just overwrite anyway
+            if (returningClients.Count > 0 && dataManager.PlayerData.CurrentDay > 1)
+            {
+                var returningClientsRebuilt = new List<ClientData>();
+                foreach (var client in returningClients)
+                {
+
+                    var recreatedClient = clientGenerator.CreateClientForRequest(client.RequestId);
+                    returningClientsRebuilt.Add(recreatedClient);
+
+                }
+                //Append the returning clients!
+                clients.AddRange(returningClientsRebuilt);
+            }
+            //Set the daily client list for the firm
+            this.clients = clients;
+        }
+
         private void ResolveLabComponents()
         {
             // Inspector references also support components on other lab GameObjects.
@@ -386,7 +417,12 @@ namespace GameLogic
             for (int cubicle = 1; cubicle <= researcherSpawner.CubicleCount; cubicle++)
             {
                 if (researcherSpawner.IsCubicleFree(cubicle))
-                    return researcherSpawner.Hire(data, cubicle);
+                {
+                    var researcher = researcherSpawner.Hire(data, cubicle);
+                    dataManager.PlayerData
+
+                }
+
             }
 
             Debug.Log("No free cubicles left.");
@@ -464,6 +500,69 @@ namespace GameLogic
             player.CurrentMoney -= amount;
             MoneySpent?.Invoke(amount);
             return true;
+        }
+
+
+
+        //Do work here on game starting! Note this comes if we not selected a starter yet!
+        public void OnGameStarted(int selectedStarter)
+        {
+            //Only hire the selected starter if that screen was shown!
+            if (selectedStarter != -1)
+            {
+                Hire(researcherGenerator.GetById(9 + selectedStarter));
+                return;
+
+            }
+            else
+            {
+                var hired = researcherGenerator.GetHiredResearchers();
+                //Hire the selected researcher!
+                foreach (var h in hired)
+                {
+                    Hire(h);
+                }
+            }
+
+            SpawnNextClient();
+        }
+
+        /// <summary>
+        /// This will need to be updated in the future.
+        /// Currently, this is set up for the demo to spawn in the next client from the deck
+        /// </summary>
+        public void SpawnNextClient()
+        {
+            if (clientGenerator == null || clientSpawner == null) return;
+            //Reached the end of our daily clients!
+            if (clients.Count == 0)
+            {
+                //Perform work for end of day
+                EndDay();
+
+            }
+            
+            var client = clients[0];
+            
+            
+            dataManager.PlayerData.StudyResults.Add(client.RequestId, client.AssignedMethodologyId);
+            //Track the clients state changes
+            OnClientSpawned(clientSpawner.Spawn(client));
+        }
+
+        public void EndDay()
+        {
+            DayEnded?.Invoke(dataManager.PlayerData.CurrentDay);
+        }
+
+        //Day end when either: the hud fires an event for the timer expiring or 
+        public void OnDayEnded(int day)
+        {
+            Debug.Log($"FirmController: day {day} ended.");
+
+            // Stop admitting clients, prepare saving, etc.
+
+
         }
 
 

@@ -7,6 +7,7 @@ using Assets.Scripts.Interfaces;
 using GameLogic;
 using UI;
 using UnityEngine;
+using UnityEngine.InputSystem.HID;
 
 public class UIInitializer : MonoBehaviour, ISceneInitializable
 {
@@ -15,27 +16,66 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
 
     public GameObject UI;
     public GameObject shopUI;
-    
+
+    private FirmController connectedFirm;
+    private HUD hud;
+
+    private ShopScreen shop;
+    public StartScreen startScreen;
     private GameSystems systems;
 
     public void InitializeScene(GameSystems gameSystems)
     {
         systems = gameSystems;
         Debug.Log("UI scene initialized");
-        // TODO: hand systems to the HUD so it can show money / day
-        var hud = UI.GetComponent<HUD>();
-        var shop = shopUI.GetComponent<ShopScreen>();
+        hud = UI.GetComponent<HUD>();
+        shop = shopUI.GetComponent<ShopScreen>();
+        startScreen = UI.GetComponent<StartScreen>();
         hud.Initialize(gameSystems);
         shop.Initialize(gameSystems);
         
 
     }
-
+    //Subscribe to UI events here!
     public void SendFirm(FirmController firm)
     {
-        var hud = UI.GetComponent<HUD>();
-        var shop = shopUI.GetComponent<ShopScreen>();
+        
+
+        //Unsubscribe to event if sendfirm called multiple times!
+        if (connectedFirm != null)
+        {
+            startScreen.GameStarted -= firm.OnGameStarted;
+            hud.DayEnded -= firm.OnDayEnded;
+            firm.DayEnded -= hud.EndDay;
+
+        }
+
+        connectedFirm = firm;
+
+        if (connectedFirm != null)
+        {
+            startScreen.GameStarted += firm.OnGameStarted;
+            hud.DayEnded += firm.OnDayEnded;
+            firm.DayEnded += hud.EndDay;
+
+        }
+
+
         shop.Initialize(firm);
         hud.Initialize(firm);
+    }
+
+
+    private void OnDestroy()
+    {
+        if (startScreen != null && connectedFirm != null)
+        {
+            startScreen.GameStarted -= connectedFirm.OnGameStarted;
+            hud.DayEnded -= connectedFirm.OnDayEnded;
+            connectedFirm.DayEnded -= hud.EndDay;
+        }
+            
+
+
     }
 }

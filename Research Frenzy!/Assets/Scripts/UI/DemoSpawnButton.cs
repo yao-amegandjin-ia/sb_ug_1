@@ -37,16 +37,15 @@ namespace UI
             upgradesButton.style.right = 16;
             root.Add(upgradesButton);
         }
-
+        
         void SpawnClicked()
         {
-            var lab = FindAnyObjectByType<FirmController>();
-            if (lab == null)
+           
+            if (true)
             {
                 Debug.LogWarning("DemoSpawnButton: no LabInitializer found. Is the Research_Lab scene loaded?");
                 return;
             }
-           
         }
         
         void UpgradesClicked()
