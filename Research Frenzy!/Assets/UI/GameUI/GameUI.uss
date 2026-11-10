@@ -542,6 +542,23 @@
 .result-tag.wrong { background-color: var(--orange); color: var(--navy); }
 .result-tag.lost { background-color: var(--lavender); }
 
+/* the tags and money on the right of a study card's top row */
+.study-tags {
+    flex-direction: row;
+    align-items: center;
+}
+
+.study-tags .result-tag {
+    margin-left: 6px;
+}
+
+.study-reward {
+    margin-left: 10px;
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: var(--navy);
+}
+
 .study-problem {
     white-space: normal;
     font-size: 17px;

@@ -1,13 +1,8 @@
-﻿using Assets.Scripts.Bootstrap;
-using Assets.Scripts.GameDataObjects;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using GameDataObjects;
 using UnityEngine;
-using UnityEngine.Networking;
 
-
-namespace Assets.Scripts.Interfaces
+namespace Interfaces
 {
     /// <summary>
     /// This interface defines the save system so it can function even upon switching the API. 

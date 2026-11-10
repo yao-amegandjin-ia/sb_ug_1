@@ -1,12 +1,12 @@
-﻿using Assets.Scripts.Bootstrap;
-using Assets.Scripts.GameDataObjects;
-using Assets.Scripts.Interfaces;
+﻿﻿using Bootstrap;
+using GameDataObjects;
+using Interfaces;
 using Clients;
+using Config;
 using Researchers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -53,7 +53,7 @@ public class DataManager
     {
         
         this.saveSystem = saveSystem;
-        Requests = InitializeRequestData();
+        Requests = InitializeRequestData();   // the config spreadsheets, packed in the build, so this is instant
         
     }
 
@@ -125,10 +125,18 @@ public class DataManager
         state.Player.CurrentMoney -= byValue;
     }
 
-    public bool TryRecordStudy(int requestId, int methodologyId, int reward)
+    /// <summary>
+    /// Saves the player's answer for a request: the methodology (step two) and the approach (step one),
+    /// and pays the reward the first time the request is answered.
+    /// </summary>
+    public bool TryRecordStudy(int requestId, ResearchApproach approach, int methodologyId, int reward)
     {
         if (reward < 0) throw new ArgumentOutOfRangeException(nameof(reward));
         if (methodologyId < 0) throw new ArgumentOutOfRangeException(nameof(methodologyId));
+
+        // the approach is saved whether or not this pays, the same as the methodology below
+        state.Player.StudyApproaches[requestId] = (int)approach;
+
         // -1 is a reserved/unanswered request, not a final answer.
         if (state.Player.StudyResults.TryGetValue(requestId, out int method) && method != -1)
         {
@@ -150,24 +158,30 @@ public class DataManager
 
 
 
+    /// <summary>Everything that was wrong in the config spreadsheets this time (empty if all good).</summary>
+    public ConfigReport ConfigReport { get; private set; }
+
+    /// <summary>
+    /// Reads the config spreadsheets in Assets/Resources/Config:
+    /// methodologies.csv first (requests name their methods, so the names must be known), then requests.csv.
+    /// </summary>
     private RequestList InitializeRequestData()
     {
-        string filePath = Path.Combine(Application.streamingAssetsPath, "Config", "requests.json");
-        filePath = filePath.Replace('\\', '/');
+        ConfigReport = new ConfigReport();
         var requests = new RequestList();
-        if (File.Exists(filePath))
-        {
-            string jsonString = File.ReadAllText(filePath);
-            requests = JsonUtility.FromJson<RequestList>(jsonString);
-            return requests;
-        }
-        else
-        {
-            Debug.Log($"JSON file failed to load/not found. {filePath}");
-            return requests;
-        }
 
+        // 1. methodologies (MethodLibrary keeps them for the whole game)
+        MethodLibrary.LoadFromConfigFolder(ConfigReport);
 
+        // 2. requests, with method names turned into methodology IDs
+        string requestsText = ConfigFiles.Read(RequestConfig.FileName, ConfigReport);
+        if (requestsText != null)
+            requests.Requests = RequestConfig.Parse(requestsText, MethodLibrary.GetAll(), ConfigReport);
+
+        Debug.Log($"DataManager: loaded {MethodLibrary.GetAll().Count} methodologies and {requests.Requests.Count} requests " +
+                  $"from {ConfigFiles.Folder}");
+        ConfigFiles.Log(ConfigReport);   // one warning listing every problem, with file and row
+        return requests;
     }
 
 }
@@ -180,12 +194,14 @@ public sealed class PlayerDataReadonly
     public int TotalMoneyEarned => player.TotalMoneyEarned;
     public int CurrentDay => player.CurrentDay;
     public IReadOnlyDictionary<int, int> StudyResults { get; }
+    public IReadOnlyDictionary<int, int> StudyApproaches { get; }
     public IReadOnlyDictionary<string, int> OwnedUpgrades { get; }
 
     internal PlayerDataReadonly(PlayerData player)
     {
         this.player = player;
         StudyResults = new ReadOnlyDictionary<int, int>(player.StudyResults);
+        StudyApproaches = new ReadOnlyDictionary<int, int>(player.StudyApproaches);
         OwnedUpgrades = new ReadOnlyDictionary<string, int>(player.OwnedUpgrades);
     }
 }

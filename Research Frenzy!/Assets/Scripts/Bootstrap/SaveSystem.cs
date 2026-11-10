@@ -1,20 +1,13 @@
-﻿using Assets;
-using Assets.Scripts.Bootstrap.ApiDtos;
-using Assets.Scripts.GameDataObjects;
-using Assets.Scripts.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using GameDataObjects;
+using Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PlasticGui.Help.Conditions;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
-namespace Assets.Scripts.Bootstrap
+
+namespace Bootstrap
 {
     /// <summary>
     /// Implement this base class to create the new adapter for the cyclone commons api!

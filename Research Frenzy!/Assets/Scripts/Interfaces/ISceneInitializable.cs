@@ -1,9 +1,6 @@
-﻿using Assets.Scripts.Bootstrap;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Bootstrap;
 
-namespace Assets.Scripts.Interfaces
+namespace Interfaces
 {
     /// <summary>
     /// If this interface is not implemented by a scene, you will not get access to the persistent game systems...so implement it.

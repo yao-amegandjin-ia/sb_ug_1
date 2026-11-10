@@ -521,7 +521,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HUD
   day: 1
   totalDays: 7
-  dayLength: 30
+  dayLength: 60
   best: 0
   partial: 0
   wrong: 0
@@ -583,7 +583,9 @@ MonoBehaviour:
   starterNames:
   - Steven
   - Maya
-  starterMethods: 0c00000006000000i
+  starterMethodNames:
+  - Product R&D
+  - Field Research
   selectedStarter: 0
 --- !u!114 &1571892145
 MonoBehaviour:
@@ -698,6 +700,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIInitializer
   UI: {fileID: 1571892137}
   shopUI: {fileID: 1559369278}
+  startScreen: {fileID: 0}
 --- !u!4 &1926409701
 Transform:
   m_ObjectHideFlags: 0

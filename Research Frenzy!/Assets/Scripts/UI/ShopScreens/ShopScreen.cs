@@ -3,9 +3,9 @@
 // it always opens on the first tab. buying or hiring doesn't close it, the tab just rebuilds.
 // the player leaves with the CLOSE button. for now the HUD's Upgrades button opens it.
 
-using Assets.Scripts.Bootstrap;
 using GameLogic;
 using System.Collections.Generic;
+using Bootstrap;
 using UI.ClientScreens;
 using UnityEngine;
 using UnityEngine.UIElements;

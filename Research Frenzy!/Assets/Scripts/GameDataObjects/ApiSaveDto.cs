@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+﻿﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using Assets.Scripts.GameDataObjects;
 
-namespace Assets.Scripts.Bootstrap.ApiDtos
+namespace GameDataObjects
 {
     // These classes define the current json structure of the API. They define the JSON serializations so that they are seperate from 
     //the data objects the game will use, this is to seperate for the adapter pattern. 
@@ -31,6 +30,10 @@ namespace Assets.Scripts.Bootstrap.ApiDtos
 
         [JsonProperty("study_results")]
         public Dictionary<int, int> StudyResults { get; set; }
+
+        // request ID -> approach number (0 None, 1 Quantitative, 2 Qualitative, 3 Mixed)
+        [JsonProperty("study_approaches")]
+        public Dictionary<int, int> StudyApproaches { get; set; }
 
         [JsonProperty("owned_upgrades")]
         public Dictionary<string, int> OwnedUpgrades { get; set; }

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using GameDataObjects;
 using UnityEngine.UIElements;
 
 namespace UI
