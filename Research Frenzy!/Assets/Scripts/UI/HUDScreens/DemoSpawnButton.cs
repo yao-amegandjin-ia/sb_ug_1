@@ -1,13 +1,14 @@
+using GameLogic;
+using UI.HUDScreens;
+using UnityEngine;
+using UnityEngine.UIElements;
+
 namespace UI
 {
-    using GameLogic;
     // DemoSpawnButton - goes on the GameUI object (the one with the HUD's UIDocument).
     // temporary "Spawn Client" button for the demo.
     // the lab is a different scene, so it finds the FirmController at runtime instead of through the Inspector.
 
-    using UnityEngine;
-    using UnityEngine.UIElements;
-    
     /// <summary>
     /// This is SOLELY for demonstration purposes, and will not be used in game
     /// This goes on the GameUI object (which is the HUD)

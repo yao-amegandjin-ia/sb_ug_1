@@ -3,6 +3,8 @@
 // when the player hits Start Day 1 the start screen hides and GameStarted fires.
 
 using System;
+using GameDataObjects;
+using UI.HUDScreens;
 using UnityEngine;
 using UnityEngine.UIElements;
 

@@ -1,6 +1,7 @@
 // DaySummary - shows up when the day timer runs out (HUD.DayEnded), or when something calls Show(day).
-// top: how many of each result today. middle: every client from today, what the player answered,
-// the best answer and why (the Rationale column of requests.csv). bottom: money and Continue.
+// top: how many of each result today. middle: every client from today, what the player answered
+// (approach + methodology), what it paid, the best answer and why (the Rationale column of the requests
+// spreadsheet). bottom: money and Continue.
 // it keeps its own list of today's clients from FirmController.ClientResolved. that event carries the request,
 // the methodology picked and the outcome, so nothing has to be looked up in the saved study results.
 
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using GameDataObjects;
 using GameLogic;
+using UI.HUDScreens;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -91,6 +93,7 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         AddTile("BEST", Count(ClientOutcome.Best), "best");
         AddTile("GOOD", Count(ClientOutcome.Good), "good");
         AddTile("INCORRECT", Count(ClientOutcome.Wrong) + Count(ClientOutcome.WrongReject), "wrong");
+        AddTile("RIGHT APPROACH", CountRightApproach(), "good");
         AddTile("CORRECT REJECTS", Count(ClientOutcome.CorrectReject), "best");
         AddTile("CLIENTS LOST", Count(ClientOutcome.Lost), "lost");
 
@@ -120,6 +123,15 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         return n;
     }
 
+    // matches where step one (the approach) was right
+    int CountRightApproach()
+    {
+        int n = 0;
+        foreach (ClientResult entry in today)
+            if (entry.IsMatch && entry.ApproachCorrect) n++;
+        return n;
+    }
+
     void AddTile(string label, int value, string colorClass)
     {
         VisualElement tile = new VisualElement();
@@ -134,7 +146,7 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         tiles.Add(tile);
     }
 
-    // one client: name + result, the request, what the player answered, the best answer, and why
+    // one client: name + result tags + money, the request, what the player answered, the best answer, and why
     VisualElement BuildCard(ClientResult entry)
     {
         RequestData request = entry.Request;
@@ -146,11 +158,18 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         top.AddToClassList("study-card-top");
         Label name = new Label(request != null && !string.IsNullOrEmpty(request.Name) ? request.Name : "Client");
         name.AddToClassList("study-client");
-        Label tag = new Label(TagText(entry.Outcome));
-        tag.AddToClassList("result-tag");
-        tag.AddToClassList(TagClass(entry.Outcome));
         top.Add(name);
-        top.Add(tag);
+
+        // right side of the top row: [APPROACH RIGHT/WRONG] [BEST/GOOD/...] +$50
+        VisualElement tags = new VisualElement();
+        tags.AddToClassList("study-tags");
+        if (entry.IsMatch)
+            tags.Add(Tag(entry.ApproachCorrect ? "RIGHT APPROACH" : "WRONG APPROACH", entry.ApproachCorrect ? "best" : "wrong"));
+        tags.Add(Tag(TagText(entry.Outcome), TagClass(entry.Outcome)));
+        Label reward = new Label("+$" + entry.Reward.ToString("N0"));
+        reward.AddToClassList("study-reward");
+        tags.Add(reward);
+        top.Add(tags);
         card.Add(top);
 
         if (request != null)
@@ -162,8 +181,8 @@ public class DaySummary : MonoBehaviour, IGameUIPart
 
         card.Add(AnswerRow("YOUR ANSWER", YourAnswer(entry), entry.MethodologyId));
 
-        // when they got it right, the best answer is the same as theirs, so it's not repeated
-        bool gotItRight = entry.Outcome == ClientOutcome.Best || entry.Outcome == ClientOutcome.CorrectReject;
+        // when both steps were right, the best answer is the same as theirs, so it's not repeated
+        bool gotItRight = (entry.Outcome == ClientOutcome.Best && entry.ApproachCorrect) || entry.Outcome == ClientOutcome.CorrectReject;
         if (!gotItRight && request != null)
         {
             int bestId = request.IsResearchable ? request.BestMethodologyId : MethodLibrary.NoneId;
@@ -172,7 +191,7 @@ public class DaySummary : MonoBehaviour, IGameUIPart
 
         if (request != null && !string.IsNullOrEmpty(request.Rationale))
         {
-            Label why = new Label(request.Rationale);
+            Label why = new Label("WHY: " + request.Rationale);
             why.AddToClassList("study-why");
             card.Add(why);
         }
@@ -210,8 +229,19 @@ public class DaySummary : MonoBehaviour, IGameUIPart
             case ClientOutcome.Lost: return "They left before you helped them";
             case ClientOutcome.CorrectReject:
             case ClientOutcome.WrongReject: return "We can't help";
-            default: return MethodLibrary.GetName(entry.MethodologyId);
+            default:
+                // e.g. "Qualitative: Field Research", the same shape as the best answer below
+                string method = MethodLibrary.GetName(entry.MethodologyId);
+                return entry.Approach != ResearchApproach.None ? entry.Approach + ": " + method : method;
         }
+    }
+
+    Label Tag(string text, string colorClass)
+    {
+        Label tag = new Label(text);
+        tag.AddToClassList("result-tag");
+        tag.AddToClassList(colorClass);
+        return tag;
     }
 
     // e.g. "Qualitative: Field Research". the approach (step one of matching) comes first
@@ -227,8 +257,9 @@ public class DaySummary : MonoBehaviour, IGameUIPart
     {
         switch (outcome)
         {
-            case ClientOutcome.Best: return "BEST";
-            case ClientOutcome.Good: return "GOOD";
+            case ClientOutcome.Best: return "BEST METHOD";
+            case ClientOutcome.Good: return "GOOD METHOD";
+            case ClientOutcome.Wrong: return "WRONG METHOD";
             case ClientOutcome.CorrectReject: return "CORRECT REJECT";
             case ClientOutcome.Lost: return "LEFT";
             default: return "INCORRECT";
