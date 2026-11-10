@@ -11,7 +11,7 @@ using GameLogic;
 using UnityEngine;
 using UnityEngine.UIElements;
 using GameLogic.Upgrades;
-using Assets.Scripts.Bootstrap;
+using Bootstrap;
 
 [RequireComponent(typeof(GameUIPanel), typeof(StartScreen), typeof(DaySummary))]
 [RequireComponent(typeof(CodexPanel), typeof(ManageFirmPanel))]
@@ -65,10 +65,6 @@ public class HUD : MonoBehaviour, IGameUIPart
         partialText = root.Q<Label>("partial-count");
         wrongText = root.Q<Label>("wrong-count");
         ongoingText = root.Q<Label>("ongoing-count");
-<<<<<<< Research Frenzy!/Assets/Scripts/UI/HUD.cs
-        
-        
-=======
 
         HookButton(root, "codex-button", ToggleCodex);
         HookButton(root, "manage-button", ToggleFirm);
@@ -82,18 +78,8 @@ public class HUD : MonoBehaviour, IGameUIPart
     void Start()
     {
         
-        firmRules = FindAnyObjectByType<FirmController>();
->>>>>>> Research Frenzy!/Assets/Scripts/UI/HUD.cs
-        if (firmRules != null)
-        {
-            firmRules.MoneyEarned += OnMoneyEarned;
-            firmRules.MoneySpent += OnMoneySpent;
-            firmRules.StudyFinished += OnStudyFinished;
-            firmRules.RequestRejected += OnRequestRejected;
-            firmRules.ClientLost += OnClientLost;
-        }
-
-        else Debug.LogWarning("HUD: no FirmController found, study counts won't update. Is it on the GameInitializer object?");
+        // the lab scene may not be loaded yet. if it isn't, UIInitializer.SendFirm calls Initialize(firm) later
+        if (firmRules == null) Connect(FindAnyObjectByType<FirmController>());
 
         upgrades = FindAnyObjectByType<UpgradeController>();
         if (upgrades == null) Debug.LogWarning("HUD: no UpgradeController found, the Clock upgrade won't add time. Is it on the GameInitializer object?");
@@ -148,7 +134,34 @@ public class HUD : MonoBehaviour, IGameUIPart
     }
     public void Initialize(FirmController firm)
     {
+        Connect(firm);
+        GetComponent<DaySummary>().Initialize(firm);   // the day summary needs the same FirmController
+    }
+
+    // listens to the firm's events. safe to call twice: it lets go of the old firm first, so nothing is counted double
+    void Connect(FirmController firm)
+    {
+        if (firm == firmRules && firm != null) return;
+        Disconnect();
         firmRules = firm;
+        if (firmRules == null) return;
+
+        firmRules.MoneyEarned += OnMoneyEarned;
+        firmRules.MoneySpent += OnMoneySpent;
+        firmRules.StudyFinished += OnStudyFinished;
+        firmRules.RequestRejected += OnRequestRejected;
+        firmRules.ClientLost += OnClientLost;
+    }
+
+    void Disconnect()
+    {
+        if (firmRules == null) return;
+        firmRules.MoneyEarned -= OnMoneyEarned;
+        firmRules.MoneySpent -= OnMoneySpent;
+        firmRules.StudyFinished -= OnStudyFinished;
+        firmRules.RequestRejected -= OnRequestRejected;
+        firmRules.ClientLost -= OnClientLost;
+        firmRules = null;
     }
     public void StartDay()
     {
@@ -176,17 +189,7 @@ public class HUD : MonoBehaviour, IGameUIPart
 
     void OnDestroy()
     {
-        if (firmRules != null)
-        {
-            firmRules.MoneyEarned -= OnMoneyEarned;
-            firmRules.MoneySpent -= OnMoneySpent;
-        }
-        if (firmRules != null)
-        {
-            firmRules.StudyFinished -= OnStudyFinished;
-            firmRules.RequestRejected -= OnRequestRejected;
-            firmRules.ClientLost -= OnClientLost;
-        }
+        Disconnect();
     }
 
     void OnStudyFinished(StudyOutcome outcome)

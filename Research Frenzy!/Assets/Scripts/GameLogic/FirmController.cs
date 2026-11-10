@@ -2,7 +2,7 @@
 // goes on the same GameObject as GameInitializer in the Bootstrap scene.
 // the screens only show things and pass on clicks. every click that changes the game calls one function here,
 // so the rules can be read (and changed) in one place without any UI code around them.
-// money and study results still live in GameInitializer. the HUD hears what happened through the events below.
+// money and study results live in the DataManager. the HUD and DaySummary hear what happened through the events below.
 
 
 using System;
@@ -12,14 +12,13 @@ using UnityEngine;
 using GameLogic.Upgrades;
 using Clients;
 using System.Linq;
+using GameDataObjects;
+using Interfaces;
+using Bootstrap;
 
 namespace GameLogic
 {
-    using Assets.Scripts.Bootstrap;
-    // inside the namespace so this MethodologiesEnum wins over any old global copy still in the project
-    using Assets.Scripts.GameDataObjects;
-    using Assets.Scripts.Interfaces;
-
+    // RequestData lives here
 
 
     /// <summary>
@@ -53,6 +52,12 @@ namespace GameLogic
         
         /// <summary>A client left dissatisfied (patience ran out, or no seat to wait in). The HUD counts these.</summary>
         public event Action<Client> ClientLost;
+
+        /// <summary>
+        /// Any client finished (matched, turned away or lost), with their request and the methodology picked.
+        /// DaySummary builds its list of today's clients from this.
+        /// </summary>
+        public event Action<ClientResult> ClientResolved;
         private DataManager dataManager;
         //Clients from a save 
         private readonly HashSet<ClientData> trackedClients = new();
@@ -216,13 +221,19 @@ namespace GameLogic
             int reward = correct ? correctRejectReward : 0;
 
             if (request != null)
-                RecordStudy(request.RequestId, (int)MethodologiesEnum.None, reward);
+                RecordStudy(request.RequestId, MethodLibrary.NoneId, reward);
             Debug.Log($"{client.Data.Name} denied: {(correct ? "correct" : "wrong, this one was researchable")}, +${reward}");
 
             client.Data.Complete();   // "request was rejected"
             client.Leave();
 
             RequestRejected?.Invoke(correct);
+            ClientResolved?.Invoke(new ClientResult
+            {
+                Request = request,
+                MethodologyId = MethodLibrary.NoneId,
+                Outcome = correct ? ClientOutcome.CorrectReject : ClientOutcome.WrongReject
+            });
             return correct;
         }
 
@@ -314,12 +325,13 @@ namespace GameLogic
 
             RequestData request = client.Data.Request;
             if (request != null)
-                RecordStudy(request.RequestId, (int)MethodologiesEnum.None, 0);
+                RecordStudy(request.RequestId, MethodLibrary.NoneId, 0);
             Debug.Log($"{client.Data.Name} left dissatisfied. Saved as a rejection, +$0");
 
             StopFollowing(client);
             client.Leave();
             ClientLost?.Invoke(client);
+            ClientResolved?.Invoke(new ClientResult { Request = request, MethodologyId = MethodLibrary.NoneId, Outcome = ClientOutcome.Lost });
         }
  
         /// <summary>"Come back tomorrow". The client leaves and returns the next day.</summary>
@@ -357,19 +369,19 @@ namespace GameLogic
             if (!client || !researcher) return StudyOutcome.Wrong;
 
             RequestData request = client.Data.Request;
-            MethodologiesEnum picked = (MethodologiesEnum)methodologyId;
-            StudyOutcome outcome = StudyScoring.Score(request, picked);
+            StudyOutcome outcome = StudyScoring.Score(request, methodologyId);   // methodology IDs come from methodologies.csv
             int reward = RewardFor(outcome);
 
             if (request != null)
                 RecordStudy(request.RequestId, methodologyId, reward);
-            Debug.Log($"{client.Data.Name} matched with {researcher.Data.Name} using {picked} ({outcome}): +${reward}");
+            Debug.Log($"{client.Data.Name} matched with {researcher.Data.Name} using {MethodLibrary.GetName(methodologyId)} ({outcome}): +${reward}");
 
             client.Data.AssignTo(researcher.Data.Id, methodologyId);
             client.Data.Complete();
             client.Leave();
 
             StudyFinished?.Invoke(outcome);
+            ClientResolved?.Invoke(new ClientResult { Request = request, MethodologyId = methodologyId, Outcome = ClientResult.FromStudy(outcome) });
             return outcome;
         }
 
@@ -417,12 +429,9 @@ namespace GameLogic
 
             for (int cubicle = 1; cubicle <= researcherSpawner.CubicleCount; cubicle++)
             {
+                // stop at the first free cubicle. without the return, the same researcher was hired into every free one
                 if (researcherSpawner.IsCubicleFree(cubicle))
-                {
-                    var researcher = researcherSpawner.Hire(data, cubicle);
-                    
-
-                }
+                    return researcherSpawner.Hire(data, cubicle);
 
             }
 
@@ -443,7 +452,10 @@ namespace GameLogic
         /// <param name="reward">Reward amount</param>
         public void RecordStudy(int requestId, int methodologyId, int reward)
         {
-            dataManager.TryRecordStudy(requestId, methodologyId, reward);
+            // the HUD's "earned today" (shown in DaySummary) listens to MoneyEarned, so it has to fire here.
+            // TryRecordStudy returns false when this request was already paid for, and then nothing was earned
+            if (dataManager.TryRecordStudy(requestId, methodologyId, reward) && reward > 0)
+                MoneyEarned?.Invoke(reward);
         }
    
 
@@ -518,10 +530,11 @@ namespace GameLogic
             {
                 //Perform work for end of day
                 EndDay();
-
+                return;   // without this, clients[0] below throws on an empty list
             }
             
             var client = clients[0];
+            clients.RemoveAt(0);   // so the next call sends in the next client, not the same one again
             
             
             //Track the clients state changes

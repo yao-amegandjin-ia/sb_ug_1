@@ -19,7 +19,7 @@ namespace Config
 {
     public static class RequestConfig
     {
-        public const string FileName = "requests.csv";
+        public const string FileName = "ResearchFrenzyRequests.csv";
 
         static readonly string[] IdColumn = { "ID", "Request ID", "Number" };
         static readonly string[] NameColumn = { "Client Name", "Client", "Name" };

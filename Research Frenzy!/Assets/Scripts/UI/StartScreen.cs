@@ -5,13 +5,13 @@
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Assets.Scripts.GameDataObjects;
 
 public class StartScreen : MonoBehaviour, IGameUIPart
 {
     // placeholder until the real starting researchers are decided
     public string[] starterNames = { "Steven", "Maya" };
-    public MethodologiesEnum[] starterMethods = { MethodologiesEnum.Product, MethodologiesEnum.Qualitative };
+    // methodology names from methodologies.csv. Keep these the same as ResearcherGenerator's Starter Method Names
+    public string[] starterMethodNames = { "Product R&D", "Field Research" };
     public int selectedStarter = 0;
 
     // the HUD (and later the client spawner / day system) listen to this
@@ -49,7 +49,7 @@ public class StartScreen : MonoBehaviour, IGameUIPart
             Label level = new Label("Level 1");
             level.AddToClassList("starter-level");
 
-            int methodId = (int)starterMethods[i];
+            int methodId = StarterMethodId(i);
             VisualElement methodRow = new VisualElement();
             methodRow.AddToClassList("starter-method");
             Label badge = new Label(methodId.ToString());
@@ -128,6 +128,14 @@ public class StartScreen : MonoBehaviour, IGameUIPart
 
     public int GetStarterMethod()
     {
-        return (int)starterMethods[selectedStarter];
+        return StarterMethodId(selectedStarter);
+    }
+
+    // the starter's methodology ID, looked up by name. 0 (no badge, "Unknown") if the name isn't in methodologies.csv
+    int StarterMethodId(int index)
+    {
+        if (index < 0 || index >= starterMethodNames.Length) return MethodLibrary.NoneId;
+        MethodEntry method = MethodLibrary.Find(starterMethodNames[index]);
+        return method != null ? method.id : MethodLibrary.NoneId;
     }
 }

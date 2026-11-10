@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Bootstrap;
+using Bootstrap;
 
 namespace Interfaces
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Assets.Scripts.Bootstrap
+﻿namespace Bootstrap
 {
     /// <summary>
     /// Container for persistent game systems 

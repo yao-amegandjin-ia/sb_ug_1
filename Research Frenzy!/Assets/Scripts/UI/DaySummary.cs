@@ -1,33 +1,22 @@
 // DaySummary - shows up when the day timer runs out (HUD.DayEnded), or when something calls Show(day).
 // top: how many of each result today. middle: every client from today, what the player answered,
-// the best answer and why (the request's Rationale from requests.json). bottom: money and Continue.
-// it keeps its own list of today's clients from FirmController's events. each event fires right after
-// GameInitializer.RecordStudy, so the newest StudyResult is the one that just happened.
+// the best answer and why (the Rationale column of requests.csv). bottom: money and Continue.
+// it keeps its own list of today's clients from FirmController.ClientResolved. that event carries the request,
+// the methodology picked and the outcome, so nothing has to be looked up in the saved study results.
 
 using System;
 using System.Collections.Generic;
-using Assets.Scripts.GameDataObjects;
+using GameDataObjects;
 using GameLogic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class DaySummary : MonoBehaviour, IGameUIPart
 {
-    // what happened with one client today
-    enum Kind { Best, Good, Wrong, CorrectReject, WrongReject, Lost }
-
-    class Entry
-    {
-        public RequestData request;
-        public int pickedMethod;   // 0 when the client was turned away or left
-        public Kind kind;
-    }
-
     // fires when the player presses Continue, before the next day starts. the upgrades screen can hook in here
     public event Action<int> Closed;
 
-    readonly List<Entry> today = new List<Entry>();
-    Dictionary<int, RequestData> requests;   // request ID -> request, filled the first time it's needed
+    readonly List<ClientResult> today = new List<ClientResult>();
 
     VisualElement panel;
     VisualElement tiles;
@@ -36,9 +25,7 @@ public class DaySummary : MonoBehaviour, IGameUIPart
     Label earnedText;
     Label totalText;
     HUD hud;
-    GameInitializer game;
     FirmController firmRules;
-    int seenResults;      // how many StudyResults there were the last time we looked
     int shownDay = -1;    // the day on screen, -1 when it's closed
 
     void Awake()
@@ -66,88 +53,29 @@ public class DaySummary : MonoBehaviour, IGameUIPart
     {
         hud.DayEnded += Show;
 
-        game = FindAnyObjectByType<GameInitializer>();
-        if (game != null) seenResults = game.StudyResults.Count;
+        // the lab scene may not be loaded yet. if it isn't, HUD.Initialize(firm) calls Initialize below later
+        if (firmRules == null) Initialize(FindAnyObjectByType<FirmController>());
+    }
 
-        firmRules = FindAnyObjectByType<FirmController>();
-        if (firmRules != null)
-        {
-            firmRules.StudyFinished += OnStudyFinished;
-            firmRules.RequestRejected += OnRequestRejected;
-            firmRules.ClientLost += OnClientLost;
-        }
-        else Debug.LogWarning("DaySummary: no FirmController found, the summary won't list today's clients.");
+    /// <summary>Starts listening to the FirmController. Called by HUD.Initialize(firm) once the lab scene is up.</summary>
+    public void Initialize(FirmController firm)
+    {
+        if (firm == firmRules) return;
+        if (firmRules != null) firmRules.ClientResolved -= OnClientResolved;
+        firmRules = firm;
+        if (firmRules != null) firmRules.ClientResolved += OnClientResolved;
     }
 
     void OnDestroy()
     {
         if (hud != null) hud.DayEnded -= Show;
-        if (firmRules != null)
-        {
-            firmRules.StudyFinished -= OnStudyFinished;
-            firmRules.RequestRejected -= OnRequestRejected;
-            firmRules.ClientLost -= OnClientLost;
-        }
+        if (firmRules != null) firmRules.ClientResolved -= OnClientResolved;
     }
 
-    // --- collecting today's clients ---
-
-    void OnStudyFinished(StudyOutcome outcome)
+    // every finished client (matched, turned away or lost) comes through here
+    void OnClientResolved(ClientResult result)
     {
-        StudyResult result = TakeNewestResult();
-        if (result == null) return;
-
-        Kind kind = outcome == StudyOutcome.Best ? Kind.Best
-                  : outcome == StudyOutcome.Good ? Kind.Good
-                  : Kind.Wrong;
-        Add(FindRequest(result.RequestId), result.MethodologyId, kind);
-    }
-
-    void OnRequestRejected(bool correct)
-    {
-        StudyResult result = TakeNewestResult();
-        if (result == null) return;
-        Add(FindRequest(result.RequestId), 0, correct ? Kind.CorrectReject : Kind.WrongReject);
-    }
-
-    void OnClientLost(Client client)
-    {
-        TakeNewestResult();   // the firm saved this one too (as methodology 0), so mark it as seen
-        if (client == null) return;
-        Add(client.Data.Request, 0, Kind.Lost);
-    }
-
-    // the StudyResult that was just saved, or null if nothing new was saved (e.g. the client had no request)
-    StudyResult TakeNewestResult()
-    {
-        if (game == null) return null;
-        int count = game.StudyResults.Count;
-        if (count <= seenResults) return null;
-        seenResults = count;
-        return game.StudyResults[count - 1];
-    }
-
-    void Add(RequestData request, int pickedMethod, Kind kind)
-    {
-        today.Add(new Entry { request = request, pickedMethod = pickedMethod, kind = kind });
-    }
-
-    RequestData FindRequest(int id)
-    {
-        if (requests == null)
-        {
-            // the requests come from the DataManager, which the bootstrap hands to the UI scene
-            UIInitializer ui = FindAnyObjectByType<UIInitializer>();
-            var all = ui != null && ui.Systems != null ? ui.Systems.DataManager.RequestList?.Requests : null;
-            if (all == null) return null;   // not loaded yet, try again next time
-
-            requests = new Dictionary<int, RequestData>();
-            foreach (RequestData r in all)
-                if (r != null) requests[r.RequestId] = r;
-        }
-
-        requests.TryGetValue(id, out RequestData found);
-        return found;
+        if (result != null) today.Add(result);
     }
 
     // --- the screen ---
@@ -160,11 +88,11 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         title.text = "DAY " + day + " COMPLETE";
 
         tiles.Clear();
-        AddTile("BEST", Count(Kind.Best), "best");
-        AddTile("GOOD", Count(Kind.Good), "good");
-        AddTile("INCORRECT", Count(Kind.Wrong) + Count(Kind.WrongReject), "wrong");
-        AddTile("CORRECT REJECTS", Count(Kind.CorrectReject), "best");
-        AddTile("CLIENTS LOST", Count(Kind.Lost), "lost");
+        AddTile("BEST", Count(ClientOutcome.Best), "best");
+        AddTile("GOOD", Count(ClientOutcome.Good), "good");
+        AddTile("INCORRECT", Count(ClientOutcome.Wrong) + Count(ClientOutcome.WrongReject), "wrong");
+        AddTile("CORRECT REJECTS", Count(ClientOutcome.CorrectReject), "best");
+        AddTile("CLIENTS LOST", Count(ClientOutcome.Lost), "lost");
 
         list.Clear();
         if (today.Count == 0)
@@ -173,7 +101,7 @@ public class DaySummary : MonoBehaviour, IGameUIPart
             empty.AddToClassList("summary-empty");
             list.Add(empty);
         }
-        foreach (Entry entry in today)
+        foreach (ClientResult entry in today)
             list.Add(BuildCard(entry));
 
         earnedText.text = "$" + hud.earnedToday.ToString("N0");
@@ -184,11 +112,11 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         panel.RemoveFromClassList("hidden");
     }
 
-    int Count(Kind kind)
+    int Count(ClientOutcome outcome)
     {
         int n = 0;
-        foreach (Entry entry in today)
-            if (entry.kind == kind) n++;
+        foreach (ClientResult entry in today)
+            if (entry.Outcome == outcome) n++;
         return n;
     }
 
@@ -207,9 +135,9 @@ public class DaySummary : MonoBehaviour, IGameUIPart
     }
 
     // one client: name + result, the request, what the player answered, the best answer, and why
-    VisualElement BuildCard(Entry entry)
+    VisualElement BuildCard(ClientResult entry)
     {
-        RequestData request = entry.request;
+        RequestData request = entry.Request;
 
         VisualElement card = new VisualElement();
         card.AddToClassList("study-card");
@@ -218,9 +146,9 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         top.AddToClassList("study-card-top");
         Label name = new Label(request != null && !string.IsNullOrEmpty(request.Name) ? request.Name : "Client");
         name.AddToClassList("study-client");
-        Label tag = new Label(TagText(entry.kind));
+        Label tag = new Label(TagText(entry.Outcome));
         tag.AddToClassList("result-tag");
-        tag.AddToClassList(TagClass(entry.kind));
+        tag.AddToClassList(TagClass(entry.Outcome));
         top.Add(name);
         top.Add(tag);
         card.Add(top);
@@ -232,13 +160,13 @@ public class DaySummary : MonoBehaviour, IGameUIPart
             card.Add(problem);
         }
 
-        card.Add(AnswerRow("YOUR ANSWER", YourAnswer(entry), entry.pickedMethod));
+        card.Add(AnswerRow("YOUR ANSWER", YourAnswer(entry), entry.MethodologyId));
 
         // when they got it right, the best answer is the same as theirs, so it's not repeated
-        bool gotItRight = entry.kind == Kind.Best || entry.kind == Kind.CorrectReject;
+        bool gotItRight = entry.Outcome == ClientOutcome.Best || entry.Outcome == ClientOutcome.CorrectReject;
         if (!gotItRight && request != null)
         {
-            int bestId = request.IsResearchable ? (int)request.BestMethodology : 0;
+            int bestId = request.IsResearchable ? request.BestMethodologyId : MethodLibrary.NoneId;
             card.Add(AnswerRow("BEST ANSWER", BestAnswer(request), bestId));
         }
 
@@ -275,44 +203,46 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         return row;
     }
 
-    string YourAnswer(Entry entry)
+    string YourAnswer(ClientResult entry)
     {
-        switch (entry.kind)
+        switch (entry.Outcome)
         {
-            case Kind.Lost: return "They left before you helped them";
-            case Kind.CorrectReject:
-            case Kind.WrongReject: return "We can't help";
-            default: return MethodLibrary.GetName(entry.pickedMethod);
+            case ClientOutcome.Lost: return "They left before you helped them";
+            case ClientOutcome.CorrectReject:
+            case ClientOutcome.WrongReject: return "We can't help";
+            default: return MethodLibrary.GetName(entry.MethodologyId);
         }
     }
 
+    // e.g. "Qualitative: Field Research". the approach (step one of matching) comes first
     string BestAnswer(RequestData request)
     {
-        return request.IsResearchable
-            ? MethodLibrary.GetName((int)request.BestMethodology)
-            : "We can't help, this can't be researched";
+        if (!request.IsResearchable) return "We can't help, this can't be researched";
+
+        string method = MethodLibrary.GetName(request.BestMethodologyId);
+        return request.Approach != ResearchApproach.None ? request.Approach + ": " + method : method;
     }
 
-    string TagText(Kind kind)
+    string TagText(ClientOutcome outcome)
     {
-        switch (kind)
+        switch (outcome)
         {
-            case Kind.Best: return "BEST";
-            case Kind.Good: return "GOOD";
-            case Kind.CorrectReject: return "CORRECT REJECT";
-            case Kind.Lost: return "LEFT";
+            case ClientOutcome.Best: return "BEST";
+            case ClientOutcome.Good: return "GOOD";
+            case ClientOutcome.CorrectReject: return "CORRECT REJECT";
+            case ClientOutcome.Lost: return "LEFT";
             default: return "INCORRECT";
         }
     }
 
-    string TagClass(Kind kind)
+    string TagClass(ClientOutcome outcome)
     {
-        switch (kind)
+        switch (outcome)
         {
-            case Kind.Best:
-            case Kind.CorrectReject: return "best";
-            case Kind.Good: return "good";
-            case Kind.Lost: return "lost";
+            case ClientOutcome.Best:
+            case ClientOutcome.CorrectReject: return "best";
+            case ClientOutcome.Good: return "good";
+            case ClientOutcome.Lost: return "lost";
             default: return "wrong";
         }
     }

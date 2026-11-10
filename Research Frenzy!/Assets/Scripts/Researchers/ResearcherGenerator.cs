@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Researchers;
-using Assets.Scripts.GameDataObjects;
+using GameDataObjects;
 using Unity.U2D.Physics;
 using UnityEngine;
 using Random = System.Random;
-using GluonGui.Dialog;
 
 /// <summary>
 /// Generates the starting pool of researchers from the game seed.
@@ -35,8 +34,17 @@ public class ResearcherGenerator : MonoBehaviour
     [SerializeField] private Vector2Int qualityRange = new Vector2Int(1, 3);
 
     [Header("Methodologies")]
-    [Tooltip("IDs of every methodology in the game.")]
-    [SerializeField] private List<int> methodologyIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+    [Tooltip("Ticked: hand out every methodology in methodologies.csv (new rows are picked up automatically). " +
+             "Unticked: only hand out the IDs in the list below.")]
+    [SerializeField] private bool useAllConfigMethodologies = true;
+    [Tooltip("Only used when the box above is unticked. IDs from the ID column of methodologies.csv.")]
+    [SerializeField] private List<int> methodologyIds = new List<int>();
+    [Tooltip("How many methodologies each researcher knows. Lowered automatically if there are fewer in the game.")]
+    [SerializeField, Min(1)] private int methodologiesPerResearcher = 4;
+
+    [Header("Starting researchers (placeholders)")]
+    [Tooltip("Methodology names from methodologies.csv. Must match StartScreen's Starter Method Names.")]
+    [SerializeField] private string[] starterMethodNames = { "Product R&D", "Field Research" };
 
     
     private ResearcherData startingResearcher0 = new();
@@ -66,9 +74,6 @@ public class ResearcherGenerator : MonoBehaviour
     {
         if (generateOnStart)
             Generate();
-        //Placeholder starters
-        startingResearcher0.Init(9, "Steven", Vector3Int.zero, 0, 0, 0, new List<int> { (int)MethodologiesEnum.Product });
-        startingResearcher1.Init(10, "Maya", Vector3Int.one, 0, 0, 0, new List<int> { (int)MethodologiesEnum.Qualitative});
 
     }
 
@@ -76,6 +81,18 @@ public class ResearcherGenerator : MonoBehaviour
     public List<ResearcherData> Generate()
     {
         if (!ValidateSettings()) return null;
+
+        // the methodologies come from the config file now, so new ones show up without touching this script
+        if (useAllConfigMethodologies)
+            methodologyIds = MethodLibrary.GetAllIds();
+        if (!ValidateMethodologies()) return null;
+
+        // Placeholder starters. Made here instead of in Start(), because FirmController can call Generate()
+        // before this object's Start() has run, and then the starters would have no name or methods yet.
+        startingResearcher0 = new ResearcherData();
+        startingResearcher1 = new ResearcherData();
+        startingResearcher0.Init(9, "Steven", Vector3Int.zero, 0, 0, 0, StarterMethods(0));
+        startingResearcher1.Init(10, "Maya", Vector3Int.one, 0, 0, 0, StarterMethods(1));
 
         var researchers = new List<ResearcherData>();
 
@@ -180,7 +197,10 @@ public class ResearcherGenerator : MonoBehaviour
 
         List<int> unlocked = new List<int>();
 
-        while (unlocked.Count < 4)
+        // can't know more methods than exist (with 3 methods and 4 wanted, this loop would never end)
+        int wanted = Mathf.Min(methodologiesPerResearcher, new HashSet<int>(methodologyIds).Count);
+
+        while (unlocked.Count < wanted)
         {
             // Start a new cycle (every methodology has now been used equally often).
             if (unused.Count == 0)
@@ -249,16 +269,41 @@ public class ResearcherGenerator : MonoBehaviour
         }
     }
 
+    // the starter's methodology, looked up by name in methodologies.csv
+    private List<int> StarterMethods(int starter)
+    {
+        List<int> ids = new List<int>();
+        if (starterMethodNames == null || starter >= starterMethodNames.Length) return ids;
+
+        MethodEntry method = MethodLibrary.Find(starterMethodNames[starter]);
+        if (method != null) ids.Add(method.id);
+        else Debug.LogWarning($"ResearcherGenerator: starter method \"{starterMethodNames[starter]}\" isn't in methodologies.csv.");
+        return ids;
+    }
+
+    // checked after the IDs are read from the config, so it's separate from ValidateSettings
+    private bool ValidateMethodologies()
+    {
+        if (methodologyIds == null || methodologyIds.Count == 0)
+        {
+            Debug.LogError(useAllConfigMethodologies
+                ? "ResearcherGenerator: no methodologies loaded. Check Assets/Resources/Config/methodologies.csv."
+                : "ResearcherGenerator: methodologyIds is empty. Add IDs or tick Use All Config Methodologies.");
+            return false;
+        }
+        foreach (int id in methodologyIds)
+        {
+            if (MethodLibrary.Get(id) == null)
+                Debug.LogWarning($"ResearcherGenerator: methodology ID {id} isn't in methodologies.csv. Researchers may show \"Unknown\".");
+        }
+        return true;
+    }
+
     private bool ValidateSettings()
     {
         if (headCount < researcherCount)
         {
             Debug.LogError($"ResearcherGenerator: headCount ({headCount}) must be >= researcherCount ({researcherCount}) so heads are unique.");
-            return false;
-        }
-        if (methodologyIds == null || methodologyIds.Count == 0)
-        {
-            Debug.LogError("ResearcherGenerator: methodologyIds is empty.");
             return false;
         }
         if (firstNames.Length == 0 || lastNames.Length == 0)

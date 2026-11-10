@@ -3,8 +3,9 @@
 // so this is where the UI gets access to the game systems (data manager etc).
 
 using Assets.Scripts.Bootstrap;
-using Assets.Scripts.Interfaces;
+using Bootstrap;
 using GameLogic;
+using Interfaces;
 using UI;
 using UnityEngine;
 using UnityEngine.InputSystem.HID;

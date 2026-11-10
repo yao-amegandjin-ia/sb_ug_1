@@ -14,7 +14,7 @@ namespace Config
 {
     public static class MethodologyConfig
     {
-        public const string FileName = "methodologies.csv";
+        public const string FileName = "ResearchFrenzyMethodologies.csv";
 
         static readonly string[] IdColumn = { "ID", "Number", "Method ID" };
         static readonly string[] NameColumn = { "Name", "Method", "Methodology" };
