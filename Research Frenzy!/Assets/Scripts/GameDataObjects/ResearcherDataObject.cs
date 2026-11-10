@@ -1,9 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace Assets.Scripts.GameDataObjects
+namespace GameDataObjects
 {
     public class ResearcherDataObject
     {
@@ -16,7 +13,8 @@ namespace Assets.Scripts.GameDataObjects
         public int Speed { get; set; }
         public int Quality { get; set; }
 
-        public List<MethodologiesEnum> Methodologies
+        // methodology IDs from methodologies.csv (the old MethodologiesEnum is gone)
+        public List<int> Methodologies
         { get; set; } = new();
 
         public List<int> Skin { get; set; } = new();
@@ -39,6 +37,10 @@ namespace Assets.Scripts.GameDataObjects
         public int CurrentDay { get; set; }
 
         public Dictionary<int, int> StudyResults { get; set; } = new();
+
+        // request ID -> the approach picked in step one of the match, as the ResearchApproach number
+        // (0 None, 1 Quantitative, 2 Qualitative, 3 Mixed). Rejected and lost clients are saved as 0.
+        public Dictionary<int, int> StudyApproaches { get; set; } = new();
 
         public Dictionary<string, int> OwnedUpgrades{ get; set; } = new();
 

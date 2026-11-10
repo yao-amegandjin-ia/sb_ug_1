@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Assets.Scripts.GameDataObjects;
 using Clients;
+using GameDataObjects;
 using UnityEngine;
 using Random = System.Random;
 

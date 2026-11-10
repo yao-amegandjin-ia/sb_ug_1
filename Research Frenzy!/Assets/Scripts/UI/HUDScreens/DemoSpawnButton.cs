@@ -1,13 +1,14 @@
+using GameLogic;
+using UI.HUDScreens;
+using UnityEngine;
+using UnityEngine.UIElements;
+
 namespace UI
 {
-    using GameLogic;
     // DemoSpawnButton - goes on the GameUI object (the one with the HUD's UIDocument).
     // temporary "Spawn Client" button for the demo.
-    // the lab is a different scene, so it finds the LabInitializer at runtime instead of through the Inspector.
+    // the lab is a different scene, so it finds the FirmController at runtime instead of through the Inspector.
 
-    using UnityEngine;
-    using UnityEngine.UIElements;
-    
     /// <summary>
     /// This is SOLELY for demonstration purposes, and will not be used in game
     /// This goes on the GameUI object (which is the HUD)
@@ -38,14 +39,17 @@ namespace UI
             root.Add(upgradesButton);
         }
         
+        // sends in the next client of the day. FirmController (in the Research_Lab scene) owns the day's client list now,
+        // so the button asks it. LabInitializer no longer exists, which is why the old code could only print a warning
         void SpawnClicked()
         {
-           
-            if (true)
+            FirmController firm = FindAnyObjectByType<FirmController>();
+            if (firm == null)
             {
-                Debug.LogWarning("DemoSpawnButton: no LabInitializer found. Is the Research_Lab scene loaded?");
+                Debug.LogWarning("DemoSpawnButton: no FirmController found. Is the Research_Lab scene loaded?");
                 return;
             }
+            firm.SpawnNextClient();
         }
         
         void UpgradesClicked()

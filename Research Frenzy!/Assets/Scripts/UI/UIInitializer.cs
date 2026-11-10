@@ -2,10 +2,11 @@
 // the bootstrap SceneLoader looks for one ISceneInitializable per scene and calls InitializeScene on it,
 // so this is where the UI gets access to the game systems (data manager etc).
 
-using Assets.Scripts.Bootstrap;
-using Assets.Scripts.Interfaces;
+using Bootstrap;
 using GameLogic;
+using Interfaces;
 using UI;
+using UI.HUDScreens;
 using UnityEngine;
 using UnityEngine.InputSystem.HID;
 
@@ -45,12 +46,10 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
         
 
         //Unsubscribe to event if sendfirm called multiple times!
+        // (the day timer is FirmController's own now, so only the start button needs wiring here)
         if (connectedFirm != null)
         {
-            startScreen.GameStarted -= firm.OnGameStarted;
-            hud.DayEnded -= firm.OnDayEnded;
-            firm.DayEnded -= hud.EndDay;
-
+            startScreen.GameStarted -= connectedFirm.OnGameStarted;
         }
 
         connectedFirm = firm;
@@ -58,8 +57,6 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
         if (connectedFirm != null)
         {
             startScreen.GameStarted += firm.OnGameStarted;
-            hud.DayEnded += firm.OnDayEnded;
-            firm.DayEnded += hud.EndDay;
 
         }
 
@@ -74,8 +71,6 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
         if (startScreen != null && connectedFirm != null)
         {
             startScreen.GameStarted -= connectedFirm.OnGameStarted;
-            hud.DayEnded -= connectedFirm.OnDayEnded;
-            connectedFirm.DayEnded -= hud.EndDay;
         }
             
 

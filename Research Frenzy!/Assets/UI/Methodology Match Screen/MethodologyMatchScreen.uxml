@@ -22,11 +22,27 @@
         </ui:VisualElement>
 
         <ui:VisualElement name="method-prompt">
-            <ui:TextElement name="prompt-speaker" text="YOUR LAB"/>
-            <ui:TextElement name="prompt-question" text="WHICH METHOD FITS?"/>
+            <!-- MethodMatchScreen.cs changes these two for each step -->
+            <ui:TextElement name="prompt-speaker" text="YOUR LAB - STEP 1 OF 2"/>
+            <ui:TextElement name="prompt-question" text="WHICH APPROACH FITS?"/>
         </ui:VisualElement>
 
-        <ui:Instance template="ResearcherMethodologyComponent" name="method-tray-slot"/>
+        <!-- STEP 1: the approach. Shown first, hidden (display: none from code) during step 2 -->
+        <ui:VisualElement name="approach-step">
+            <ui:Button name="approach-quantitative" text="Quantitative"/>
+            <ui:Button name="approach-qualitative" text="Qualitative"/>
+            <ui:Button name="approach-mixed" text="Mixed"/>
+        </ui:VisualElement>
+
+        <!-- STEP 2: the methodology. Hidden during step 1 -->
+        <ui:VisualElement name="method-step">
+            <ui:VisualElement name="picked-approach-row">
+                <ui:Label name="picked-approach-label" text="APPROACH"/>
+                <ui:Label name="picked-approach" text="Qualitative"/>
+                <ui:Button name="back-btn" text="CHANGE"/>
+            </ui:VisualElement>
+            <ui:Instance template="ResearcherMethodologyComponent" name="method-tray-slot"/>
+        </ui:VisualElement>
 
         <ui:VisualElement name="method-detail">
             <ui:VisualElement name="method-banner">
@@ -36,6 +52,8 @@
             <ui:VisualElement name="method-info">
                 <ui:Label name="method-description" text="Want to know why? Qualitative research explores people's reasons, feelings, and experiences through interviews and open-ended questions, in their own words."/>
                 <ui:VisualElement name="decision-buttons">
+                    <!-- step 1 shows NEXT, step 2 shows MATCH. NO MATCH is there in both -->
+                    <ui:Button name="next-btn" text="NEXT"/>
                     <ui:Button name="match-btn" text="MATCH"/>
                     <ui:Button name="no-match-btn" text="NO MATCH"/>
                 </ui:VisualElement>
