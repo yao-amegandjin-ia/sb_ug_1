@@ -1,4 +1,4 @@
-﻿using Bootstrap;
+﻿﻿using Bootstrap;
 using GameDataObjects;
 using Interfaces;
 using Clients;
@@ -125,10 +125,18 @@ public class DataManager
         state.Player.CurrentMoney -= byValue;
     }
 
-    public bool TryRecordStudy(int requestId, int methodologyId, int reward)
+    /// <summary>
+    /// Saves the player's answer for a request: the methodology (step two) and the approach (step one),
+    /// and pays the reward the first time the request is answered.
+    /// </summary>
+    public bool TryRecordStudy(int requestId, ResearchApproach approach, int methodologyId, int reward)
     {
         if (reward < 0) throw new ArgumentOutOfRangeException(nameof(reward));
         if (methodologyId < 0) throw new ArgumentOutOfRangeException(nameof(methodologyId));
+
+        // the approach is saved whether or not this pays, the same as the methodology below
+        state.Player.StudyApproaches[requestId] = (int)approach;
+
         // -1 is a reserved/unanswered request, not a final answer.
         if (state.Player.StudyResults.TryGetValue(requestId, out int method) && method != -1)
         {
@@ -186,12 +194,14 @@ public sealed class PlayerDataReadonly
     public int TotalMoneyEarned => player.TotalMoneyEarned;
     public int CurrentDay => player.CurrentDay;
     public IReadOnlyDictionary<int, int> StudyResults { get; }
+    public IReadOnlyDictionary<int, int> StudyApproaches { get; }
     public IReadOnlyDictionary<string, int> OwnedUpgrades { get; }
 
     internal PlayerDataReadonly(PlayerData player)
     {
         this.player = player;
         StudyResults = new ReadOnlyDictionary<int, int>(player.StudyResults);
+        StudyApproaches = new ReadOnlyDictionary<int, int>(player.StudyApproaches);
         OwnedUpgrades = new ReadOnlyDictionary<string, int>(player.OwnedUpgrades);
     }
 }

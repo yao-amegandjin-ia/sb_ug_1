@@ -101,7 +101,7 @@
 #method-description {
     color: #2A1B4D;
     font-size: 16px;
-    white-space: normal;           
+    white-space: normal;
     -unity-font-style: normal;
     margin-bottom: 14px;
 }
@@ -122,11 +122,12 @@
     -unity-font-style: bold;
 }
 
-#decision-buttons #match-btn    { 
-    margin-left: 0; 
+#decision-buttons #match-btn,
+#decision-buttons #next-btn    {
+    margin-left: 0;
 }
-#decision-buttons #no-match-btn { 
-    margin-right: 0; 
+#decision-buttons #no-match-btn {
+    margin-right: 0;
 }
 
 
@@ -139,6 +140,16 @@
     background-color: #33ADFF;
 }
 
+/* NEXT looks like MATCH: it's the "go on" button of step 1 */
+#next-btn {
+    background-color: #0099FF;
+    color: #FFFFFF;
+}
+
+#next-btn:hover {
+    background-color: #33ADFF;
+}
+
 #no-match-btn {
     background-color: #FFA500;
     color: #2A1B4D;
@@ -146,4 +157,76 @@
 
 #no-match-btn:hover {
     background-color: #FFB733;
+}
+
+
+/* ---------- two-step matching ---------- */
+
+/* step 1: three approach buttons in a row, same lavender tray as the methods */
+#approach-step {
+    flex-direction: row;
+    flex-shrink: 0;
+    margin: 0 24px 16px 24px;
+    padding: 10px;
+    background-color: #E4E2F5;
+    border-radius: 10px;
+}
+
+#approach-step Button {
+    flex-grow: 1;
+    flex-basis: 0;
+    height: 40px;
+    margin: 4px;
+    border-radius: 15px;
+    border-width: 3px;
+    border-color: #8683CC;
+    background-color: #8683CC;
+    color: #FFFFFF;
+    font-size: 16px;
+    -unity-font-style: bold;
+}
+
+#approach-step Button:hover,
+#approach-step Button.selected {
+    background-color: #FFFFFF;
+    border-color: #7300FF;
+    color: #7300FF;
+}
+
+/* step 2: "APPROACH  Qualitative  [CHANGE]" above the researcher's methods */
+#method-step {
+    flex-shrink: 0;
+}
+
+#picked-approach-row {
+    flex-direction: row;
+    align-items: center;
+    margin: 0 24px 8px 24px;
+}
+
+#picked-approach-label {
+    color: #8683CC;
+    font-size: 13px;
+    -unity-font-style: bold;
+    margin-right: 8px;
+}
+
+#picked-approach {
+    color: #7300FF;
+    font-size: 16px;
+    -unity-font-style: bold;
+    margin-right: 8px;
+}
+
+#back-btn {
+    background-color: #8683CC;
+    color: #FFFFFF;
+    border-width: 0;
+    border-radius: 10px;
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+
+#back-btn:hover {
+    background-color: #9C99DB;
 }

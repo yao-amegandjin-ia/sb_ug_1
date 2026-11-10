@@ -38,6 +38,10 @@ namespace GameDataObjects
 
         public Dictionary<int, int> StudyResults { get; set; } = new();
 
+        // request ID -> the approach picked in step one of the match, as the ResearchApproach number
+        // (0 None, 1 Quantitative, 2 Qualitative, 3 Mixed). Rejected and lost clients are saved as 0.
+        public Dictionary<int, int> StudyApproaches { get; set; } = new();
+
         public Dictionary<string, int> OwnedUpgrades{ get; set; } = new();
 
         

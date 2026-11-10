@@ -1,15 +1,11 @@
-﻿using Researchers;
-using UnityEngine;
-using Clients;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-
-using Newtonsoft.Json.Linq;
-using System.Text;
+using Clients;
 using GameDataObjects;
+using Researchers;
+using UnityEngine;
 
-namespace Assets.Scripts.Bootstrap
+namespace Bootstrap
 {
     public static class SaveDataMapper
     {
@@ -24,6 +20,8 @@ namespace Assets.Scripts.Bootstrap
                 TotalMoneyEarned = api.Player.TotalMoneyEarned,
                 CurrentDay = api.Player.CurrentDay,
                 StudyResults = api.Player.StudyResults ?? new Dictionary<int, int>(),
+                // saves made before approaches were recorded don't have this, so start empty
+                StudyApproaches = api.Player.StudyApproaches ?? new Dictionary<int, int>(),
                 OwnedUpgrades = api.Player.OwnedUpgrades ?? new Dictionary<string, int>()
             },
 
@@ -116,6 +114,7 @@ namespace Assets.Scripts.Bootstrap
             TotalMoneyEarned = player.TotalMoneyEarned,
             CurrentDay = player.CurrentDay,
             StudyResults = player.StudyResults,
+            StudyApproaches = player.StudyApproaches,
             OwnedUpgrades = player.OwnedUpgrades
         };
     }

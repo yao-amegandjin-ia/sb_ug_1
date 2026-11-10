@@ -3,6 +3,8 @@
 // the screens only show things and pass on clicks. every click that changes the game calls one function here,
 // so the rules can be read (and changed) in one place without any UI code around them.
 // money and study results live in the DataManager. the HUD and DaySummary hear what happened through the events below.
+// it also owns the day: the timer, which day it is, starting the next one and ending this one.
+// the HUD only shows TimeLeft / CurrentDay, and DaySummary opens on DayEnded and calls NextDay.
 
 
 using System;
@@ -29,8 +31,9 @@ namespace GameLogic
     public class FirmController : MonoBehaviour, ISceneInitializable
     {
         [Header("Rewards")]
-        [SerializeField] private int bestReward = 100;
-        [SerializeField] private int goodReward = 50;
+        [Tooltip("Money for a match, by whether step one (approach) was right and how good step two (methodology) was.")]
+        [SerializeField] private MatchRewards matchRewards = new MatchRewards();
+        [Tooltip("\"We can't help\" on a request that can't be researched. Turning away a researchable one pays 0.")]
         [SerializeField] private int correctRejectReward = 50;
 
         [Header("Researchers")]
@@ -38,10 +41,23 @@ namespace GameLogic
                  "so this starts at 2. Set it to 4 to allow all of them.")]
         [SerializeField, Range(1, 4)] private int unlockedMethods = 2;
         
+        [Header("Day")]
+        [Tooltip("Seconds in a day before Clock upgrades.")]
+        [SerializeField, Min(1f)] private float baseDayLength = 180f;
+        [Tooltip("Days in a full game. The day summary after the last one is the end of the game.")]
+        [SerializeField, Min(1)] private int totalDays = 7;
+
         [Header("Waiting room")]
         [Tooltip("Clients who can sit in the waiting area before any Couch upgrades.")]
         [SerializeField, Min(0)] private int baseWaitingSeats = 3;
 
+        /// <summary>A day began (the timer is running). Gives the day number. The HUD resets its "today" counts here.</summary>
+        public event Action<int> DayStarted;
+
+        /// <summary>
+        /// The day is over: the timer ran out, or there are no clients left today. Gives the day number.
+        /// Fires once per day. DaySummary opens on this.
+        /// </summary>
         public event Action<int> DayEnded;
 
         /// <summary>A study was finished with this result. The HUD counts these.</summary>
@@ -221,7 +237,7 @@ namespace GameLogic
             int reward = correct ? correctRejectReward : 0;
 
             if (request != null)
-                RecordStudy(request.RequestId, MethodLibrary.NoneId, reward);
+                RecordStudy(request.RequestId, ResearchApproach.None, MethodLibrary.NoneId, reward);
             Debug.Log($"{client.Data.Name} denied: {(correct ? "correct" : "wrong, this one was researchable")}, +${reward}");
 
             client.Data.Complete();   // "request was rejected"
@@ -232,7 +248,8 @@ namespace GameLogic
             {
                 Request = request,
                 MethodologyId = MethodLibrary.NoneId,
-                Outcome = correct ? ClientOutcome.CorrectReject : ClientOutcome.WrongReject
+                Outcome = correct ? ClientOutcome.CorrectReject : ClientOutcome.WrongReject,
+                Reward = reward
             });
             return correct;
         }
@@ -325,7 +342,7 @@ namespace GameLogic
 
             RequestData request = client.Data.Request;
             if (request != null)
-                RecordStudy(request.RequestId, MethodLibrary.NoneId, 0);
+                RecordStudy(request.RequestId, ResearchApproach.None, MethodLibrary.NoneId, 0);
             Debug.Log($"{client.Data.Name} left dissatisfied. Saved as a rejection, +$0");
 
             StopFollowing(client);
@@ -361,38 +378,36 @@ namespace GameLogic
         }
 
         /// <summary>
-        /// MATCH. Grades the methodology, pays the reward, saves {request ID : methodology ID}
-        /// and finishes the client (for now they leave straight away, there's no research timer yet).
+        /// MATCH. Grades both steps (the approach, then the methodology), pays from the matchRewards table,
+        /// saves {request ID : methodology ID} and finishes the client (they leave straight away, there's no research timer yet).
         /// </summary>
-        public StudyOutcome CompleteStudy(Client client, Researcher researcher, int methodologyId)
+        public MatchGrade CompleteStudy(Client client, Researcher researcher, ResearchApproach approach, int methodologyId)
         {
-            if (!client || !researcher) return StudyOutcome.Wrong;
+            if (!client || !researcher) return new MatchGrade(false, StudyOutcome.Wrong);
 
             RequestData request = client.Data.Request;
-            StudyOutcome outcome = StudyScoring.Score(request, methodologyId);   // methodology IDs come from methodologies.csv
-            int reward = RewardFor(outcome);
+            MatchGrade grade = StudyScoring.Grade(request, approach, methodologyId);   // methodology IDs come from the methodologies spreadsheet
+            int reward = matchRewards.For(grade);
 
             if (request != null)
-                RecordStudy(request.RequestId, methodologyId, reward);
-            Debug.Log($"{client.Data.Name} matched with {researcher.Data.Name} using {MethodLibrary.GetName(methodologyId)} ({outcome}): +${reward}");
+                RecordStudy(request.RequestId, approach, methodologyId, reward);
+            Debug.Log($"{client.Data.Name} matched with {researcher.Data.Name}: {approach} / {MethodLibrary.GetName(methodologyId)} ({grade}): +${reward}");
 
             client.Data.AssignTo(researcher.Data.Id, methodologyId);
             client.Data.Complete();
             client.Leave();
 
-            StudyFinished?.Invoke(outcome);
-            ClientResolved?.Invoke(new ClientResult { Request = request, MethodologyId = methodologyId, Outcome = ClientResult.FromStudy(outcome) });
-            return outcome;
-        }
-
-        private int RewardFor(StudyOutcome outcome)
-        {
-            switch (outcome)
+            StudyFinished?.Invoke(grade.Method);
+            ClientResolved?.Invoke(new ClientResult
             {
-                case StudyOutcome.Best: return bestReward;
-                case StudyOutcome.Good: return goodReward;
-                default: return 0;
-            }
+                Request = request,
+                Approach = approach,
+                ApproachCorrect = grade.ApproachCorrect,
+                MethodologyId = methodologyId,
+                Outcome = ClientResult.FromStudy(grade.Method),
+                Reward = reward
+            });
+            return grade;
         }
 
         // --- hire screen ---
@@ -450,11 +465,11 @@ namespace GameLogic
         /// <param name="requestId">Request ID</param>
         /// <param name="methodologyId">Methodology ID</param>
         /// <param name="reward">Reward amount</param>
-        public void RecordStudy(int requestId, int methodologyId, int reward)
+        public void RecordStudy(int requestId, ResearchApproach approach, int methodologyId, int reward)
         {
             // the HUD's "earned today" (shown in DaySummary) listens to MoneyEarned, so it has to fire here.
             // TryRecordStudy returns false when this request was already paid for, and then nothing was earned
-            if (dataManager.TryRecordStudy(requestId, methodologyId, reward) && reward > 0)
+            if (dataManager.TryRecordStudy(requestId, approach, methodologyId, reward) && reward > 0)
                 MoneyEarned?.Invoke(reward);
         }
    
@@ -479,6 +494,12 @@ namespace GameLogic
         public int GetStudyMethodology(int requestId)
         {
             return dataManager.PlayerData.StudyResults.GetValueOrDefault(requestId, -1);
+        }
+
+        /// <summary>The approach picked for a request (step one), or None if it hasn't been studied or was turned away.</summary>
+        public ResearchApproach GetStudyApproach(int requestId)
+        {
+            return (ResearchApproach)dataManager.PlayerData.StudyApproaches.GetValueOrDefault(requestId, 0);
         }
 
         /// <summary>
@@ -515,6 +536,7 @@ namespace GameLogic
                 }
             }
 
+            StartDay();
             SpawnNextClient();
         }
 
@@ -541,20 +563,91 @@ namespace GameLogic
             OnClientSpawned(clientSpawner.Spawn(client));
         }
 
-        //Used to fire the hud event early when the clients are done for the day but the timer still going
-        public void EndDay()
+        // ---------- the day ----------
+
+        private float timeLeft;
+        private bool dayRunning;
+
+        /// <summary>Today's length: the base length plus the Clock upgrade. A Clock bought during the day counts from the next day.</summary>
+        public float DayLength => baseDayLength + (upgrades != null ? upgrades.ExtraDaySeconds : 0f);
+
+        /// <summary>Seconds left today. Before the first day starts it's the full length, after the day ends it's 0.</summary>
+        public float TimeLeft => timeLeft;
+
+        /// <summary>True while the timer is counting down.</summary>
+        public bool IsDayRunning => dayRunning;
+
+        /// <summary>The day being played, from the save, so it carries over between sessions.</summary>
+        public int CurrentDay => dataManager != null ? dataManager.PlayerData.CurrentDay : 1;
+
+        public int TotalDays => totalDays;
+
+        public bool IsLastDay => CurrentDay >= totalDays;
+
+        private void Start()
         {
-            DayEnded?.Invoke(dataManager.PlayerData.CurrentDay);
+            timeLeft = DayLength;   // so the HUD shows the full day before Start is pressed
         }
 
-        //Called by the hud event!
-        public async void OnDayEnded(int day)
+        // the timer. Time.deltaTime is the seconds since the last frame, so this counts down in real seconds
+        private void Update()
         {
+            if (!dayRunning) return;
+
+            timeLeft -= Time.deltaTime;
+            if (timeLeft <= 0f)
+                EndDay();
+        }
+
+        /// <summary>Starts the timer for the current day. Called by OnGameStarted and NextDay.</summary>
+        private void StartDay()
+        {
+            timeLeft = DayLength;
+            dayRunning = true;
+            Debug.Log($"FirmController: day {CurrentDay} started ({DayLength:0}s).");
+            DayStarted?.Invoke(CurrentDay);
+        }
+
+        /// <summary>
+        /// Ends today: stops the timer, saves and tells everyone. Called when the timer runs out, and by
+        /// SpawnNextClient when there are no clients left. Does nothing if the day already ended,
+        /// so both happening doesn't open the day summary twice.
+        /// </summary>
+        public void EndDay()
+        {
+            if (!dayRunning) return;
+            dayRunning = false;
+            timeLeft = 0f;
+
+            int day = CurrentDay;
             Debug.Log($"FirmController: day {day} ended.");
+            DayEnded?.Invoke(day);
+            SaveAfterDay();
+        }
 
+        // async void: Unity can't wait for this, so it runs alongside the game. fine for a save that nothing waits on
+        private async void SaveAfterDay()
+        {
             await dataManager.SaveGame();
+        }
 
+        /// <summary>
+        /// Moves to the next day: day number +1 (saved), a fresh set of clients, the timer starts and the
+        /// first client comes in. DaySummary calls this when the player presses Continue.
+        /// </summary>
+        public void NextDay()
+        {
+            if (dayRunning) return;   // only between days
+            if (IsLastDay)
+            {
+                Debug.Log("FirmController: that was the last day.");
+                return;
+            }
 
+            dataManager.AdvanceDay();
+            SetDailyClients();   // uses the new day number and skips requests already answered
+            StartDay();
+            SpawnNextClient();
         }
 
 

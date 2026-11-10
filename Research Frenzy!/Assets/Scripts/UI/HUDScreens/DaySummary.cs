@@ -1,4 +1,5 @@
-// DaySummary - shows up when the day timer runs out (HUD.DayEnded), or when something calls Show(day).
+// DaySummary - shows up when the day ends (FirmController.DayEnded), or when something calls Show(day).
+// Continue asks FirmController for the next day.
 // top: how many of each result today. middle: every client from today, what the player answered
 // (approach + methodology), what it paid, the best answer and why (the Rationale column of the requests
 // spreadsheet). bottom: money and Continue.
@@ -53,8 +54,6 @@ public class DaySummary : MonoBehaviour, IGameUIPart
 
     void Start()
     {
-        hud.DayEnded += Show;
-
         // the lab scene may not be loaded yet. if it isn't, HUD.Initialize(firm) calls Initialize below later
         if (firmRules == null) Initialize(FindAnyObjectByType<FirmController>());
     }
@@ -63,15 +62,24 @@ public class DaySummary : MonoBehaviour, IGameUIPart
     public void Initialize(FirmController firm)
     {
         if (firm == firmRules) return;
-        if (firmRules != null) firmRules.ClientResolved -= OnClientResolved;
+        Disconnect();
         firmRules = firm;
-        if (firmRules != null) firmRules.ClientResolved += OnClientResolved;
+        if (firmRules == null) return;
+        firmRules.ClientResolved += OnClientResolved;
+        firmRules.DayEnded += Show;
+    }
+
+    void Disconnect()
+    {
+        if (firmRules == null) return;
+        firmRules.ClientResolved -= OnClientResolved;
+        firmRules.DayEnded -= Show;
+        firmRules = null;
     }
 
     void OnDestroy()
     {
-        if (hud != null) hud.DayEnded -= Show;
-        if (firmRules != null) firmRules.ClientResolved -= OnClientResolved;
+        Disconnect();
     }
 
     // every finished client (matched, turned away or lost) comes through here
@@ -286,7 +294,9 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         today.Clear();
         Closed?.Invoke(day);
 
-        if (hud.IsLastDay())
+        if (firmRules == null) return;
+
+        if (firmRules.IsLastDay)
         {
             // TODO: final survey + leaderboard go here
             Debug.Log("Last day done - final survey would go here");
@@ -294,6 +304,6 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         }
 
         // TODO: open the upgrades screen here once it's done, then start the next day from there
-        hud.NextDay();
+        firmRules.NextDay();
     }
 }

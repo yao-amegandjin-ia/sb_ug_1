@@ -6,7 +6,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
-using Assets.Scripts;
 using System.Collections.Generic;
 using Clients;
 using GameDataObjects;

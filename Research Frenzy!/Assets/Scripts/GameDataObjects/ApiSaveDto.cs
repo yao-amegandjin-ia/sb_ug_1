@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace GameDataObjects
@@ -30,6 +30,10 @@ namespace GameDataObjects
 
         [JsonProperty("study_results")]
         public Dictionary<int, int> StudyResults { get; set; }
+
+        // request ID -> approach number (0 None, 1 Quantitative, 2 Qualitative, 3 Mixed)
+        [JsonProperty("study_approaches")]
+        public Dictionary<int, int> StudyApproaches { get; set; }
 
         [JsonProperty("owned_upgrades")]
         public Dictionary<string, int> OwnedUpgrades { get; set; }

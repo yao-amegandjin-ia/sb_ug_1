@@ -1,8 +1,10 @@
+using System;
 using GameDataObjects;
+using UnityEngine;
 
 namespace GameLogic
 {
-    /// <summary>How well a methodology fits a request. The numbers match HUD.AddStudyResult (0 best, 1 partial, 2 wrong).</summary>
+    /// <summary>How well a methodology fits a request (step two). The numbers match HUD.AddStudyResult (0 best, 1 partial, 2 wrong).</summary>
     public enum StudyOutcome
     {
         Best = 0,
@@ -22,15 +24,69 @@ namespace GameLogic
     }
 
     /// <summary>
-    /// What happened with one client: their request, the methodology picked (0 when turned away or lost)
-    /// and the outcome. FirmController sends one of these every time a client is finished.
-    /// It carries the data itself, so listeners don't have to dig it out of the saved study results.
+    /// The grade for one match: was step one (the approach) right, and how good was step two (the methodology).
+    /// A struct because it's two small values that always travel together.
+    /// </summary>
+    public struct MatchGrade
+    {
+        public bool ApproachCorrect;
+        public StudyOutcome Method;
+
+        public MatchGrade(bool approachCorrect, StudyOutcome method)
+        {
+            ApproachCorrect = approachCorrect;
+            Method = method;
+        }
+
+        public override string ToString() => $"approach {(ApproachCorrect ? "right" : "wrong")}, method {Method}";
+    }
+
+    /// <summary>
+    /// The payout table. [Serializable] makes it show up as a foldout in FirmController's Inspector,
+    /// so the amounts can be tuned there without touching code. The defaults are the design's table.
+    /// </summary>
+    [Serializable]
+    public class MatchRewards
+    {
+        [Tooltip("Approach right, methodology best")]
+        public int approachRightMethodBest = 100;
+        [Tooltip("Approach right, methodology good")]
+        public int approachRightMethodGood = 50;
+        [Tooltip("Approach right, methodology incorrect")]
+        public int approachRightMethodWrong = 25;
+        [Tooltip("Approach wrong, methodology best")]
+        public int approachWrongMethodBest = 50;
+        [Tooltip("Approach wrong, methodology good")]
+        public int approachWrongMethodGood = 25;
+        [Tooltip("Approach wrong, methodology incorrect")]
+        public int approachWrongMethodWrong = 0;
+
+        public int For(MatchGrade grade)
+        {
+            switch (grade.Method)
+            {
+                case StudyOutcome.Best: return grade.ApproachCorrect ? approachRightMethodBest : approachWrongMethodBest;
+                case StudyOutcome.Good: return grade.ApproachCorrect ? approachRightMethodGood : approachWrongMethodGood;
+                default: return grade.ApproachCorrect ? approachRightMethodWrong : approachWrongMethodWrong;
+            }
+        }
+    }
+
+    /// <summary>
+    /// What happened with one client: their request, what the player picked (approach None and methodology 0
+    /// when turned away or lost), the outcome and the money it paid. FirmController sends one of these every
+    /// time a client is finished. It carries the data itself, so listeners don't have to dig it out of the save.
     /// </summary>
     public class ClientResult
     {
         public RequestData Request;
+        public ResearchApproach Approach;   // step one pick. None for rejects and lost clients
+        public bool ApproachCorrect;        // only means something for matches
         public int MethodologyId;
         public ClientOutcome Outcome;
+        public int Reward;
+
+        public bool IsMatch => Outcome == ClientOutcome.Best || Outcome == ClientOutcome.Good || Outcome == ClientOutcome.Wrong;
 
         public static ClientOutcome FromStudy(StudyOutcome outcome)
         {
@@ -49,8 +105,14 @@ namespace GameLogic
     /// </summary>
     public static class StudyScoring
     {
+        /// <summary>Grades both steps of a match at once.</summary>
+        public static MatchGrade Grade(RequestData request, ResearchApproach approach, int methodologyId)
+        {
+            return new MatchGrade(IsCorrectApproach(request, approach), Score(request, methodologyId));
+        }
+
         /// <summary>
-        /// Grades step two: the methodology (an ID from methodologies.csv) the player matched a request with.
+        /// Grades step two: the methodology (an ID from the methodologies spreadsheet) the player matched a request with.
         /// </summary>
         public static StudyOutcome Score(RequestData request, int methodologyId)
         {
@@ -60,10 +122,7 @@ namespace GameLogic
             return StudyOutcome.Wrong;
         }
 
-        /// <summary>
-        /// Step one: true if the player picked the right approach (quantitative / qualitative / mixed).
-        /// Not used by the match screen yet. It's here so the data can be checked now.
-        /// </summary>
+        /// <summary>Step one: true if the player picked the right approach (quantitative / qualitative / mixed).</summary>
         public static bool IsCorrectApproach(RequestData request, ResearchApproach picked)
         {
             return request != null && request.IsResearchable && picked != ResearchApproach.None && picked == request.Approach;

@@ -9,6 +9,7 @@
 // Adding a methodology = adding a row. No code changes.
 
 using System.Collections.Generic;
+using GameDataObjects;
 
 namespace Config
 {

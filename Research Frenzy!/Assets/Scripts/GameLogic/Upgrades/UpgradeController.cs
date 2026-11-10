@@ -4,7 +4,6 @@
 // the scripts that use a bonus ask for it (HUD for day time, ClientGenerator for patience, ...),
 // so this script never has to change when a new upgrade asset is added.
 
-using Assets.Scripts.Bootstrap;
 using System;
 using System.Collections.Generic;
 using Bootstrap;

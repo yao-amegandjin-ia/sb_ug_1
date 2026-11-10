@@ -2,14 +2,14 @@
 // adding this script also adds the other UI scripts it needs (RequireComponent).
 // other scripts should call AddMoney / AddStudyResult / SetOngoing instead of touching the labels.
 // study results and correct rejects come from FirmController's events, so the screens don't have to tell the HUD.
-// the day is dayLength seconds plus the Clock upgrade. a Clock bought during the day counts from the next day.
+// the day timer lives in FirmController. the HUD only shows it: Update reads FirmController.TimeLeft,
+// and DayStarted resets the "today" counts.
 // the labels are looked up in Bind (called by GameUIPanel when the PanelRenderer has built the UI),
 // the game systems are found in Start. either one can run first.
 
 using System;
 using Bootstrap;
 using GameLogic;
-using GameLogic.Upgrades;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -21,12 +21,9 @@ namespace UI.HUDScreens
     {
         // read straight from GameInitializer, so there is only one money value. DaySummary and ManageFirmPanel still use hud.money
         public int money => dataManager != null ? dataManager.PlayerData.CurrentMoney : 0;
-        public int day = 1;
-        public int totalDays = 7;
-        public float dayLength = 180f; // seconds before upgrades, placeholder until we decide
-
-        /// <summary>Today's length: dayLength plus the Clock upgrade.</summary>
-        public float DayLength => dayLength + (upgrades != null ? upgrades.ExtraDaySeconds : 0f);
+        // read from FirmController, which owns the day. ManageFirmPanel still uses hud.day / hud.totalDays
+        public int day => firmRules != null ? firmRules.CurrentDay : 1;
+        public int totalDays => firmRules != null ? firmRules.TotalDays : 7;
 
         // whole game
         public int best, partial, wrong, ongoing;
@@ -34,13 +31,9 @@ namespace UI.HUDScreens
         // just today, for the day summary
         public int bestToday, partialToday, wrongToday, lostToday, rejectsToday, earnedToday;
 
-        public event Action<int> DayEnded;
-
         private DataManager dataManager;
 
-    
-        float timeLeft;
-        bool running = false;
+        int shownSeconds = -1;   // the whole seconds on the timer label, so it's only rewritten when it changes
 
         Label moneyText, dayText, timerText;
         Label bestText, partialText, wrongText, ongoingText;
@@ -48,13 +41,11 @@ namespace UI.HUDScreens
         //GameInitializer game;
         FirmController firmRules;   // game rules, in the Bootstrap scene. not the ManageFirmPanel below
         private ManageFirmPanel firm;
-        UpgradeController upgrades;
 
         void Awake()
         {
             codex = GetComponent<CodexPanel>();
             firm = GetComponent<ManageFirmPanel>();
-            timeLeft = dayLength;
         }
 
         // called by GameUIPanel once the UI has loaded (and again if it reloads)
@@ -82,15 +73,6 @@ namespace UI.HUDScreens
         
             // the lab scene may not be loaded yet. if it isn't, UIInitializer.SendFirm calls Initialize(firm) later
             if (firmRules == null) Connect(FindAnyObjectByType<FirmController>());
-
-            upgrades = FindAnyObjectByType<UpgradeController>();
-            if (upgrades == null) Debug.LogWarning("HUD: no UpgradeController found, the Clock upgrade won't add time. Is it on the GameInitializer object?");
-
-            StartScreen startScreen = GetComponent<StartScreen>();
-            if (startScreen != null) startScreen.GameStarted += (starter) => StartDay();
-            else Debug.LogWarning("HUD: no StartScreen on this object, so the day won't start.");
-
-            timeLeft = DayLength;
             Refresh();
         }
 
@@ -103,32 +85,21 @@ namespace UI.HUDScreens
             else Debug.LogWarning($"HUD: no Button named '{buttonName}' in the GameUI UXML.");
         }
 
+        // FirmController counts the time down. this just shows it.
+        // reading a property every frame is cheap, an event every frame would be noisier for no gain
         void Update()
         {
-            if (!running) return;
-
-            timeLeft -= Time.deltaTime;
-            if (timeLeft <= 0)
-            {
-                timeLeft = 0;
-                running = false;
-                Refresh();
-                DayEnded?.Invoke(day);
-            }
-            else if (timerText != null)
-            {
-                timerText.text = FormatTime(timeLeft);
-            }
+            ShowTime();
         }
 
-
-        public void EndDay(int day)
+        void ShowTime()
         {
-            running = false;
-            timeLeft = 0;
-            Refresh();
-
-            DayEnded?.Invoke(day);
+            if (timerText == null) return;
+            float timeLeft = firmRules != null ? firmRules.TimeLeft : 0f;
+            int seconds = Mathf.CeilToInt(timeLeft);
+            if (seconds == shownSeconds) return;   // same text as last frame
+            shownSeconds = seconds;
+            timerText.text = FormatTime(timeLeft);
         }
         public void Initialize(GameSystems systems)
         {
@@ -153,6 +124,9 @@ namespace UI.HUDScreens
             firmRules.StudyFinished += OnStudyFinished;
             firmRules.RequestRejected += OnRequestRejected;
             firmRules.ClientLost += OnClientLost;
+            firmRules.DayStarted += OnDayStarted;
+            firmRules.DayEnded += OnDayEnded;
+            Refresh();
         }
 
         void Disconnect()
@@ -163,9 +137,12 @@ namespace UI.HUDScreens
             firmRules.StudyFinished -= OnStudyFinished;
             firmRules.RequestRejected -= OnRequestRejected;
             firmRules.ClientLost -= OnClientLost;
+            firmRules.DayStarted -= OnDayStarted;
+            firmRules.DayEnded -= OnDayEnded;
             firmRules = null;
         }
-        public void StartDay()
+        // a new day: clear today's counts for the day summary
+        void OnDayStarted(int day)
         {
             bestToday = 0;
             partialToday = 0;
@@ -173,20 +150,13 @@ namespace UI.HUDScreens
             lostToday = 0;
             rejectsToday = 0;
             earnedToday = 0;
-            timeLeft = DayLength;
-            running = true;
             Refresh();
         }
 
-        public void NextDay()
+        // the timer label shows 0:00 straight away, even if this frame's Update already ran
+        void OnDayEnded(int day)
         {
-            day++;
-            StartDay();
-        }
-
-        public bool IsLastDay()
-        {
-            return day >= totalDays;
+            Refresh();
         }
 
         void OnDestroy()
@@ -281,7 +251,8 @@ namespace UI.HUDScreens
             if (moneyText == null) return;   // the UI hasn't loaded yet
             moneyText.text = "$" + money.ToString("N0");
             dayText.text = day + "/" + totalDays;
-            timerText.text = FormatTime(timeLeft);
+            shownSeconds = -1;   // force the timer label to be rewritten
+            ShowTime();
             bestText.text = best.ToString();
             partialText.text = partial.ToString();
             wrongText.text = wrong.ToString();
