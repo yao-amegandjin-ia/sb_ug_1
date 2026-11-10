@@ -1,7 +1,4 @@
 ﻿using Assets;
-using Assets.Scripts.Bootstrap.ApiDtos;
-using Assets.Scripts.GameDataObjects;
-using Assets.Scripts.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PlasticGui.Help.Conditions;
@@ -12,6 +9,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using GameDataObjects;
+using Interfaces;
 using UnityEngine;
 using UnityEngine.Networking;
 namespace Assets.Scripts.Bootstrap

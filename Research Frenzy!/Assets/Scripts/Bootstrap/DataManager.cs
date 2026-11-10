@@ -1,6 +1,4 @@
 ﻿using Assets.Scripts.Bootstrap;
-using Assets.Scripts.GameDataObjects;
-using Assets.Scripts.Interfaces;
 using Clients;
 using Researchers;
 using System;
@@ -11,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using GameDataObjects;
 using Unity.VisualScripting;
 using UnityEngine;
 

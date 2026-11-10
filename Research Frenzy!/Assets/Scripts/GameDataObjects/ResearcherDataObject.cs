@@ -1,9 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace Assets.Scripts.GameDataObjects
+namespace GameDataObjects
 {
     public class ResearcherDataObject
     {
@@ -16,7 +13,8 @@ namespace Assets.Scripts.GameDataObjects
         public int Speed { get; set; }
         public int Quality { get; set; }
 
-        public List<MethodologiesEnum> Methodologies
+        // methodology IDs from methodologies.csv (the old MethodologiesEnum is gone)
+        public List<int> Methodologies
         { get; set; } = new();
 
         public List<int> Skin { get; set; } = new();

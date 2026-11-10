@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using Clients;
 using Researchers;
 using System.Text;
-using PlasticGui.Help.Conditions;
 
-namespace Assets.Scripts.GameDataObjects
+namespace GameDataObjects
 {
     public class SaveData
     {

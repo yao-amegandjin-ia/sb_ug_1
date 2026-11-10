@@ -1,7 +1,4 @@
 using Assets.Scripts.Bootstrap;
-using Assets.Scripts.Bootstrap.ApiDtos;
-using Assets.Scripts.GameDataObjects;
-using Assets.Scripts.Interfaces;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using System;
@@ -9,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using GameDataObjects;
+using Interfaces;
 using UnityEngine;
 using UnityEngine.Networking;
 

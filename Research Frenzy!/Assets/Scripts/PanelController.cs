@@ -6,10 +6,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
-using Assets.Scripts.GameDataObjects;
 using Assets.Scripts;
 using System.Collections.Generic;
 using Clients;
+using GameDataObjects;
 
 public class PanelController : MonoBehaviour
 {

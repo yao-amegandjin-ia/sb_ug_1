@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
-using Assets.Scripts.GameDataObjects;
 
-namespace Assets.Scripts.Bootstrap.ApiDtos
+namespace GameDataObjects
 {
     // These classes define the current json structure of the API. They define the JSON serializations so that they are seperate from 
     //the data objects the game will use, this is to seperate for the adapter pattern. 

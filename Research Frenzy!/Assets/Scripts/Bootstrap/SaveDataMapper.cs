@@ -1,6 +1,4 @@
-﻿using Assets.Scripts.Bootstrap.ApiDtos;
-using Assets.Scripts.GameDataObjects;
-using Researchers;
+﻿using Researchers;
 using UnityEngine;
 using Clients;
 using System;
@@ -9,6 +7,7 @@ using System.Linq;
 
 using Newtonsoft.Json.Linq;
 using System.Text;
+using GameDataObjects;
 
 namespace Assets.Scripts.Bootstrap
 {

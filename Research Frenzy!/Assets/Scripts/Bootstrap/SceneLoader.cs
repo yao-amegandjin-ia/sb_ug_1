@@ -1,9 +1,9 @@
 using Assets.Scripts.Bootstrap;
-using Assets.Scripts.Interfaces;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Interfaces;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

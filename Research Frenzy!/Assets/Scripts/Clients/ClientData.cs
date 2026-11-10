@@ -3,7 +3,7 @@
 // the panel buttons call the public functions below to change what happens to them.
 
 using System;
-using Assets.Scripts.GameDataObjects;
+using GameDataObjects;
 using UnityEngine;
 
 namespace Clients
