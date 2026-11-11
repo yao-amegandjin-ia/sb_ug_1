@@ -516,6 +516,17 @@ namespace GameLogic
             return true;
         }
 
+        /// <summary>
+        /// Adds money that isn't from a study (the quiz rewards).
+        /// Fires MoneyEarned so the HUD and the day summary update.
+        /// </summary>
+        public void AddMoney(int amount)
+        {
+            if (amount <= 0) return;
+            dataManager.IncreaseMoney(amount);
+            MoneyEarned?.Invoke(amount);
+        }
+
 
 
         //Do work here on game starting! Note this comes if we not selected a starter yet!

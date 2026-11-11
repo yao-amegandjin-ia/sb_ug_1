@@ -1,10 +1,11 @@
 // QuizScreen - goes on the GameUI object. mid game and post game quiz, questions from Resources/Config/ResearchFrenzyQuizzes.csv
 // same questions every time, order is shuffled with the game seed. results only show at the end.
-// TODO: $50 per right answer + sending answers with SaveQuizData 
+// TODO: sending the answers with SaveQuizData
 
 using System;
 using System.Collections.Generic;
 using Config;
+using GameLogic;
 using Interfaces;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -305,7 +306,15 @@ namespace UI.HUDScreens
             foreach (QuizAnswer a in answers)
                 Debug.Log("  question " + a.question.id + ": picked " + Letter(a.picked) + (a.IsCorrect() ? " (right)" : " (wrong)") + ", " + a.seconds.ToString("0.0") + "s");
 
-            // TODO: give CorrectCount() * correctReward money and send {question id: picked} with SaveQuizData
+            int earned = CorrectCount() * correctReward;
+            if (earned > 0)
+            {
+                FirmController firm = FindAnyObjectByType<FirmController>();
+                if (firm != null) firm.AddMoney(earned);
+                else Debug.LogWarning("QuizScreen: no FirmController found, so the quiz money wasn't added. Is the Research_Lab scene loaded?");
+            }
+
+            // TODO: send {question id: picked} with SaveQuizData
 
             ShowResults();
         }
