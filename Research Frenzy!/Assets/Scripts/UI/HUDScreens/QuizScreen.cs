@@ -1,6 +1,6 @@
 // QuizScreen - goes on the GameUI object. mid game and post game quiz, questions from Resources/Config/ResearchFrenzyQuizzes.csv
 // same questions every time, order is shuffled with the game seed. results only show at the end.
-// TODO: $50 per right answer + sending answers with SaveQuizData (need a way to add money / save from Brandon)
+// TODO: $50 per right answer + sending answers with SaveQuizData 
 
 using System;
 using System.Collections.Generic;
