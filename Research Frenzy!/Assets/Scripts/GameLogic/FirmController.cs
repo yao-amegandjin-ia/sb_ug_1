@@ -102,6 +102,7 @@ namespace GameLogic
         public Client FollowingClient => following && following.IsFollowing ? following : null;
 
      
+        
         public void InitializeScene(GameSystems gameSystems)
         {
             dataManager = gameSystems.DataManager;
@@ -118,17 +119,14 @@ namespace GameLogic
                 throw new InvalidOperationException(
                     "FirmController: assign the lab generators and spawners in the Inspector.");
 
-            
-            
-            
-            //If no researchers loaded in 
+            //Connect the researchers
+            researcherGenerator.Initialize(dataManager.Researchers);
+
+            //If no researchers loaded in (this means we will need to show the start screen so probably move that check from UI to here)
             if (researcherGenerator.Researchers.Count == 0)
             {
-                
                 var researchers = researcherGenerator.Generate();
-                dataManager.SetResearchers(researchers);
-                researcherGenerator.Initialize(dataManager.Researchers);
-
+                dataManager.UpdateResearchers(researchers);
             }
             clientGenerator.Initialize(dataManager.GetRequests());
             ApplyClientUpgrades();
@@ -161,8 +159,8 @@ namespace GameLogic
                 //Append the returning clients!
                 clients.AddRange(returningClientsRebuilt);
             }
-            //Set the daily client list for the firm
-            this.clients = clients;
+            //Update the daily client list for the firm
+            dataManager.UpdateDailyClients(clients);
         }
 
         private void ResolveLabComponents()

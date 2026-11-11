@@ -80,13 +80,28 @@ public class DataManager
         return instance;
     }
 
-
-  public void SetResearchers(List<ResearcherData> researchers)
+/// <summary>
+/// Clears and updates the researchers from the new list. 
+/// </summary>
+/// <param name="researchers"></param>
+  public void UpdateResearchers(List<ResearcherData> researchers)
     {
-        this.researchers = researchers;
+        researchers.Clear();
+        foreach(var r in researchers)
+        {
+            AddResearcher(r);
+        }
+    }
+    /// <summary>
+    /// Clears and updates the daily clients from the new list. 
+    /// </summary>
+    /// <param name="clients"></param>
+    public void UpdateDailyClients(List<ClientData> clients)
+    {
+
     }
 
-    public void AddResearcher(ResearcherData researcher)
+    private void AddResearcher(ResearcherData researcher)
     {
         if (researcher == null) throw new ArgumentNullException(nameof(researcher));
         if (state.Researchers.Any(r => r.Id == researcher.Id))

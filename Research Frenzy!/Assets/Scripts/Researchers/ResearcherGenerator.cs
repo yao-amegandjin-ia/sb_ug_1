@@ -45,7 +45,6 @@ public class ResearcherGenerator : MonoBehaviour
     [Header("Starting researchers (placeholders)")]
     [Tooltip("Methodology names from methodologies.csv. Must match StartScreen's Starter Method Names.")]
     [SerializeField] private string[] starterMethodNames = { "Product R&D", "Field Research" };
-
     
     private ResearcherData startingResearcher0 = new();
     private ResearcherData startingResearcher1 = new(); 
@@ -66,6 +65,7 @@ public class ResearcherGenerator : MonoBehaviour
     private IReadOnlyList<ResearcherData> researchers = Array.Empty<ResearcherData>();
     public IReadOnlyList<ResearcherData> Researchers => researchers;
 
+    //Give the researcher generator read only reference to the datamanager's researchers!
     public void Initialize(IReadOnlyList<ResearcherData> researchers)
     {
         this.researchers = researchers;

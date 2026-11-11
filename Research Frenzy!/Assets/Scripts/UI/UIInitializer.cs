@@ -35,8 +35,12 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
         hud = UI.GetComponent<HUD>();
         shop = shopUI.GetComponent<ShopScreen>();
         startScreen = UI.GetComponent<StartScreen>();
+        var manageFirm = UI.GetComponent<ManageFirmPanel>();
+        //Could probably just send the data manager if that is the only thing they end up needing
         hud.Initialize(gameSystems);
         shop.Initialize(gameSystems);
+        manageFirm.Initialize(gameSystems.DataManager);
+        
         
 
     }
@@ -59,8 +63,6 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
             startScreen.GameStarted += firm.OnGameStarted;
 
         }
-
-
         shop.Initialize(firm);
         hud.Initialize(firm);
     }
