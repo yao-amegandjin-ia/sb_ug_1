@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['savegame_0',['SaveGame',['../class_data_manager.html#a41d9b34cb07e43792816296795539f49',1,'DataManager.SaveGame()'],['../class_bootstrap_1_1_offline_save_system.html#a0c4de62b976326244ad686e5442fc86c',1,'Bootstrap.OfflineSaveSystem.SaveGame()'],['../class_bootstrap_1_1_base_save_system.html#a2099643f34296399328329ec382f8906',1,'Bootstrap.BaseSaveSystem.SaveGame()'],['../class_bootstrap_1_1_save_system.html#afaf56cb4f2a9b7cc997c2f1eb384810e',1,'Bootstrap.SaveSystem.SaveGame()'],['../interface_interfaces_1_1_i_save_system.html#aa8208adc25b03a48874fa1592a566a55',1,'Interfaces.ISaveSystem.SaveGame()']]],
+  ['savequizdata_1',['SaveQuizData',['../class_bootstrap_1_1_offline_save_system.html#a06dd3509861364b8fd1b11cea387039a',1,'Bootstrap.OfflineSaveSystem.SaveQuizData()'],['../class_bootstrap_1_1_base_save_system.html#a618f8598f6de19a4cadd1a8e1df3574b',1,'Bootstrap.BaseSaveSystem.SaveQuizData()'],['../class_bootstrap_1_1_save_system.html#a44a9bc4c7bebcdeeeed564860477edc3',1,'Bootstrap.SaveSystem.SaveQuizData()'],['../interface_interfaces_1_1_i_save_system.html#a5de9ab6b6a83afb2320866f44c7d12bd',1,'Interfaces.ISaveSystem.SaveQuizData()']]],
+  ['savesystem_2',['SaveSystem',['../class_bootstrap_1_1_save_system.html#a166f5509347044dba2c0f01c91044369',1,'Bootstrap.SaveSystem.SaveSystem(string apiBaseUrl, string playerId, int seed)'],['../class_bootstrap_1_1_save_system.html#a96c9b52667feda2d78cdfb2148421dd2',1,'Bootstrap.SaveSystem.SaveSystem(string apiBaseUrl)']]],
+  ['sendfirm_3',['SendFirm',['../class_u_i_initializer.html#ae26715c5a459ebfe7e5384a0eaf5ac33',1,'UIInitializer']]],
+  ['sendhomeuntiltomorrow_4',['SendHomeUntilTomorrow',['../class_game_logic_1_1_firm_controller.html#ade833ab7bc2623f6fbc7aead498b7dad',1,'GameLogic::FirmController']]],
+  ['sendtowaitingroom_5',['SendToWaitingRoom',['../class_clients_1_1_client_data.html#a1ea5085df23ad4391b982e86facd04bd',1,'Clients.ClientData.SendToWaitingRoom()'],['../class_game_logic_1_1_firm_controller.html#ae9cb73804518fc759c68c0c80484e668',1,'GameLogic.FirmController.SendToWaitingRoom()']]],
+  ['setongoing_6',['SetOngoing',['../class_u_i_1_1_h_u_d_screens_1_1_h_u_d.html#a2de20e50a3df041fa4cc73c5b8ada20a',1,'UI::HUDScreens::HUD']]],
+  ['setresearchers_7',['SetResearchers',['../class_data_manager.html#a5ac81db1d6eaa87dfdc65cb5ba97ca16',1,'DataManager']]],
+  ['setselected_8',['SetSelected',['../class_u_i_1_1_methodology_tray.html#a2adaeca92c3f8dae9ed62f3761b1cf3c',1,'UI::MethodologyTray']]],
+  ['settext_9',['SetText',['../class_u_i_1_1_shop_tab.html#a78c74a3358348e9adeb72309309d3124',1,'UI::ShopTab']]],
+  ['shouldautoclose_10',['ShouldAutoClose',['../class_u_i_1_1_client_screen.html#a423f7f2efdde77acade6b43558945340',1,'UI.ClientScreen.ShouldAutoClose()'],['../class_u_i_1_1_client_screens_1_1_method_match_screen.html#a2d0bdd5e49a6c7bdb300f322e2551cc7',1,'UI.ClientScreens.MethodMatchScreen.ShouldAutoClose()'],['../class_u_i_1_1_client_screens_1_1_modal_screen.html#a5334156daaed6048b8817fd517807e67',1,'UI.ClientScreens.ModalScreen.ShouldAutoClose()']]],
+  ['show_11',['Show',['../class_u_i_1_1_client_screens_1_1_modal_screen.html#a05b4435e207ed3ee9936a069cafa04ca',1,'UI.ClientScreens.ModalScreen.Show()'],['../class_day_summary.html#a216027826842a487517c84b4a9cb81ae',1,'DaySummary.Show()'],['../class_u_i_1_1_methodology_tray.html#a1bb02b94570b09304f3d5cdf93134ab6',1,'UI.MethodologyTray.Show()']]],
+  ['spawn_12',['Spawn',['../class_client_spawner.html#ad5036a5f7eb046431258bbf82377a3be',1,'ClientSpawner.Spawn(IEnumerable&lt; ClientData &gt; clients)'],['../class_client_spawner.html#ad6e302b29c1c59979f38b65b3d266a11',1,'ClientSpawner.Spawn(ClientData data)']]],
+  ['spawnhired_13',['SpawnHired',['../class_researchers_1_1_researcher_spawner.html#a55d6c1701e2117bf80797ac13372c60e',1,'Researchers::ResearcherSpawner']]],
+  ['spawnnextclient_14',['SpawnNextClient',['../class_game_logic_1_1_firm_controller.html#ae1458939ac34fe9ed6ea34a499a3a995',1,'GameLogic::FirmController']]],
+  ['splitlist_15',['SplitList',['../class_config_1_1_csv_table.html#a3ee692fe8db2ce512e37112a12bf448b',1,'Config::CsvTable']]],
+  ['spreadsheetrow_16',['SpreadsheetRow',['../class_config_1_1_csv_table.html#a4e4bd1e99f65c8fb1d49d1cc82c50c9c',1,'Config::CsvTable']]],
+  ['startfollowing_17',['StartFollowing',['../class_clients_1_1_client_data.html#a1f321091b391c3d823a319e2b2f13d2f',1,'Clients::ClientData']]],
+  ['stopfollowing_18',['StopFollowing',['../class_client.html#a6c643cefc9e77f29336d140e436c272e',1,'Client']]],
+  ['studyresultstojson_19',['StudyResultsToJson',['../class_game_logic_1_1_firm_controller.html#a8fd46c7c7a74afe737b1b2bd7dbc0313',1,'GameLogic::FirmController']]]
+];
