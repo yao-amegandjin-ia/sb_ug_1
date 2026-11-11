@@ -125,6 +125,15 @@ public class DataManager
         state.Player.CurrentMoney -= byValue;
     }
 
+    // money that isn't from a study, like the quiz rewards. counts toward the total (the score) too
+    public void IncreaseMoney(int byValue)
+    {
+        if (byValue < 0) throw new ArgumentOutOfRangeException(nameof(byValue));
+        state.Player.CurrentMoney = checked(state.Player.CurrentMoney + byValue);
+        state.Player.TotalMoneyEarned = checked(state.Player.TotalMoneyEarned + byValue);
+        MoneyEarned?.Invoke(byValue);
+    }
+
     /// <summary>
     /// Saves the player's answer for a request: the methodology (step two) and the approach (step one),
     /// and pays the reward the first time the request is answered.

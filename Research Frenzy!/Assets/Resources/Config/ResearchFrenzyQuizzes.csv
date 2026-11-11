@@ -1,0 +1,22 @@
+ID,Quiz,Question,A,B,C,D,Answer
+# Quiz is Mid or Post. Answer is the letter of the right option. Rows starting with # are ignored,,,,,,,
+1,Mid,A company wants to know what percentage of its customers prefer shopping online over shopping in person. Which approach fits best?,Qualitative,Quantitative,Mixed Methods,Unresearchable,B
+2,Mid,A company wants a small group of customers to talk together about how they feel about a new logo. Which method fits best?,Survey,Focus Group,Content Analysis,Randomized Control Trial Study,B
+3,Mid,Which method studies the same people again and again over many years?,Case Study,Correlational Study,Longitudinal Study,Survey,C
+4,Mid,"A school randomly puts students into two groups, and only one group gets a new reading app, to see if the app raises test scores. What is this?",Randomized Control Trial Study,Correlational Study,Ethnography,Content Analysis,A
+5,Mid,A researcher lives with a small community for months and takes part in their daily life to understand how they live. Which method is this?,Focus Group,Survey,Digital Trace Research,Ethnography,D
+6,Mid,Researchers look at millions of search queries and app usage records to see how people's habits changed during a snowstorm. Which method is this?,Case Study,Digital Trace Research,Focus Group,Longitudinal Study,B
+7,Mid,"You want to know if students who sleep more also get better grades, without changing anything about their sleep. Which method fits best?",Randomized Control Trial Study,Quasi-Experimental Study,Correlational Study,Ethnography,C
+8,Mid,A business wants an in-depth look at why one company's product launch failed. Which method fits best?,Survey,Case Study,Systematic Review,Digital Trace Research,B
+9,Mid,"You want survey numbers AND interviews that explain them, all in one study. Which approach is that?",Quantitative,Qualitative,Mixed Methods,Unresearchable,C
+10,Mid,Which of these questions can't really be answered with research?,Do students who sleep more get better grades?,How many people in town own an electric car?,Does a new medicine lower blood pressure?,Is pineapple the best pizza topping?,D
+11,Post,"A city wants to compare test scores between a school that started a new program and one that didn't, but it can't randomly pick which students are in each school. Which method fits best?",Quasi-Experimental Study,Randomized Control Trial Study,Focus Group,Survey,A
+12,Post,A researcher looks through 50 years of newspaper headlines to see how they talk about climate change. Which method is this?,Ethnography,Longitudinal Study,Content Analysis,Case Study,C
+13,Post,"You want to ask 2,000 people the same set of questions online. Which method fits best?",Focus Group,Survey,Ethnography,Case Study,B
+14,Post,Hundreds of studies have already looked at whether homework helps learning. What's the best way to find out what they say overall?,Randomized Control Trial Study,Survey,Correlational Study,Systematic Review,D
+15,Post,A state wants to know if its new texting-while-driving law actually lowered the number of crashes. Which method fits best?,Policy Research,Content Analysis,Focus Group,Digital Trace Research,A
+16,Post,"In a Randomized Control Trial, why are people put into groups at random?",To make the study faster,So researchers can pick who gets the treatment,"So the groups are alike, and any difference comes from the thing being tested",Because it's cheaper,C
+17,Post,What is the main difference between a Quasi-Experimental Study and a Randomized Control Trial?,Quasi-experiments don't use any data,Quasi-experiments don't randomly assign people to groups,Randomized Control Trials only use interviews,There is no real difference,B
+18,Post,A Correlational Study can show...,That one thing definitely causes another,How one person feels about something,"That two things change together, but not that one causes the other",What a law should say,C
+19,Post,The Qualitative approach is best for questions about...,How many or how much,Exact percentages,Testing cause and effect with random groups,"People's reasons, feelings and experiences",D
+20,Post,Researchers want to follow 500 kids from age 5 to age 25 to see how their interests change. Which method fits best?,Case Study,Longitudinal Study,Survey,Content Analysis,B
