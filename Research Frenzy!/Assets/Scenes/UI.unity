@@ -485,6 +485,7 @@ GameObject:
   - component: {fileID: 1571892145}
   - component: {fileID: 1571892147}
   - component: {fileID: 1571892146}
+  - component: {fileID: 1571892148}
   m_Layer: 5
   m_Name: GameUI
   m_TagString: Untagged
@@ -519,9 +520,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9ebd483b71965d408a726daa0ae0511, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HUD
-  day: 1
-  totalDays: 7
-  dayLength: 60
   best: 0
   partial: 0
   wrong: 0
@@ -669,6 +667,20 @@ PanelRenderer:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_Position: 0
+--- !u!114 &1571892148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571892137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60bbe1ebf6996bd4daeeda0b616e885b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: NewAssembly::UI.HUDScreens.QuizScreen
+  correctReward: 50
+  showDemoButtons: 1
 --- !u!1 &1926409699
 GameObject:
   m_ObjectHideFlags: 0

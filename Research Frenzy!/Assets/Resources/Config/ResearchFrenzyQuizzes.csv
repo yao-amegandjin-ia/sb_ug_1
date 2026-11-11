@@ -1,0 +1,22 @@
+ID,Quiz,Question,A,B,C,D,Answer
+# Quiz is Mid or Post. Answer is the letter of the right option. Rows starting with # are ignored,,,,,,,
+1,Mid,A company wants to know what percentage of its customers would pay extra for faster shipping. Which approach fits best?,Qualitative,Quantitative,Mixed,This can't be researched,B
+2,Mid,You want to find out WHY people stop going to the gym after their first month. Which fits best?,Quantitative,Market Research,Qualitative,Randomized Controlled Trial,C
+3,Mid,Which method studies the same group of people again and again over many years?,Longitudinal Research,Field Research,Exploratory Research,Policy Research,A
+4,Mid,A school wants to test whether a new reading app actually raises test scores. Which method gives the strongest evidence?,Field Research,Randomized Controlled Trial,Exploratory Research,Policy Research,B
+5,Mid,What does a Systematic Review do?,Runs a brand new experiment,Interviews people in their homes,Designs and tests a new product,Collects and sums up all the existing studies on a question,D
+6,Mid,Researchers watch how nurses actually use a new check-in system at a real hospital. What kind of research is this?,Market Research,Field Research,Randomized Controlled Trial,Systematic Review,B
+7,Mid,A city wants to know if its new bike lane rule lowered the number of accidents. Which method fits best?,Product R&D,Exploratory Research,Policy Research,Longitudinal Research,C
+8,Mid,"You want survey numbers AND interviews that explain them, all in one study. Which approach is that?",Quantitative,Qualitative,Market Research,Mixed,D
+9,Mid,A team is designing a new water bottle and wants to test prototypes before selling it. Which method fits best?,Market Research,Product R&D,Field Research,Longitudinal Research,B
+10,Mid,A company wants to know what customers think of its competitors' products. Which method fits best?,Field Research,Market Research,Longitudinal Research,Policy Research,B
+11,Post,"Almost nobody has studied a topic yet, and you're not even sure what questions to ask. Which method fits best?",Exploratory Research,Randomized Controlled Trial,Systematic Review,Policy Research,A
+12,Post,Which of these questions can't really be answered with research?,Do students who sleep more get better grades?,Is pineapple the best pizza topping?,How many people in town own an electric car?,Does a new medicine lower blood pressure?,B
+13,Post,"In a Randomized Controlled Trial, why are people put into groups at random?",To make the study faster,So researchers can pick who gets the treatment,"So the groups are alike, and any difference comes from the thing being tested",Because it's cheaper,C
+14,Post,Quantitative research is best for questions about...,People's feelings and reasons,What a law should say,How to build a product,How many or how much,D
+15,Post,A researcher wants to see how teenagers' screen time changes from middle school to college. Which method fits best?,Exploratory Research,Longitudinal Research,Market Research,Product R&D,B
+16,Post,Hundreds of studies have already looked at whether homework helps learning. What's the best way to find out what they say overall?,Run a new Randomized Controlled Trial,Field Research,Systematic Review,Exploratory Research,C
+17,Post,Which method would a government office most likely use to decide whether to keep a free school lunch program?,Product R&D,Field Research,Exploratory Research,Policy Research,D
+18,Post,What's the main difference between qualitative and quantitative research?,Qualitative is always done in a lab,Quantitative never uses surveys,"Qualitative looks at reasons and experiences, quantitative looks at numbers",There is no real difference,C
+19,Post,What makes Field Research different from other methods?,It collects data in people's real setting instead of a lab,It only uses past studies,It always uses random groups,It is only for new products,A
+20,Post,What is Market Research mostly used for?,Testing if a medicine works,Finding out what customers want and would buy,Following people for many years,Summing up past studies,B

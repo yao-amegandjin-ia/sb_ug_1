@@ -780,3 +780,52 @@
 .starter-card.selected:hover, .starter-card.selected:hover:active {
     border-color: var(--purple);
 }
+
+/* ---------- quiz (mid game / post game) ---------- */
+
+.quiz-modal {
+    width: 900px;
+}
+
+.quiz-progress {
+    color: white;
+    font-size: 20px;
+    -unity-font-style: bold;
+}
+
+.quiz-question {
+    white-space: normal;
+    font-size: 24px;
+    -unity-font-style: bold;
+    color: var(--navy);
+    margin-bottom: 18px;
+}
+
+.quiz-option {
+    white-space: normal;
+    -unity-text-align: middle-left;
+    font-size: 20px;
+    min-height: 60px;
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    background-color: white;
+    color: var(--navy);
+    border-width: 3px;
+    border-color: var(--line);
+}
+
+.quiz-option:hover, .quiz-option:hover:active {
+    background-color: var(--tray);
+    border-color: var(--purple);
+}
+
+.quiz-card-right {
+    flex-direction: row;
+    align-items: center;
+}
+
+.quiz-time {
+    font-size: 15px;
+    color: var(--muted);
+    margin-right: 10px;
+}

@@ -107,6 +107,36 @@
             </ui:VisualElement>
         </ui:VisualElement>
 
+        <!-- mid game / post game quiz. the option buttons and result cards are made in QuizScreen.cs -->
+        <ui:VisualElement name="quiz-screen" class="modal-bg hidden">
+            <ui:VisualElement name="quiz-modal" class="modal quiz-modal">
+                <ui:VisualElement class="panel-header">
+                    <ui:Label name="quiz-title" text="QUICK CHECK-IN" class="panel-title" />
+                    <ui:Label name="quiz-progress" text="1 / 10" class="quiz-progress" />
+                </ui:VisualElement>
+                <ui:VisualElement name="quiz-question-page" class="modal-body">
+                    <ui:Label name="quiz-question" text="Question" class="quiz-question" />
+                    <ui:VisualElement name="quiz-options" />
+                </ui:VisualElement>
+                <ui:VisualElement name="quiz-results-page" class="modal-body summary-body hidden">
+                    <ui:VisualElement name="quiz-tiles" class="summary-tiles" />
+                    <ui:Label text="YOUR ANSWERS" class="section-title" />
+                    <ui:ScrollView name="quiz-list" class="summary-list" />
+                    <ui:VisualElement class="summary-footer">
+                        <ui:VisualElement class="money-box">
+                            <ui:Label text="EARNED FROM QUIZ" class="card-label" />
+                            <ui:Label name="quiz-earned" text="$0" class="money-value" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="money-box">
+                            <ui:Label text="CURRENT MONEY" class="card-label" />
+                            <ui:Label name="quiz-total" text="$0" class="money-value" />
+                        </ui:VisualElement>
+                        <ui:Button name="quiz-continue" text="CONTINUE" class="big-button primary" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
         <!-- start screen (covers everything until the game starts) -->
         <ui:VisualElement name="start-screen">
             <ui:VisualElement name="intro-page" class="start-page">
