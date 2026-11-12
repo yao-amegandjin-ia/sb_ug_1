@@ -1,8 +1,9 @@
 ﻿﻿using Bootstrap;
+using Clients;
+using Codice.Client.Common;
+using Config;
 using GameDataObjects;
 using Interfaces;
-using Clients;
-using Config;
 using Researchers;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ public class DataManager
 {
     public int Seed => state.Seed;
     private SaveData state = new SaveData();
-    private readonly IReadOnlyList<ClientData> dailyClients = new List<ClientData>();
+    private List<ClientData> dailyClients = new List<ClientData>();
 
     private  IReadOnlyList<ResearcherData> researchers;
 
@@ -80,16 +81,30 @@ public class DataManager
         return instance;
     }
 
-/// <summary>
-/// Clears and updates the researchers from the new list. 
-/// </summary>
-/// <param name="researchers"></param>
-  public void UpdateResearchers(List<ResearcherData> researchers)
+    public void AddReturningClient(ClientData client)
     {
-        researchers.Clear();
+        if (ReturningClients.Any(id => client.Id == id.Id))
+        {
+            return; //Client already coming back tomorrow
+        }
+        state.Clients.Add(client);
+
+
+    }
+
+    /// <summary>
+    /// Clears and updates the researchers from the new list. 
+    /// </summary>
+    /// <param name="researchers"></param>
+    public void UpdateResearchers(List<ResearcherData> researchers)
+    {
+        state.Researchers.Clear();
         foreach(var r in researchers)
         {
-            AddResearcher(r);
+            if (r == null) throw new ArgumentNullException(nameof(r));
+            if (Researchers.Any(re => re.Id == r.Id))
+                throw new ArgumentException("Researcher ID already exists.", nameof(r));
+            state.Researchers.Add(r);
         }
     }
     /// <summary>
@@ -98,24 +113,26 @@ public class DataManager
     /// <param name="clients"></param>
     public void UpdateDailyClients(List<ClientData> clients)
     {
+        dailyClients.Clear();
+        foreach(var c in clients)
+        {
+            if (c == null) throw new ArgumentNullException(nameof(c));
+            if (Researchers.Any(r => r.Id == c.Id))
+                throw new ArgumentException("Researcher ID already exists.", nameof(c));
+            dailyClients.Add(c);
+        }
 
     }
 
-    private void AddResearcher(ResearcherData researcher)
+    public void RemoveDailyClient(int index)
     {
-        if (researcher == null) throw new ArgumentNullException(nameof(researcher));
-        if (state.Researchers.Any(r => r.Id == researcher.Id))
-            throw new ArgumentException("Researcher ID already exists.", nameof(researcher));
-        state.Researchers.Add(researcher);
-
+        dailyClients.RemoveAt(index);
     }
+
     public void AdvanceDay()
     {
         state.Player.CurrentDay = checked(state.Player.CurrentDay + 1);
     }
-
-
-
 
     /// <summary>
     /// Saves the DataManager's SaveData object.

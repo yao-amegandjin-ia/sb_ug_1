@@ -75,10 +75,9 @@ namespace GameLogic
         /// </summary>
         public event Action<ClientResult> ClientResolved;
         private DataManager dataManager;
-        //Clients from a save 
+        //Clients from a save
         private readonly HashSet<ClientData> trackedClients = new();
 
-        private List<ClientData> clients;
         //private GameInitializer game;
 
         [Header("Lab scene components")]
@@ -178,6 +177,7 @@ namespace GameLogic
             if (clientGenerator != null)
                 clientGenerator.ExtraPatience = upgrades != null ? upgrades.ExtraPatienceSeconds : 0f;
         }
+
         private void OnClientSpawned(Client client)
         {
             if (client != null) TrackClient(client.Data);
@@ -195,6 +195,10 @@ namespace GameLogic
             trackedClients.Clear();
         }
 
+        /// <summary>
+        /// Add the client to the tracked clients list if not null and subscribe it to state changes event!
+        /// </summary>
+        /// <param name="client"></param>
         public void TrackClient(ClientData client)
         {
             // Prevent subscribing twice to the same object.
@@ -204,12 +208,13 @@ namespace GameLogic
             client.OnStateChanged += OnClientStateChanged;
         }
 
+        //Currently only used to check for returning client state
         private void OnClientStateChanged(ClientData client)
         {
-
             if (client.State == ClientState.Returning)
             {
-                //Track the client for tomorrow!
+                dataManager.AddReturningClient(client);
+                
             }
         }
 
@@ -249,6 +254,7 @@ namespace GameLogic
                 Outcome = correct ? ClientOutcome.CorrectReject : ClientOutcome.WrongReject,
                 Reward = reward
             });
+            SpawnNextClient();
             return correct;
         }
 
@@ -347,6 +353,7 @@ namespace GameLogic
             client.Leave();
             ClientLost?.Invoke(client);
             ClientResolved?.Invoke(new ClientResult { Request = request, MethodologyId = MethodLibrary.NoneId, Outcome = ClientOutcome.Lost });
+            SpawnNextClient();
         }
  
         /// <summary>"Come back tomorrow". The client leaves and returns the next day.</summary>
@@ -356,6 +363,7 @@ namespace GameLogic
             StopFollowing(client);
             client.Data.AskToReturnTomorrow();
             client.Leave();
+            SpawnNextClient();
         }
 
         
@@ -405,6 +413,7 @@ namespace GameLogic
                 Outcome = ClientResult.FromStudy(grade.Method),
                 Reward = reward
             });
+            SpawnNextClient();
             return grade;
         }
 
@@ -557,15 +566,15 @@ namespace GameLogic
         {
             if (clientGenerator == null || clientSpawner == null) return;
             //Reached the end of our daily clients!
-            if (clients.Count == 0)
+            if (dataManager.Clients.Count == 0)
             {
                 //Perform work for end of day
                 EndDay();
                 return;   // without this, clients[0] below throws on an empty list
             }
-            
-            var client = clients[0];
-            clients.RemoveAt(0);   // so the next call sends in the next client, not the same one again
+
+            var client = dataManager.Clients[0];
+            dataManager.RemoveDailyClient(0);   // so the next call sends in the next client, not the same one again
             
             
             //Track the clients state changes
@@ -622,7 +631,7 @@ namespace GameLogic
         /// SpawnNextClient when there are no clients left. Does nothing if the day already ended,
         /// so both happening doesn't open the day summary twice.
         /// </summary>
-        public void EndDay()
+        public async Awaitable EndDay()
         {
             if (!dayRunning) return;
             dayRunning = false;
