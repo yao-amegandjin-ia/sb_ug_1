@@ -1,3 +1,4 @@
+using DataLogging;
 using GameDataObjects;
 using UnityEngine.UIElements;
 
@@ -50,8 +51,8 @@ namespace UI.ClientScreens
             matchButton = Find<Button>("match-btn");
             if (matchButton != null) matchButton.clicked += MatchClicked;
 
-            HookButton("close-btn", Close);
-            HookButton("no-match-btn", Close);
+            HookButton("close-btn", () => CloseWithoutMatch("close_button"));
+            HookButton("no-match-btn", () => CloseWithoutMatch("no_match"));
             HookButton("back-btn", ShowApproachStep);
 
             for (int i = 0; i < ApproachButtonNames.Length; i++)
@@ -70,6 +71,14 @@ namespace UI.ClientScreens
             if (!client || !researcher) return;
             this.researcher = researcher;
             OpenFor(client);
+            ClientLog.MatchScreenOpened(client.Data, researcher.Data);   // DATA LOG: match_screen_opened
+        }
+
+        // NO MATCH or X. The client keeps following the player
+        private void CloseWithoutMatch(string how)
+        {
+            if (Current) ClientLog.MatchScreenClosed(Current.Data, researcher ? researcher.Data : null, how);   // DATA LOG
+            Close();
         }
 
         protected override void OnShown()
@@ -127,6 +136,7 @@ namespace UI.ClientScreens
         private void NextClicked()
         {
             if (approach == ResearchApproach.None) return;
+            if (Current) AnswerLog.ApproachChosen(Current.Data, researcher ? researcher.Data : null, approach);   // DATA LOG: approach_chosen
             ShowMethodStep();
         }
 

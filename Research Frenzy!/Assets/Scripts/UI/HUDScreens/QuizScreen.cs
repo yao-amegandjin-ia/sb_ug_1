@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using Config;
+using DataLogging;
 using GameLogic;
 using Interfaces;
 using UnityEngine;
@@ -166,6 +167,7 @@ namespace UI.HUDScreens
 
             title.text = type == QuizType.MidGame ? "QUICK CHECK-IN" : "FINAL QUIZ";
             questionStart = Time.unscaledTime;
+            QuizLog.Started(type, questions);   // DATA LOG: quiz_start (with the question order) + the first quiz_question_start
             ShowQuestion();
             panel.RemoveFromClassList("hidden");
         }
@@ -290,10 +292,15 @@ namespace UI.HUDScreens
             answer.picked = picked;
             answer.seconds = Time.unscaledTime - questionStart;
             answers.Add(answer);
+            QuizLog.QuestionAnswered(answer.question, current, picked);   // DATA LOG: quiz_question_answer
 
             current++;
             questionStart = Time.unscaledTime;
-            if (current < questions.Count) ShowQuestion();
+            if (current < questions.Count)
+            {
+                QuizLog.QuestionShown(questions[current], current);   // DATA LOG: quiz_question_start (= previous question's stop time)
+                ShowQuestion();
+            }
             else FinishQuiz();
         }
 
@@ -307,6 +314,7 @@ namespace UI.HUDScreens
                 Debug.Log("  question " + a.question.id + ": picked " + Letter(a.picked) + (a.IsCorrect() ? " (right)" : " (wrong)") + ", " + a.seconds.ToString("0.0") + "s");
 
             int earned = CorrectCount() * correctReward;
+            QuizLog.Finished(earned);   // DATA LOG: quiz_end
             if (earned > 0)
             {
                 FirmController firm = FindAnyObjectByType<FirmController>();
