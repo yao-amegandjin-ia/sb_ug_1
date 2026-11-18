@@ -27,7 +27,7 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
     private HUD hud;
 
     private ShopScreen shop;
-    public StartScreen startScreen;
+    private StartScreen startScreen;
     private GameSystems systems;
 
     // the persistent systems, once the bootstrap has handed them over. null before that
@@ -75,10 +75,10 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
             if (screen != null)
                 screen.Close();
         }
-
+        //Close these screens if open!
         codex?.Close();
         manageFirm?.Close();
-
+        
         // Show this after everything else has closed.
         daySummary.Show(day);
     }

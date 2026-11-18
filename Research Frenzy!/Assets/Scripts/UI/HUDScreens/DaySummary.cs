@@ -66,14 +66,14 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         firmRules = firm;
         if (firmRules == null) return;
         firmRules.ClientResolved += OnClientResolved;
-        firmRules.DayEnded += Show;
+        
     }
 
     void Disconnect()
     {
         if (firmRules == null) return;
         firmRules.ClientResolved -= OnClientResolved;
-        firmRules.DayEnded -= Show;
+        
         firmRules = null;
     }
 
