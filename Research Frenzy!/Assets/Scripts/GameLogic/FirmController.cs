@@ -598,7 +598,7 @@ namespace GameLogic
         public void SpawnNextClient()
         {
             //Do not spawn a client if the day is over!
-            if (dayRunning == false)
+            if (dayRunning == false || skippingDay)
             {
                 return;
             }
@@ -625,6 +625,7 @@ namespace GameLogic
 
         private float timeLeft;
         private bool dayRunning;
+        private bool skippingDay;
 
         /// <summary>Today's length: the base length plus the Clock upgrade. A Clock bought during the day counts from the next day.</summary>
         public float DayLength => baseDayLength + (upgrades != null ? upgrades.ExtraDaySeconds : 0f);
@@ -721,10 +722,99 @@ namespace GameLogic
 
         /// <summary>
         /// Debug function to skip to the end of a day answering all clients 
+        /// Leaves one returning client
         /// </summary>
+        [ContextMenu("Debug/Skip Day")]
         public void SkipDay()
         {
+            if (!Application.isPlaying || !dayRunning || skippingDay)
+                return;
 
+            // CompleteStudy needs a researcher GameObject.
+            Researcher researcher = null;
+
+            for (int cubicle = 1;
+                 cubicle <= researcherSpawner.CubicleCount;
+                 cubicle++)
+            {
+                researcher = researcherSpawner.GetAtCubicle(cubicle);
+                if (researcher != null) break;
+            }
+
+            if (researcher == null)
+            {
+                Debug.LogWarning("SkipDay: hire a researcher first.");
+                return;
+            }
+
+            skippingDay = true;
+
+            try
+            {
+                // Include clients already in the lab.
+                var clients = clientSpawner.ActiveClients.ToList();
+
+                // Spawn the remaining queued clients so we can use
+                // the existing gameplay methods on them.
+                while (dataManager.Clients.Count > 0)
+                {
+                    var data = dataManager.Clients[0];
+                    dataManager.RemoveDailyClient(0);
+
+                    var client = clientSpawner.Spawn(data);
+                    if (client == null) continue;
+
+                    OnClientSpawned(client);
+                    ClientLog.Entered(data);
+                    clients.Add(client);
+                }
+
+                foreach (var client in clients)
+                {
+                    if (client == null) continue;
+
+                    switch (UnityEngine.Random.Range(0, 4))
+                    {
+                        case 0:
+                            SendHomeUntilTomorrow(client);
+                            break;
+
+                        case 1:
+                            // Fires the existing dissatisfied-client handler.
+                            client.Data.RunOutOfPatience();
+                            break;
+
+                        case 2:
+                            var request = client.Data.Request;
+
+                            if (request != null && request.IsResearchable)
+                            {
+                                CompleteStudy(
+                                    client,
+                                    researcher,
+                                    request.Approach,
+                                    request.BestMethodologyId);
+                            }
+                            else
+                            {
+                                // The proper answer to an unresearchable request.
+                                RejectRequest(client);
+                            }
+                            break;
+
+                        case 3:
+                            RejectRequest(client);
+                            break;
+                    }
+                }
+
+                // Sets TimeLeft to zero and fires DayEnded.
+                EndDay(DayEndReason.Timer);
+            }
+            finally
+            {
+                skippingDay = false;
+            }
         }
 
         /// <summary>
