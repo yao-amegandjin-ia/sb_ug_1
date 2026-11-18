@@ -157,12 +157,13 @@ namespace GameLogic
                     var recreatedClient = clientGenerator.CreateClientForRequest(client.RequestId);
                     returningClientsRebuilt.Add(recreatedClient);
 
+
                 }
                 //Append the returning clients!
                 clients.AddRange(returningClientsRebuilt);
             }
             //Update the daily client list for the firm
-            dataManager.UpdateDailyClients(clients);
+            dataManager.UpdateDailyClients(clients, true);
         }
 
         private void ResolveLabComponents()
@@ -210,6 +211,13 @@ namespace GameLogic
 
             client.OnStateChanged += OnClientStateChanged;
         }
+        public void UntrackClient(ClientData client)
+        {
+            if (client == null || !trackedClients.Remove(client))
+                return;
+
+            client.OnStateChanged -= OnClientStateChanged;
+        }
 
         //Currently only used to check for returning client state
         private void OnClientStateChanged(ClientData client)
@@ -248,6 +256,7 @@ namespace GameLogic
             ClientLog.TurnedAway(client.Data, correct, reward);   // DATA LOG: client_leave (turned_away)
 
             client.Data.Complete();   // "request was rejected"
+            UntrackClient(client.Data);
             client.Leave();
 
             RequestRejected?.Invoke(correct);
@@ -361,6 +370,7 @@ namespace GameLogic
             ClientLog.Lost(client.Data);   // DATA LOG: client_leave (patience_ran_out / no_seat_in_waiting_room)
 
             StopFollowing(client);
+            UntrackClient(client.Data);
             client.Leave();
             ClientLost?.Invoke(client);
             ClientResolved?.Invoke(new ClientResult { Request = request, MethodologyId = MethodLibrary.NoneId, Outcome = ClientOutcome.Lost });
@@ -374,6 +384,7 @@ namespace GameLogic
             StopFollowing(client);
             ClientLog.SentHome(client.Data);   // DATA LOG: client_leave (return_tomorrow)
             client.Data.AskToReturnTomorrow();
+            UntrackClient(client.Data);
             client.Leave();
             SpawnNextClient();
         }
@@ -420,6 +431,7 @@ namespace GameLogic
 
             client.Data.AssignTo(researcher.Data.Id, methodologyId);
             client.Data.Complete();
+            UntrackClient(client.Data);
             client.Leave();
 
             StudyFinished?.Invoke(grade.Method);
@@ -588,6 +600,11 @@ namespace GameLogic
         /// </summary>
         public void SpawnNextClient()
         {
+            //Do not spawn a client if the day is over!
+            if (dayRunning == false)
+            {
+                return;
+            }
             if (clientGenerator == null || clientSpawner == null) return;
             //Reached the end of our daily clients!
             if (dataManager.Clients.Count == 0)
@@ -649,7 +666,7 @@ namespace GameLogic
             timeLeft = DayLength;
             dayRunning = true;
             Debug.Log($"FirmController: day {CurrentDay} started ({DayLength:0}s).");
-            DayLog.Started(CurrentDay, DayLength, clients != null ? clients.Count : 0);   // DATA LOG: day_start
+            DayLog.Started(CurrentDay, DayLength, dataManager.Clients != null ? dataManager.Clients.Count : 0);   // DATA LOG: day_start
             DayStarted?.Invoke(CurrentDay);
         }
 
@@ -667,6 +684,15 @@ namespace GameLogic
 
             int day = CurrentDay;
             Debug.Log($"FirmController: day {day} ended.");
+
+            //Clean up for clients that may remain in the queue or in the firm
+            StopFollowing(following);
+            following = null;
+            UntrackAllClients();
+            trackedClients.Clear();
+            clientSpawner.Clear();
+            dataManager.ClearDailyClients();
+
             // DATA LOG: day_end. If a fail rule is added, call EndDay(DayEndReason.Failed): clients still in the lab
             // are then logged as interrupted by the failed day
             DayLog.Ended(day, reason, dataManager.PlayerData.CurrentMoney, dataManager.PlayerData.TotalMoneyEarned);
@@ -674,12 +700,18 @@ namespace GameLogic
             SaveAfterDay();
         }
 
+        private void UntrackAllClients()
+        {
+            foreach (var client in trackedClients.ToArray())
+                UntrackClient(client);
+        }
         // async void: Unity can't wait for this, so it runs alongside the game. fine for a save that nothing waits on
         private async void SaveAfterDay()
         {
             int day = CurrentDay;
             try
             {
+                
                 await dataManager.SaveGame();
                 DayLog.Saved(day, true, null);   // DATA LOG: game_saved
             }
@@ -688,6 +720,14 @@ namespace GameLogic
                 DayLog.Saved(day, false, e.Message);   // DATA LOG: game_saved (failed)
                 throw;   // still shows up in the Console like before
             }
+        }
+
+        /// <summary>
+        /// Debug function to skip to the end of a day answering all clients 
+        /// </summary>
+        public void SkipDay()
+        {
+
         }
 
         /// <summary>

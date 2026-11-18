@@ -111,19 +111,30 @@ public class DataManager
     /// Clears and updates the daily clients from the new list. 
     /// </summary>
     /// <param name="clients"></param>
-    public void UpdateDailyClients(List<ClientData> clients)
+    public void UpdateDailyClients(List<ClientData> clients, bool includesReturning)
     {
         dailyClients.Clear();
+        //Clear the returning clients state if they've been added to daily clients
+        if (includesReturning)
+        {
+            state.Clients.Clear();
+        }
+        
         foreach(var c in clients)
         {
             if (c == null) throw new ArgumentNullException(nameof(c));
-            if (Researchers.Any(r => r.Id == c.Id))
-                throw new ArgumentException("Researcher ID already exists.", nameof(c));
+            if (Clients.Any(cl => cl.Id == c.Id))
+                throw new ArgumentException("Client ID already exists.", nameof(c));
             dailyClients.Add(c);
         }
 
     }
 
+  
+    public void ClearDailyClients()
+    {
+        dailyClients.Clear();
+    }
     public void RemoveDailyClient(int index)
     {
         dailyClients.RemoveAt(index);
@@ -246,4 +257,9 @@ public sealed class PlayerDataReadonly
         OwnedUpgrades = new ReadOnlyDictionary<string, int>(player.OwnedUpgrades);
     }
 }
+
+
+
+
+
 

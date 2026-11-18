@@ -6,6 +6,7 @@ using Bootstrap;
 using GameLogic;
 using Interfaces;
 using UI;
+using UI.ClientScreens;
 using UI.HUDScreens;
 using UnityEngine;
 using UnityEngine.InputSystem.HID;
@@ -13,8 +14,12 @@ using UnityEngine.InputSystem.HID;
 public class UIInitializer : MonoBehaviour, ISceneInitializable
 {
 
-  
 
+    [SerializeField] private ModalScreen[] screensToClose;
+    private DaySummary daySummary;
+    private CodexPanel codex;
+    private ManageFirmPanel manageFirm;
+    
     public GameObject UI;
     public GameObject shopUI;
 
@@ -32,10 +37,13 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
     {
         systems = gameSystems;
         Debug.Log("UI scene initialized");
+        daySummary = UI.GetComponent<DaySummary>();
+        codex = UI.GetComponent<CodexPanel>();
+        
         hud = UI.GetComponent<HUD>();
         shop = shopUI.GetComponent<ShopScreen>();
         startScreen = UI.GetComponent<StartScreen>();
-        var manageFirm = UI.GetComponent<ManageFirmPanel>();
+        manageFirm = UI.GetComponent<ManageFirmPanel>();
         //Could probably just send the data manager if that is the only thing they end up needing
         hud.Initialize(gameSystems);
         shop.Initialize(gameSystems);
@@ -47,35 +55,48 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
     //Subscribe to UI events here!
     public void SendFirm(FirmController firm)
     {
-        
-
-        //Unsubscribe to event if sendfirm called multiple times!
-        // (the day timer is FirmController's own now, so only the start button needs wiring here)
-        if (connectedFirm != null)
-        {
-            startScreen.GameStarted -= connectedFirm.OnGameStarted;
-        }
+        DisconnectFirm();
 
         connectedFirm = firm;
 
-        if (connectedFirm != null)
-        {
-            startScreen.GameStarted += firm.OnGameStarted;
-
-        }
         shop.Initialize(firm);
         hud.Initialize(firm);
+
+        if (connectedFirm == null) return;
+
+        startScreen.GameStarted += connectedFirm.OnGameStarted;
+        connectedFirm.DayEnded += OnDayEnded;
     }
 
+    private void OnDayEnded(int day)
+    {
+        foreach (var screen in screensToClose)
+        {
+            if (screen != null)
+                screen.Close();
+        }
+
+        codex?.Close();
+        manageFirm?.Close();
+
+        // Show this after everything else has closed.
+        daySummary.Show(day);
+    }
+
+    private void DisconnectFirm()
+    {
+        if (connectedFirm == null) return;
+
+        if (startScreen != null)
+            startScreen.GameStarted -= connectedFirm.OnGameStarted;
+
+        connectedFirm.DayEnded -= OnDayEnded;
+        connectedFirm = null;
+    }
 
     private void OnDestroy()
     {
-        if (startScreen != null && connectedFirm != null)
-        {
-            startScreen.GameStarted -= connectedFirm.OnGameStarted;
-        }
-            
-
-
+        DisconnectFirm();
+          
     }
 }
