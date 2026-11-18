@@ -288,22 +288,14 @@ public class DaySummary : MonoBehaviour, IGameUIPart
 
     void ContinueClicked()
     {
-        if (panel != null) panel.AddToClassList("hidden");
+        if (shownDay < 0) return;
+
         int day = shownDay;
-        shownDay = -1;
+        shownDay = -1; // Consume this Continue action immediately.
+
+        if (panel != null) panel.AddToClassList("hidden");
         today.Clear();
         Closed?.Invoke(day);
 
-        if (firmRules == null) return;
-
-        if (firmRules.IsLastDay)
-        {
-            // TODO: final survey + leaderboard go here
-            Debug.Log("Last day done - final survey would go here");
-            return;
-        }
-
-        // TODO: open the upgrades screen here once it's done, then start the next day from there
-        firmRules.NextDay();
     }
 }

@@ -306,9 +306,11 @@ namespace UI.HUDScreens
 
         void FinishQuiz()
         {
-            current = -1;
+            if (!showingResults) return;
+            
+            
             showingResults = true;
-
+            current = -1;
             Debug.Log(type + " quiz done: " + CorrectCount() + "/" + answers.Count + " right in " + FormatTime(TotalTime()));
             foreach (QuizAnswer a in answers)
                 Debug.Log("  question " + a.question.id + ": picked " + Letter(a.picked) + (a.IsCorrect() ? " (right)" : " (wrong)") + ", " + a.seconds.ToString("0.0") + "s");
@@ -425,12 +427,16 @@ namespace UI.HUDScreens
 
         void ContinueClicked()
         {
-            if (panel != null) panel.AddToClassList("hidden");
+            if (!showingResults) return; // No results to continue from.
+
             showingResults = false;
             current = -1;
+
+            if (panel != null)
+                panel.AddToClassList("hidden");
+
             Finished?.Invoke(type, answers);
         }
-
         // --- helpers ---
 
         public int CorrectCount()
@@ -448,7 +454,14 @@ namespace UI.HUDScreens
                 total += a.seconds;
             return total;
         }
+        public void Cancel()
+        {
+            current = -1;
+            showingResults = false;
 
+            if (panel != null)
+                panel.AddToClassList("hidden");
+        }
         string Letter(int index)
         {
             return ((char)('A' + index)).ToString();

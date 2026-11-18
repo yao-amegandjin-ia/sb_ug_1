@@ -55,6 +55,7 @@ namespace GameLogic
         /// <summary>A day began (the timer is running). Gives the day number. The HUD resets its "today" counts here.</summary>
         public event Action<int> DayStarted;
 
+
         /// <summary>
         /// The day is over: the timer ran out, or there are no clients left today. Gives the day number.
         /// Fires once per day. DaySummary opens on this.
@@ -131,7 +132,7 @@ namespace GameLogic
             clientGenerator.Initialize(dataManager.GetRequests());
             ApplyClientUpgrades();
 
-            SetDailyClients();
+            SetDailyClients(true);
             
 
             if (upgrades != null)
@@ -141,12 +142,18 @@ namespace GameLogic
             GameLog.AttachDayClock(() => CurrentDay, () => timeLeft);
         }
         
-        private void SetDailyClients()
+        private void SetDailyClients(bool fromLoad)
         {
 
             var returningClients = dataManager.ReturningClients;
             var day = dataManager.PlayerData.CurrentDay;
-            var clients = clientGenerator.GenerateDay(day, upgrades.ExtraDailyClients, dataManager.GetUsedRequestIds());
+            List<ClientData> clients;
+            //Send in the usedrequestids, otherwise those are already known
+            
+            clients = clientGenerator.GenerateDay(day, upgrades.ExtraDailyClients, dataManager.GetUsedRequestIds());
+
+            
+          
             //Not the first day and there are returning clients (if returning clients on day 1 there shouldn't be so just overwrite anyway
             if (returningClients.Count > 0 && dataManager.PlayerData.CurrentDay > 1)
             {
@@ -393,7 +400,7 @@ namespace GameLogic
         // frees the "one client at a time" slot if this was the client following
         private void StopFollowing(Client client)
         {
-            if (client != following) return;
+            if (client == null || client != following) return;
             client.StopFollowing();
             following = null;
         }
@@ -641,6 +648,7 @@ namespace GameLogic
 
         public int TotalDays => totalDays;
 
+        public bool IsMidDay => CurrentDay == 4;
         public bool IsLastDay => CurrentDay >= totalDays;
 
         private void Start()
@@ -710,7 +718,7 @@ namespace GameLogic
             try
             {
                 
-                await dataManager.SaveGame();
+                //await dataManager.SaveGame();
                 DayLog.Saved(day, true, null);   // DATA LOG: game_saved
             }
             catch (Exception e)
@@ -807,7 +815,7 @@ namespace GameLogic
                             break;
                     }
                 }
-
+                
                 // Sets TimeLeft to zero and fires DayEnded.
                 EndDay(DayEndReason.Timer);
             }
@@ -831,7 +839,7 @@ namespace GameLogic
             }
 
             dataManager.AdvanceDay();
-            SetDailyClients();   // uses the new day number and skips requests already answered
+            SetDailyClients(false);   // uses the new day number and skips requests already answered
             StartDay();
             SpawnNextClient();
         }

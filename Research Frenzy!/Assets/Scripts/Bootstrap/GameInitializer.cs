@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DataLogging;
+using System.IO;
 
 
 /// <summary>One finished study: which methodology the player matched a request with.</summary>
@@ -166,7 +167,8 @@ public class GameInitializer : MonoBehaviour
         {
             Debug.LogWarning($"GameInitializer: couldn't load the save from {_apiUrl} ({e.Message.Trim()}). " +
                              "Starting an offline game instead: nothing will be saved. Start the API to play with saves.");
-            return await DataManager.CreateAsync(new OfflineSaveSystem(GameSeed.EnsureInitialized()));
+            string saveFolder = Path.Combine(Application.dataPath, "LocalSaves");
+            return await DataManager.CreateAsync(new JsonFileSaveSystem(GameSeed.EnsureInitialized(), saveFolder));
         }
     }
 }

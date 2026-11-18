@@ -5,6 +5,7 @@
 using Bootstrap;
 using GameLogic;
 using Interfaces;
+using System.Collections.Generic;
 using UI;
 using UI.ClientScreens;
 using UI.HUDScreens;
@@ -19,7 +20,8 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
     private DaySummary daySummary;
     private CodexPanel codex;
     private ManageFirmPanel manageFirm;
-    
+
+    private QuizScreen quiz;
     public GameObject UI;
     public GameObject shopUI;
 
@@ -39,7 +41,7 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
         Debug.Log("UI scene initialized");
         daySummary = UI.GetComponent<DaySummary>();
         codex = UI.GetComponent<CodexPanel>();
-        
+        quiz = UI.GetComponent<QuizScreen>();
         hud = UI.GetComponent<HUD>();
         shop = shopUI.GetComponent<ShopScreen>();
         startScreen = UI.GetComponent<StartScreen>();
@@ -66,8 +68,47 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
 
         startScreen.GameStarted += connectedFirm.OnGameStarted;
         connectedFirm.DayEnded += OnDayEnded;
+        daySummary.Closed += OnSummaryClosed;
+        quiz.Finished += OnQuizFinished;
     }
+    private void OnQuizFinished(QuizType type, List<QuizAnswer> answers)
+    {
+        if (type == QuizType.MidGame)
+            //Do some saving
+            connectedFirm.NextDay();
+        else
+        {
 
+            //End the game
+            
+        }
+    }
+    private void OnSummaryClosed(int day)
+    {
+
+        if (connectedFirm== null) return;
+        if (connectedFirm.IsMidDay)
+        {
+            Debug.Log("Mid Day - place mid survey");
+            quiz.Open(QuizType.MidGame);
+            
+        }
+
+        else if (connectedFirm.IsLastDay)
+        {
+            // TODO: final survey + leaderboard go here
+            Debug.Log("Last day done - final survey would go here");
+            quiz.Open(QuizType.PostGame);
+
+        }
+        else
+        {
+            // TODO: open the upgrades screen here once it's done, then start the next day from there
+            connectedFirm.NextDay();
+
+        }
+
+    }
     private void OnDayEnded(int day)
     {
         foreach (var screen in screensToClose)
@@ -78,9 +119,11 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
         //Close these screens if open!
         codex?.Close();
         manageFirm?.Close();
+        quiz?.Cancel();
         
         // Show this after everything else has closed.
         daySummary.Show(day);
+        
     }
 
     private void DisconnectFirm()
@@ -89,6 +132,12 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
 
         if (startScreen != null)
             startScreen.GameStarted -= connectedFirm.OnGameStarted;
+
+        if (daySummary != null)
+            daySummary.Closed -= OnSummaryClosed;
+
+        if (quiz != null)
+            quiz.Finished -= OnQuizFinished;
 
         connectedFirm.DayEnded -= OnDayEnded;
         connectedFirm = null;
