@@ -17,6 +17,7 @@ using System.Linq;
 using GameDataObjects;
 using Interfaces;
 using Bootstrap;
+using DataLogging;
 
 namespace GameLogic
 {
@@ -139,6 +140,8 @@ namespace GameLogic
             if (upgrades != null)
                 upgrades.UpgradesChanged += ApplyClientUpgrades;
 
+            // DATA LOG: every logged event gets the day number and the time left on the day timer
+            GameLog.AttachDayClock(() => CurrentDay, () => timeLeft);
         }
         
         private void SetDailyClients()
@@ -239,6 +242,7 @@ namespace GameLogic
             if (request != null)
                 RecordStudy(request.RequestId, ResearchApproach.None, MethodLibrary.NoneId, reward);
             Debug.Log($"{client.Data.Name} denied: {(correct ? "correct" : "wrong, this one was researchable")}, +${reward}");
+            ClientLog.TurnedAway(client.Data, correct, reward);   // DATA LOG: client_leave (turned_away)
 
             client.Data.Complete();   // "request was rejected"
             client.Leave();
@@ -278,7 +282,11 @@ namespace GameLogic
                 return false;
             }
  
-            if (!client.IsFollowing) client.FollowPlayer();
+            if (!client.IsFollowing)
+            {
+                client.FollowPlayer();
+                ClientLog.Following(client.Data);   // DATA LOG: client_following
+            }
             following = client;
             return true;
         }
@@ -321,11 +329,13 @@ namespace GameLogic
             if (!CanSendToWaitingRoom(client))
             {
                 Debug.Log($"Waiting area is full ({WaitingCount}/{WaitingSeats}), so {client.Data.Name} gave up.");
+                ClientLog.SentToWaiting(client.Data, false, WaitingCount, WaitingSeats);   // DATA LOG (client_leave follows)
                 client.Data.RunOutOfPatience();   // Client hears this and calls HandleLeftDissatisfied below
                 return false;
             }
 
             client.Data.SendToWaitingRoom();
+            ClientLog.SentToWaiting(client.Data, true, WaitingCount, WaitingSeats);   // DATA LOG: client_sent_to_waiting
             return true;
         }
         
@@ -344,6 +354,7 @@ namespace GameLogic
             if (request != null)
                 RecordStudy(request.RequestId, ResearchApproach.None, MethodLibrary.NoneId, 0);
             Debug.Log($"{client.Data.Name} left dissatisfied. Saved as a rejection, +$0");
+            ClientLog.Lost(client.Data);   // DATA LOG: client_leave (patience_ran_out / no_seat_in_waiting_room)
 
             StopFollowing(client);
             client.Leave();
@@ -356,6 +367,7 @@ namespace GameLogic
         {
             if (!client) return;
             StopFollowing(client);
+            ClientLog.SentHome(client.Data);   // DATA LOG: client_leave (return_tomorrow)
             client.Data.AskToReturnTomorrow();
             client.Leave();
         }
@@ -392,6 +404,13 @@ namespace GameLogic
             if (request != null)
                 RecordStudy(request.RequestId, approach, methodologyId, reward);
             Debug.Log($"{client.Data.Name} matched with {researcher.Data.Name}: {approach} / {MethodLibrary.GetName(methodologyId)} ({grade}): +${reward}");
+
+            // DATA LOG: match_answered (AnswerLog), then client_matched, research_finished, client_reengaged, client_leave (ClientLog).
+            // The list of researchers who could have taken this request is worked out first, while everyone's
+            // availability is still what the player saw.
+            List<object> possibleResearchers = AnswerLog.FindCorrectResearchers(request, researcherGenerator.GetHiredResearchers(), unlockedMethods);
+            AnswerLog.MatchAnswered(client.Data, researcher.Data, approach, methodologyId, grade, reward, possibleResearchers);
+            ClientLog.Matched(client.Data, researcher.Data, grade, reward);
 
             client.Data.AssignTo(researcher.Data.Id, methodologyId);
             client.Data.Complete();
@@ -547,6 +566,11 @@ namespace GameLogic
                 }
             }
 
+            // DATA LOG: game_start (selectedStarter is -1 when a saved game carries on)
+            GameLog.GameStarted(selectedStarter != -1,
+                selectedStarter != -1 ? researcherGenerator.GetById(9 + selectedStarter) : null,
+                researcherGenerator.GetHiredResearchers());
+
             StartDay();
             SpawnNextClient();
         }
@@ -562,7 +586,7 @@ namespace GameLogic
             if (clients.Count == 0)
             {
                 //Perform work for end of day
-                EndDay();
+                EndDay(DayEndReason.NoClientsLeft);
                 return;   // without this, clients[0] below throws on an empty list
             }
             
@@ -571,7 +595,9 @@ namespace GameLogic
             
             
             //Track the clients state changes
-            OnClientSpawned(clientSpawner.Spawn(client));
+            Client spawned = clientSpawner.Spawn(client);
+            ClientLog.Entered(client);   // DATA LOG: client_enter (wait starts)
+            OnClientSpawned(spawned);
         }
 
         // ---------- the day ----------
@@ -607,7 +633,7 @@ namespace GameLogic
 
             timeLeft -= Time.deltaTime;
             if (timeLeft <= 0f)
-                EndDay();
+                EndDay(DayEndReason.Timer);
         }
 
         /// <summary>Starts the timer for the current day. Called by OnGameStarted and NextDay.</summary>
@@ -616,6 +642,7 @@ namespace GameLogic
             timeLeft = DayLength;
             dayRunning = true;
             Debug.Log($"FirmController: day {CurrentDay} started ({DayLength:0}s).");
+            DayLog.Started(CurrentDay, DayLength, clients != null ? clients.Count : 0);   // DATA LOG: day_start
             DayStarted?.Invoke(CurrentDay);
         }
 
@@ -623,8 +650,9 @@ namespace GameLogic
         /// Ends today: stops the timer, saves and tells everyone. Called when the timer runs out, and by
         /// SpawnNextClient when there are no clients left. Does nothing if the day already ended,
         /// so both happening doesn't open the day summary twice.
+        /// reason is only for the data log (DayEndReason.Timer, NoClientsLeft, or Failed once days can be failed).
         /// </summary>
-        public void EndDay()
+        public void EndDay(string reason = "other")
         {
             if (!dayRunning) return;
             dayRunning = false;
@@ -632,6 +660,9 @@ namespace GameLogic
 
             int day = CurrentDay;
             Debug.Log($"FirmController: day {day} ended.");
+            // DATA LOG: day_end. If a fail rule is added, call EndDay(DayEndReason.Failed): clients still in the lab
+            // are then logged as interrupted by the failed day
+            DayLog.Ended(day, reason, dataManager.PlayerData.CurrentMoney, dataManager.PlayerData.TotalMoneyEarned);
             DayEnded?.Invoke(day);
             SaveAfterDay();
         }
@@ -639,7 +670,17 @@ namespace GameLogic
         // async void: Unity can't wait for this, so it runs alongside the game. fine for a save that nothing waits on
         private async void SaveAfterDay()
         {
-            await dataManager.SaveGame();
+            int day = CurrentDay;
+            try
+            {
+                await dataManager.SaveGame();
+                DayLog.Saved(day, true, null);   // DATA LOG: game_saved
+            }
+            catch (Exception e)
+            {
+                DayLog.Saved(day, false, e.Message);   // DATA LOG: game_saved (failed)
+                throw;   // still shows up in the Console like before
+            }
         }
 
         /// <summary>
