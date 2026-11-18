@@ -44,9 +44,16 @@ public class DataManager
 
     private readonly BaseSaveSystem saveSystem;
 
+    /// <summary>
+    /// Includes request ids of study results and ids of any returning clients!
+    /// </summary>
+    /// <returns></returns>
     public List<int> GetUsedRequestIds()
     {
-        return PlayerData.StudyResults.Keys.ToList();
+        //Return both the study results requests and the 
+        var returningids = returningClients.Select(c => c.RequestId).ToList();
+        returningids.AddRange(PlayerData.StudyResults.Keys.ToList());
+        return returningids;
     }
     
     

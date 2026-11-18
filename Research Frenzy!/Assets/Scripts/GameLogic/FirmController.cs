@@ -579,10 +579,7 @@ namespace GameLogic
             {
                 var hired = researcherGenerator.GetHiredResearchers();
                 //Hire the selected researcher!
-                foreach (var h in hired)
-                {
-                    Hire(h);
-                }
+                researcherSpawner.SpawnHired(hired);
             }
 
             // DATA LOG: game_start (selectedStarter is -1 when a saved game carries on)
