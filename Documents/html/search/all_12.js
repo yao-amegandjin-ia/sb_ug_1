@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['takeonclient_0',['TakeOnClient',['../class_game_logic_1_1_firm_controller.html#a82df93cfeaa7d89c4aa369a13706afc0',1,'GameLogic::FirmController']]],
+  ['talkdistance_1',['talkDistance',['../class_client.html#af5d35f1ae7827e7f2469ee69b12cf966',1,'Client.talkDistance'],['../class_researcher.html#a1671d5b9166257a7851b58eb73c10c1a',1,'Researcher.talkDistance']]],
+  ['tick_2',['Tick',['../class_clients_1_1_client_data.html#ad061607c935c73edd1aa7c5aa03199b0',1,'Clients::ClientData']]],
+  ['timeleft_3',['TimeLeft',['../class_game_logic_1_1_firm_controller.html#a8341922aa1f83dc7286b0bc287893d11',1,'GameLogic::FirmController']]],
+  ['title_4',['Title',['../class_u_i_1_1_shop_tab.html#a6b11545401b3ad2cb2bbddb2abbe009d',1,'UI::ShopTab']]],
+  ['toggle_5',['Toggle',['../class_u_i_1_1_researcher_hire_screen.html#ab0127a89ab04608cb492cf74638a9d80',1,'UI.ResearcherHireScreen.Toggle()'],['../class_u_i_1_1_shop_screen.html#a55ecac9dc6d2b2c971cbefa4c38f8170',1,'UI.ShopScreen.Toggle()']]],
+  ['tomorrowclicked_6',['TomorrowClicked',['../class_panel_controller.html#a807375efe0f8ecd8815a53e16ad094aa',1,'PanelController']]],
+  ['tosavedata_7',['ToSaveData',['../class_game_logic_1_1_upgrades_1_1_upgrade_controller.html#a32dc8bd9d48be393f807a8126748800f',1,'GameLogic::Upgrades::UpgradeController']]],
+  ['tostring_8',['ToString',['../class_config_1_1_config_report.html#a0c39e3939a47c697d4f095f6e3cee701',1,'Config.ConfigReport.ToString()'],['../struct_game_logic_1_1_match_grade.html#aeced04af65b42a2ee08d0f9d1f29a68f',1,'GameLogic.MatchGrade.ToString()']]],
+  ['total_9',['Total',['../class_game_logic_1_1_upgrades_1_1_upgrade_controller.html#a76190b467d1bd78091049bf8e86f6039',1,'GameLogic::Upgrades::UpgradeController']]],
+  ['totaldays_10',['TotalDays',['../class_game_logic_1_1_firm_controller.html#a237ef561d5d7f97999081afd4388d89b',1,'GameLogic::FirmController']]],
+  ['totaldays_11',['totalDays',['../class_u_i_1_1_h_u_d_screens_1_1_h_u_d.html#a4fe58b3b9597fe3c279d00116c13c3ca',1,'UI::HUDScreens::HUD']]],
+  ['totalmoneyearned_12',['TotalMoneyEarned',['../class_player_data_readonly.html#a0cb8f043414b050effde54b5a71fc66d',1,'PlayerDataReadonly.TotalMoneyEarned'],['../class_game_data_objects_1_1_api_player_dto.html#aa9ae2e5ef643f15ac1e0fb83cd61736d',1,'GameDataObjects.ApiPlayerDto.TotalMoneyEarned'],['../class_game_data_objects_1_1_player_data.html#ae065602343fd88954380e3352edb81c9',1,'GameDataObjects.PlayerData.TotalMoneyEarned']]],
+  ['totalrequests_13',['TotalRequests',['../class_client_generator.html#a4eded6a8b41d8972226c1fa5ed1a48f5',1,'ClientGenerator']]],
+  ['totaltime_14',['TotalTime',['../class_u_i_1_1_h_u_d_screens_1_1_quiz_screen.html#a9dddb500f6448a75276d8587703b0983',1,'UI::HUDScreens::QuizScreen']]],
+  ['trackclient_15',['TrackClient',['../class_game_logic_1_1_firm_controller.html#a7636476c70e628556106fd61b66c0278',1,'GameLogic::FirmController']]],
+  ['trybuy_16',['TryBuy',['../class_game_logic_1_1_upgrades_1_1_upgrade_controller.html#a2ba2cbbb0cfca62440621523fb4970e6',1,'GameLogic::Upgrades::UpgradeController']]],
+  ['tryrecordstudy_17',['TryRecordStudy',['../class_data_manager.html#af4fa8464f9ffc7150376d8f029f9eea8',1,'DataManager']]],
+  ['tryspend_18',['TrySpend',['../class_game_logic_1_1_firm_controller.html#a7d4dfb7d715d6d648607fe56587b0551',1,'GameLogic::FirmController']]]
+];

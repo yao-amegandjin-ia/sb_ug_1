@@ -8,6 +8,7 @@ using Researchers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using DataLogging;
 
 
 /// <summary>One finished study: which methodology the player matched a request with.</summary>
@@ -78,6 +79,7 @@ public class GameInitializer : MonoBehaviour
 
     
     private readonly string _apiUrl = "http://localhost:8080";
+    private string saveSource = "api";   // "offline" when the API couldn't be reached. Only used by the data log
     //Going to get overwritten anyway
 
     private void Awake()
@@ -114,6 +116,20 @@ public class GameInitializer : MonoBehaviour
             //Set with seed grabbed from session creation
             GameSeed.Set(dataManager.Seed);
 
+            // DATA LOG: starts this session's log file and logs session_start + save_loaded.
+            // Has to come before the scenes load, so the first client is logged too
+            GameLog.StartSession(new SessionInfo
+            {
+                Seed = dataManager.Seed,
+                SaveSource = saveSource,
+                Day = dataManager.PlayerData.CurrentDay,
+                Money = dataManager.PlayerData.CurrentMoney,
+                TotalMoneyEarned = dataManager.PlayerData.TotalMoneyEarned,
+                RequestsAnswered = dataManager.PlayerData.StudyResults.Count,
+                UpgradesOwned = dataManager.PlayerData.OwnedUpgrades.Count,
+                ResearchersHired = dataManager.Researchers?.Count ?? 0,
+            });
+            
             Debug.Log("GameInitializer: loading the Research_Lab and UI scenes");
             var components = await systems.SceneLoader.AddScenes();
 

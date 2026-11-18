@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['dailyclientsupgrade_0',['DailyClientsUpgrade',['../namespace_game_logic_1_1_upgrades.html#adc6accf0c28a76d7f8fefd1c05c150dca427152d9f96d2e15a02fb41cc3b316ce',1,'GameLogic::Upgrades']]],
+  ['data_1',['Data',['../class_client.html#a65e5871a24105841b06f1cf1c20eb0fa',1,'Client.Data'],['../class_researcher.html#aca3d6571027e6c1bc73d4f085fbb4755',1,'Researcher.Data']]],
+  ['datamanager_2',['DataManager',['../class_data_manager.html',1,'DataManager'],['../class_bootstrap_1_1_game_systems.html#acdc1eb2db45e8289c4d9b422cc3b1314',1,'Bootstrap.GameSystems.DataManager']]],
+  ['datamanager_2ecs_3',['DataManager.cs',['../_data_manager_8cs.html',1,'']]],
+  ['day_4',['day',['../class_game_initializer.html#a95327195af5cd8ca0a721c173b0570a2',1,'GameInitializer.day'],['../class_u_i_1_1_h_u_d_screens_1_1_h_u_d.html#adfa8f1a500e6787f2107ac2a50c2d571',1,'UI.HUDScreens.HUD.day']]],
+  ['dayended_5',['DayEnded',['../class_game_logic_1_1_firm_controller.html#ace674d0d89e9bbbc3feaed019ad9a786',1,'GameLogic::FirmController']]],
+  ['daylength_6',['DayLength',['../class_game_logic_1_1_firm_controller.html#ab86f1eaa966461ed79a2a796103cbe9f',1,'GameLogic::FirmController']]],
+  ['daylengthupgrade_7',['DayLengthUpgrade',['../namespace_game_logic_1_1_upgrades.html#adc6accf0c28a76d7f8fefd1c05c150dca32d77eb034a5e5a1e306cfc2f31f7c24',1,'GameLogic::Upgrades']]],
+  ['daystarted_8',['DayStarted',['../class_game_logic_1_1_firm_controller.html#a15139498f5c97197521e51407607e06e',1,'GameLogic::FirmController']]],
+  ['daysummary_9',['DaySummary',['../class_day_summary.html',1,'']]],
+  ['daysummary_2ecs_10',['DaySummary.cs',['../_day_summary_8cs.html',1,'']]],
+  ['decreasemoney_11',['DecreaseMoney',['../class_data_manager.html#a1d924ce8a8fefde667b66d1ecb0188b2',1,'DataManager']]],
+  ['demospawnbutton_12',['DemoSpawnButton',['../class_u_i_1_1_demo_spawn_button.html',1,'UI']]],
+  ['demospawnbutton_2ecs_13',['DemoSpawnButton.cs',['../_demo_spawn_button_8cs.html',1,'']]],
+  ['description_14',['Description',['../class_game_logic_1_1_upgrades_1_1_upgrade_definition.html#ad414dd6adadc2073b932e3796f9fa370',1,'GameLogic::Upgrades::UpgradeDefinition']]],
+  ['description_15',['description',['../class_game_data_objects_1_1_method_entry.html#aac50ef060a7f7b6eaf481daea508d114',1,'GameDataObjects::MethodEntry']]],
+  ['dim_16',['dim',['../class_panel_controller.html#a25dc591011d4879137ae20ef6fa970e4',1,'PanelController']]],
+  ['displayname_17',['DisplayName',['../class_game_logic_1_1_upgrades_1_1_upgrade_definition.html#a7571a911c08f3efc3bd9a1836ac6cc90',1,'GameLogic::Upgrades::UpgradeDefinition']]]
+];

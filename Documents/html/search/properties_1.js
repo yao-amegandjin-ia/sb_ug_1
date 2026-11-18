@@ -1,0 +1,12 @@
+var searchData=
+[
+  ['clientid_0',['ClientId',['../class_game_data_objects_1_1_api_client_dto.html#a4750cc9a7ffee55084354eade2627955',1,'GameDataObjects.ApiClientDto.ClientId'],['../class_game_data_objects_1_1_researcher_data_object.html#a6e21c9e8f331743af4511e2361487410',1,'GameDataObjects.ResearcherDataObject.ClientId'],['../class_game_data_objects_1_1_client_data_object.html#a57bbfaaabb868ba5e233a33b523cfbc5',1,'GameDataObjects.ClientDataObject.ClientId']]],
+  ['clients_1',['Clients',['../class_data_manager.html#a5014f8b0e10343358f6f725e0d2a2e54',1,'DataManager.Clients'],['../class_game_data_objects_1_1_api_save_dto.html#a54527e389edc4f12557e1a009880e3df',1,'GameDataObjects.ApiSaveDto.Clients'],['../class_game_data_objects_1_1_save_data.html#a664d40f24c92039ff94c88cc05e4132a',1,'GameDataObjects.SaveData.Clients']]],
+  ['configreport_2',['ConfigReport',['../class_data_manager.html#a4b525e097f8b1bb2639c1a9da56eb14e',1,'DataManager']]],
+  ['cubiclecount_3',['CubicleCount',['../class_researchers_1_1_researcher_spawner.html#a424b6bc37fd327d920074ae361e7aa74',1,'Researchers::ResearcherSpawner']]],
+  ['current_4',['Current',['../class_u_i_1_1_client_screen.html#aeac44c32cb94a3d8ad6b2e17e07e7b5a',1,'UI::ClientScreen']]],
+  ['currentclientid_5',['CurrentClientId',['../class_researchers_1_1_researcher_data.html#a62e0c965f2bfc18353a57e7eb106184b',1,'Researchers::ResearcherData']]],
+  ['currentday_6',['CurrentDay',['../class_player_data_readonly.html#ad6913e09f77ef46ccebff7f382fedbfb',1,'PlayerDataReadonly.CurrentDay'],['../class_game_data_objects_1_1_api_player_dto.html#a8f7562447082a87d0ab9a5ec41f7b62a',1,'GameDataObjects.ApiPlayerDto.CurrentDay'],['../class_game_data_objects_1_1_player_data.html#a2ec54312a2ceeb9a163de9cb3827e292',1,'GameDataObjects.PlayerData.CurrentDay'],['../class_game_logic_1_1_firm_controller.html#a4c9028d7831d7eb6c9e3776769291401',1,'GameLogic.FirmController.CurrentDay']]],
+  ['currentmoney_7',['CurrentMoney',['../class_player_data_readonly.html#ade683745bd63eca44824032e4bf91992',1,'PlayerDataReadonly.CurrentMoney'],['../class_game_data_objects_1_1_api_player_dto.html#af32558ffdfe27d46557856a88d9e7562',1,'GameDataObjects.ApiPlayerDto.CurrentMoney'],['../class_game_data_objects_1_1_player_data.html#ae2ae656a200c627f7f6d3ccf19bdd995',1,'GameDataObjects.PlayerData.CurrentMoney']]],
+  ['currentstate_8',['CurrentState',['../class_researchers_1_1_researcher_data.html#a8432157d6e8d34910cac3f9ab4959a69',1,'Researchers::ResearcherData']]]
+];
