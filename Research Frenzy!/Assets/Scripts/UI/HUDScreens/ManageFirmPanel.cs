@@ -18,13 +18,17 @@ namespace UI.HUDScreens
         VisualElement statsGrid;
         HUD hud;
         StartScreen startScreen;
+        private DataManager dataManager;
 
         void Awake()
         {
             hud = GetComponent<HUD>();
             startScreen = GetComponent<StartScreen>();
         }
-
+        public void Initialize(DataManager dataManager)
+        {
+            this.dataManager = dataManager;
+        }
         // called by GameUIPanel once the UI has loaded (and again if it reloads)
         public void Bind(VisualElement root)
         {
@@ -60,10 +64,10 @@ namespace UI.HUDScreens
             researcherList.Clear();
             int count = 0;
 
-            ResearcherGenerator generator = FindAnyObjectByType<ResearcherGenerator>();
-            if (generator != null)
+            
+            if (dataManager != null)
             {
-                foreach (ResearcherData r in generator.Researchers)
+                foreach (ResearcherData r in dataManager.Researchers)
                 {
                     if (!r.IsPurchased) continue;
                     string detail = "Cubicle " + r.Position + "  ·  Speed " + r.Speed + "  ·  Quality " + r.Quality + "  ·  XP " + r.Experience;
@@ -73,7 +77,7 @@ namespace UI.HUDScreens
                     count++;
                 }
             }
-
+            
             // nobody is hired through the generator yet, so show the starter from the start screen
             if (count == 0)
             {
