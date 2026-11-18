@@ -55,6 +55,7 @@ namespace GameLogic
         /// <summary>A day began (the timer is running). Gives the day number. The HUD resets its "today" counts here.</summary>
         public event Action<int> DayStarted;
 
+
         /// <summary>
         /// The day is over: the timer ran out, or there are no clients left today. Gives the day number.
         /// Fires once per day. DaySummary opens on this.
@@ -76,10 +77,9 @@ namespace GameLogic
         /// </summary>
         public event Action<ClientResult> ClientResolved;
         private DataManager dataManager;
-        //Clients from a save 
+        //Clients from a save
         private readonly HashSet<ClientData> trackedClients = new();
 
-        private List<ClientData> clients;
         //private GameInitializer game;
 
         [Header("Lab scene components")]
@@ -103,6 +103,7 @@ namespace GameLogic
         public Client FollowingClient => following && following.IsFollowing ? following : null;
 
      
+        
         public void InitializeScene(GameSystems gameSystems)
         {
             dataManager = gameSystems.DataManager;
@@ -119,22 +120,19 @@ namespace GameLogic
                 throw new InvalidOperationException(
                     "FirmController: assign the lab generators and spawners in the Inspector.");
 
-            
-            
-            
-            //If no researchers loaded in 
+            //Connect the researchers
+            researcherGenerator.Initialize(dataManager.Researchers);
+
+            //If no researchers loaded in (this means we will need to show the start screen so probably move that check from UI to here)
             if (researcherGenerator.Researchers.Count == 0)
             {
-                
                 var researchers = researcherGenerator.Generate();
-                dataManager.SetResearchers(researchers);
-                researcherGenerator.Initialize(dataManager.Researchers);
-
+                dataManager.UpdateResearchers(researchers);
             }
             clientGenerator.Initialize(dataManager.GetRequests());
             ApplyClientUpgrades();
 
-            SetDailyClients();
+            SetDailyClients(true);
             
 
             if (upgrades != null)
@@ -144,12 +142,18 @@ namespace GameLogic
             GameLog.AttachDayClock(() => CurrentDay, () => timeLeft);
         }
         
-        private void SetDailyClients()
+        private void SetDailyClients(bool fromLoad)
         {
 
             var returningClients = dataManager.ReturningClients;
             var day = dataManager.PlayerData.CurrentDay;
-            var clients = clientGenerator.GenerateDay(day, upgrades.ExtraDailyClients, dataManager.GetUsedRequestIds());
+            List<ClientData> clients;
+            //Send in the usedrequestids, otherwise those are already known
+            
+            clients = clientGenerator.GenerateDay(day, upgrades.ExtraDailyClients, dataManager.GetUsedRequestIds());
+
+            
+          
             //Not the first day and there are returning clients (if returning clients on day 1 there shouldn't be so just overwrite anyway
             if (returningClients.Count > 0 && dataManager.PlayerData.CurrentDay > 1)
             {
@@ -160,12 +164,13 @@ namespace GameLogic
                     var recreatedClient = clientGenerator.CreateClientForRequest(client.RequestId);
                     returningClientsRebuilt.Add(recreatedClient);
 
+
                 }
                 //Append the returning clients!
                 clients.AddRange(returningClientsRebuilt);
             }
-            //Set the daily client list for the firm
-            this.clients = clients;
+            //Update the daily client list for the firm
+            dataManager.UpdateDailyClients(clients, true);
         }
 
         private void ResolveLabComponents()
@@ -183,6 +188,7 @@ namespace GameLogic
             if (clientGenerator != null)
                 clientGenerator.ExtraPatience = upgrades != null ? upgrades.ExtraPatienceSeconds : 0f;
         }
+
         private void OnClientSpawned(Client client)
         {
             if (client != null) TrackClient(client.Data);
@@ -200,6 +206,10 @@ namespace GameLogic
             trackedClients.Clear();
         }
 
+        /// <summary>
+        /// Add the client to the tracked clients list if not null and subscribe it to state changes event!
+        /// </summary>
+        /// <param name="client"></param>
         public void TrackClient(ClientData client)
         {
             // Prevent subscribing twice to the same object.
@@ -208,13 +218,21 @@ namespace GameLogic
 
             client.OnStateChanged += OnClientStateChanged;
         }
+        public void UntrackClient(ClientData client)
+        {
+            if (client == null || !trackedClients.Remove(client))
+                return;
 
+            client.OnStateChanged -= OnClientStateChanged;
+        }
+
+        //Currently only used to check for returning client state
         private void OnClientStateChanged(ClientData client)
         {
-
             if (client.State == ClientState.Returning)
             {
-                //Track the client for tomorrow!
+                dataManager.AddReturningClient(client);
+                
             }
         }
 
@@ -245,6 +263,7 @@ namespace GameLogic
             ClientLog.TurnedAway(client.Data, correct, reward);   // DATA LOG: client_leave (turned_away)
 
             client.Data.Complete();   // "request was rejected"
+            UntrackClient(client.Data);
             client.Leave();
 
             RequestRejected?.Invoke(correct);
@@ -255,6 +274,7 @@ namespace GameLogic
                 Outcome = correct ? ClientOutcome.CorrectReject : ClientOutcome.WrongReject,
                 Reward = reward
             });
+            SpawnNextClient();
             return correct;
         }
 
@@ -357,9 +377,11 @@ namespace GameLogic
             ClientLog.Lost(client.Data);   // DATA LOG: client_leave (patience_ran_out / no_seat_in_waiting_room)
 
             StopFollowing(client);
+            UntrackClient(client.Data);
             client.Leave();
             ClientLost?.Invoke(client);
             ClientResolved?.Invoke(new ClientResult { Request = request, MethodologyId = MethodLibrary.NoneId, Outcome = ClientOutcome.Lost });
+            SpawnNextClient();
         }
  
         /// <summary>"Come back tomorrow". The client leaves and returns the next day.</summary>
@@ -369,14 +391,16 @@ namespace GameLogic
             StopFollowing(client);
             ClientLog.SentHome(client.Data);   // DATA LOG: client_leave (return_tomorrow)
             client.Data.AskToReturnTomorrow();
+            UntrackClient(client.Data);
             client.Leave();
+            SpawnNextClient();
         }
 
         
         // frees the "one client at a time" slot if this was the client following
         private void StopFollowing(Client client)
         {
-            if (client != following) return;
+            if (client == null || client != following) return;
             client.StopFollowing();
             following = null;
         }
@@ -414,6 +438,7 @@ namespace GameLogic
 
             client.Data.AssignTo(researcher.Data.Id, methodologyId);
             client.Data.Complete();
+            UntrackClient(client.Data);
             client.Leave();
 
             StudyFinished?.Invoke(grade.Method);
@@ -426,6 +451,7 @@ namespace GameLogic
                 Outcome = ClientResult.FromStudy(grade.Method),
                 Reward = reward
             });
+            SpawnNextClient();
             return grade;
         }
 
@@ -560,10 +586,7 @@ namespace GameLogic
             {
                 var hired = researcherGenerator.GetHiredResearchers();
                 //Hire the selected researcher!
-                foreach (var h in hired)
-                {
-                    Hire(h);
-                }
+                researcherSpawner.SpawnHired(hired);
             }
 
             // DATA LOG: game_start (selectedStarter is -1 when a saved game carries on)
@@ -581,17 +604,22 @@ namespace GameLogic
         /// </summary>
         public void SpawnNextClient()
         {
+            //Do not spawn a client if the day is over!
+            if (dayRunning == false || skippingDay)
+            {
+                return;
+            }
             if (clientGenerator == null || clientSpawner == null) return;
             //Reached the end of our daily clients!
-            if (clients.Count == 0)
+            if (dataManager.Clients.Count == 0)
             {
                 //Perform work for end of day
                 EndDay(DayEndReason.NoClientsLeft);
                 return;   // without this, clients[0] below throws on an empty list
             }
-            
-            var client = clients[0];
-            clients.RemoveAt(0);   // so the next call sends in the next client, not the same one again
+
+            var client = dataManager.Clients[0];
+            dataManager.RemoveDailyClient(0);   // so the next call sends in the next client, not the same one again
             
             
             //Track the clients state changes
@@ -604,6 +632,7 @@ namespace GameLogic
 
         private float timeLeft;
         private bool dayRunning;
+        private bool skippingDay;
 
         /// <summary>Today's length: the base length plus the Clock upgrade. A Clock bought during the day counts from the next day.</summary>
         public float DayLength => baseDayLength + (upgrades != null ? upgrades.ExtraDaySeconds : 0f);
@@ -619,6 +648,7 @@ namespace GameLogic
 
         public int TotalDays => totalDays;
 
+        public bool IsMidDay => CurrentDay == 4;
         public bool IsLastDay => CurrentDay >= totalDays;
 
         private void Start()
@@ -642,7 +672,7 @@ namespace GameLogic
             timeLeft = DayLength;
             dayRunning = true;
             Debug.Log($"FirmController: day {CurrentDay} started ({DayLength:0}s).");
-            DayLog.Started(CurrentDay, DayLength, clients != null ? clients.Count : 0);   // DATA LOG: day_start
+            DayLog.Started(CurrentDay, DayLength, dataManager.Clients != null ? dataManager.Clients.Count : 0);   // DATA LOG: day_start
             DayStarted?.Invoke(CurrentDay);
         }
 
@@ -660,6 +690,15 @@ namespace GameLogic
 
             int day = CurrentDay;
             Debug.Log($"FirmController: day {day} ended.");
+
+            //Clean up for clients that may remain in the queue or in the firm
+            StopFollowing(following);
+            following = null;
+            UntrackAllClients();
+            trackedClients.Clear();
+            clientSpawner.Clear();
+            dataManager.ClearDailyClients();
+
             // DATA LOG: day_end. If a fail rule is added, call EndDay(DayEndReason.Failed): clients still in the lab
             // are then logged as interrupted by the failed day
             DayLog.Ended(day, reason, dataManager.PlayerData.CurrentMoney, dataManager.PlayerData.TotalMoneyEarned);
@@ -667,19 +706,122 @@ namespace GameLogic
             SaveAfterDay();
         }
 
+        private void UntrackAllClients()
+        {
+            foreach (var client in trackedClients.ToArray())
+                UntrackClient(client);
+        }
         // async void: Unity can't wait for this, so it runs alongside the game. fine for a save that nothing waits on
         private async void SaveAfterDay()
         {
             int day = CurrentDay;
             try
             {
-                await dataManager.SaveGame();
+                
+                //await dataManager.SaveGame();
                 DayLog.Saved(day, true, null);   // DATA LOG: game_saved
             }
             catch (Exception e)
             {
                 DayLog.Saved(day, false, e.Message);   // DATA LOG: game_saved (failed)
                 throw;   // still shows up in the Console like before
+            }
+        }
+
+        /// <summary>
+        /// Debug function to skip to the end of a day answering all clients 
+        /// Leaves one returning client
+        /// </summary>
+        [ContextMenu("Debug/Skip Day")]
+        public void SkipDay()
+        {
+            if (!Application.isPlaying || !dayRunning || skippingDay)
+                return;
+
+            // CompleteStudy needs a researcher GameObject.
+            Researcher researcher = null;
+
+            for (int cubicle = 1;
+                 cubicle <= researcherSpawner.CubicleCount;
+                 cubicle++)
+            {
+                researcher = researcherSpawner.GetAtCubicle(cubicle);
+                if (researcher != null) break;
+            }
+
+            if (researcher == null)
+            {
+                Debug.LogWarning("SkipDay: hire a researcher first.");
+                return;
+            }
+
+            skippingDay = true;
+
+            try
+            {
+                // Include clients already in the lab.
+                var clients = clientSpawner.ActiveClients.ToList();
+
+                // Spawn the remaining queued clients so we can use
+                // the existing gameplay methods on them.
+                while (dataManager.Clients.Count > 0)
+                {
+                    var data = dataManager.Clients[0];
+                    dataManager.RemoveDailyClient(0);
+
+                    var client = clientSpawner.Spawn(data);
+                    if (client == null) continue;
+
+                    OnClientSpawned(client);
+                    ClientLog.Entered(data);
+                    clients.Add(client);
+                }
+
+                foreach (var client in clients)
+                {
+                    if (client == null) continue;
+
+                    switch (UnityEngine.Random.Range(0, 4))
+                    {
+                        case 0:
+                            SendHomeUntilTomorrow(client);
+                            break;
+
+                        case 1:
+                            // Fires the existing dissatisfied-client handler.
+                            client.Data.RunOutOfPatience();
+                            break;
+
+                        case 2:
+                            var request = client.Data.Request;
+
+                            if (request != null && request.IsResearchable)
+                            {
+                                CompleteStudy(
+                                    client,
+                                    researcher,
+                                    request.Approach,
+                                    request.BestMethodologyId);
+                            }
+                            else
+                            {
+                                // The proper answer to an unresearchable request.
+                                RejectRequest(client);
+                            }
+                            break;
+
+                        case 3:
+                            RejectRequest(client);
+                            break;
+                    }
+                }
+                
+                // Sets TimeLeft to zero and fires DayEnded.
+                EndDay(DayEndReason.Timer);
+            }
+            finally
+            {
+                skippingDay = false;
             }
         }
 
@@ -697,7 +839,7 @@ namespace GameLogic
             }
 
             dataManager.AdvanceDay();
-            SetDailyClients();   // uses the new day number and skips requests already answered
+            SetDailyClients(false);   // uses the new day number and skips requests already answered
             StartDay();
             SpawnNextClient();
         }

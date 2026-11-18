@@ -710,6 +710,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bf9d0942438832458198aa8bdbccc5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIInitializer
+  screensToClose:
+  - {fileID: 2083464592}
+  - {fileID: 1375822311}
+  - {fileID: 436650138}
+  - {fileID: 1559369284}
   UI: {fileID: 1571892137}
   shopUI: {fileID: 1559369278}
   startScreen: {fileID: 0}
