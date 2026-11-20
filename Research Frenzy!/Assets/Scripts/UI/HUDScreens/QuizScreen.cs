@@ -285,7 +285,7 @@ namespace UI.HUDScreens
 
         void OptionClicked(int picked)
         {
-            if (current < 0 || showingResults) return;
+            if (current < 0 || current >= questions.Count || showingResults) return;
 
             QuizAnswer answer = new QuizAnswer();
             answer.question = questions[current];
@@ -306,7 +306,7 @@ namespace UI.HUDScreens
 
         void FinishQuiz()
         {
-            if (!showingResults) return;
+            if (showingResults) return;
             
             
             showingResults = true;
