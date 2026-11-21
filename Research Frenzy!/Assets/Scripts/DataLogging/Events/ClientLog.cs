@@ -3,9 +3,11 @@
 //   Client enters (wait start)                          -> Entered       (client_enter)
 //   Greeted by player (wait stop / greeting start)      -> Greeted       (client_greeted)
 //   Matched with researcher (greeting stop / researcher start)   -> Matched (client_matched)
-//   Finishes with researcher (researcher stop / post-research wait start) -> Matched (research_finished, placeholder)
-//   Re-engaged by player (post-research wait stop / walkout start)       -> Matched (client_reengaged, placeholder)
-//   Client leaves (walkout stop)                        -> Matched / TurnedAway / SentHome / Lost (client_leave)
+//   Finishes with researcher (researcher stop / post-research wait start) -> ResearchFinished (research_finished)
+//   Re-engaged by player (post-research wait stop / walkout start)       -> Reengaged        (client_reengaged)
+//   Client leaves (walkout stop)                        -> StudyCollected / TurnedAway / SentHome / Lost (client_leave)
+// RESEARCH TIMER: research_finished and client_reengaged used to be placeholders logged at the moment of the
+// match. They now have their own functions, called at the real moments (search "RESEARCH TIMER" below).
 //
 // Plus the steps in between: following the player, the waiting room, opening and closing the match screen.
 // The player's answers (right or wrong) are in AnswerLog. Stage tracking is in ClientVisits.
@@ -106,11 +108,14 @@ namespace DataLogging
             });
         }
 
+        // RESEARCH TIMER (changed): this used to log client_matched, both placeholders and client_leave all at once.
+        // Now it only logs client_matched, and the research session starts. The other three have their own functions below.
         /// <summary>
-        /// MATCH pressed (FirmController.CompleteStudy, after AnswerLog.MatchAnswered). Logs client_matched
-        /// (greeting stops / researcher starts), then the two placeholders below, then client_leave.
+        /// MATCH pressed (FirmController.StartResearch, after AnswerLog.MatchAnswered). Logs client_matched
+        /// (greeting stops / researcher starts). reward is what collecting will pay (after quality),
+        /// researchSeconds how long the session lasts (after speed).
         /// </summary>
-        public static void Matched(ClientData client, ResearcherData researcher, MatchGrade grade, int reward)
+        public static void Matched(ClientData client, ResearcherData researcher, MatchGrade grade, int reward, float researchSeconds)
         {
             GameLog.Safe(() =>
             {
@@ -120,26 +125,61 @@ namespace DataLogging
                 Dictionary<string, object> matched = ClientVisits.Fields(client, v);
                 ClientVisits.ChangeStage(matched, v, ClientVisits.WithResearcher);
                 matched["researcher_id"] = researcher?.Id;
+                // RESEARCH TIMER (new fields)
+                matched["researcher_speed"] = researcher?.Speed;
+                matched["researcher_quality"] = researcher?.Quality;
+                matched["research_seconds"] = LogHelpers.Round(researchSeconds);
+                matched["expected_reward"] = reward;
                 GameLog.Emit("process", "client_matched", matched);
+            });
+        }
 
-                // ---- PLACEHOLDERS ----
-                // The game has no research timer yet: the client leaves the moment they're matched.
-                // So "researcher finishes" and "player re-engages the client" happen at the same instant and are
-                // marked placeholder = true. When a research timer is added, move these two into their own functions,
-                // call them where the researcher really finishes (e.g. ResearcherData.AssignmentFinished) and where the
-                // player clicks the client again, and drop the placeholder flag.
+        // RESEARCH TIMER (new): was a placeholder inside Matched
+        /// <summary>
+        /// The researcher finished (researcher stops / post-research wait starts). FirmController.HandleResearchFinished.
+        /// endedBy: "timer" (the session ran its full length) or "day_end" (the day ended first, so it was cut short).
+        /// </summary>
+        public static void ResearchFinished(ClientData client, ResearcherData researcher, string endedBy)
+        {
+            GameLog.Safe(() =>
+            {
+                if (client == null) return;
+                ClientVisit v = ClientVisits.Get(client);
                 Dictionary<string, object> finished = ClientVisits.Fields(client, v);
                 ClientVisits.ChangeStage(finished, v, ClientVisits.PostResearchWait);
                 finished["researcher_id"] = researcher?.Id;
-                finished["placeholder"] = true;
+                finished["ended_by"] = endedBy;
+                finished["research_seconds_planned"] = LogHelpers.Round(client.ResearchDuration);
                 GameLog.Emit("process", "research_finished", finished);
+            });
+        }
 
+        // RESEARCH TIMER (new): was a placeholder inside Matched
+        /// <summary>
+        /// The player clicked the client to collect the result (post-research wait stops / walkout starts).
+        /// FirmController.CollectResearch. autoCollected is true when the day ended and the game collected it instead.
+        /// </summary>
+        public static void Reengaged(ClientData client, bool autoCollected)
+        {
+            GameLog.Safe(() =>
+            {
+                if (client == null) return;
+                ClientVisit v = ClientVisits.Get(client);
                 Dictionary<string, object> reengaged = ClientVisits.Fields(client, v);
                 ClientVisits.ChangeStage(reengaged, v, ClientVisits.Walkout);
-                reengaged["placeholder"] = true;
+                reengaged["auto_collected_at_day_end"] = autoCollected;
                 GameLog.Emit("process", "client_reengaged", reengaged);
+            });
+        }
 
-                Leave(client, v, "study_complete", ClientResult.FromStudy(grade.Method).ToString(), reward);
+        // RESEARCH TIMER (new): the client_leave part of the old Matched
+        /// <summary>The client leaves with their result (walkout stops). FirmController.CollectResearch, right after Reengaged.</summary>
+        public static void StudyCollected(ClientData client, MatchGrade grade, int reward)
+        {
+            GameLog.Safe(() =>
+            {
+                if (client == null) return;
+                Leave(client, ClientVisits.Get(client), "study_complete", ClientResult.FromStudy(grade.Method).ToString(), reward);
             });
         }
 
