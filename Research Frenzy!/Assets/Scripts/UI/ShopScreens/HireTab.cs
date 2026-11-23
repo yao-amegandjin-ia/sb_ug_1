@@ -24,10 +24,11 @@ namespace UI
             }
 
             bool hasDesk = Firm.HasFreeCubicle();
+            bool canAfford = Firm.CanAffordHire;
             int shown = 0;
             foreach (ResearcherData r in Firm.GetHireCandidates())
             {
-                list.Add(BuildCard(r, hasDesk));
+                list.Add(BuildCard(r, hasDesk, canAfford));
                 shown++;
             }
 
@@ -35,27 +36,31 @@ namespace UI
         }
 
         // the layout is all in ResearcherCard.uxml / .uss. this only fills in the named elements
-        private VisualElement BuildCard(ResearcherData r, bool hasDesk)
+        private VisualElement BuildCard(ResearcherData r, bool hasDesk, bool canAfford)
         {
             VisualElement card = researcherCard.Instantiate();
 
             SetText(card, "researcher-name", r.Name);
             SetText(card, "quality", "QUALITY " + r.Quality + "/3");
             SetText(card, "speed", "SPEED " + r.Speed + "/3");
+            SetText(card, "level", "LEVEL " + r.Level);
 
             // no pictures yet, so the portrait shows initials. once there are sprites:
             //   card.Q("portrait").style.backgroundImage = new StyleBackground(sprite);
             //   card.Q("portrait-initials").style.display = DisplayStyle.None;
             SetText(card, "portrait-initials", Initials(r.Name));
-
-            new MethodologyTray(card.Q("methods")).Show(r.KnownMethodologyIds);
-
+            
+            new MethodologyTray(card.Q("methods")).Show(r.KnownMethodologyIds, r.UnlockedMethodCount);
+            
             Button hireButton = card.Q<Button>("hire-researcher");
             if (hireButton != null)
             {
-                if (hasDesk) hireButton.clicked += () => HireClicked(r);
-                else hireButton.text = "NO DESK";
-                hireButton.SetEnabled(hasDesk);   // every cubicle is taken
+                bool canHire = hasDesk && canAfford;
+                if (!hasDesk) hireButton.text = "NO DESK";
+                else hireButton.text = "HIRE $" + Firm.HireCost.ToString("N0");
+                hireButton.EnableInClassList("too-expensive", hasDesk && !canAfford);   // optional USS hook
+                if (canHire) hireButton.clicked += () => HireClicked(r);
+                hireButton.SetEnabled(canHire);
             }
 
             return card;
@@ -70,7 +75,7 @@ namespace UI
             return initials;
         }
 
-        // hiring itself is FirmController.Hire. the shop stays open and the list rebuilds without them
+        // hiring itself is FirmController.Hire (which now also takes the money). the shop stays open and the list rebuilds without them
         private void HireClicked(ResearcherData researcher)
         {
             if (Firm && Firm.Hire(researcher))

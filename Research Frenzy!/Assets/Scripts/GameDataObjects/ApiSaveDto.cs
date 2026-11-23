@@ -1,4 +1,4 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace GameDataObjects
@@ -37,6 +37,9 @@ namespace GameDataObjects
 
         [JsonProperty("owned_upgrades")]
         public Dictionary<string, int> OwnedUpgrades { get; set; }
+        
+        [JsonProperty("mid_game_quiz_taken")]
+        public bool MidGameQuizTaken { get; set; }
 
         
     }

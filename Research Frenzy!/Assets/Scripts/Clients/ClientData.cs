@@ -10,12 +10,13 @@ namespace Clients
 {
     /// <summary>
     /// These are the possible states a client may be in
-    /// InProcess: just walked in, waiting at the door for the player to click them
-    /// Waiting : sitting in the waiting area
+    /// InProcess: just walked in, waiting at the door (the entrance) for the player to click them
+    /// Waiting : sitting in the waiting area. The only state where patience goes down 
     /// Assisted: in a consultation with a researcher
     /// Returning: told to come back tomorrow
     /// Completed: done (consultation finished or request rejected)
     /// LeftDissatisfied: patience ran out
+    /// ResearchDone: the researcher finished, waiting for the player to collect the result
     /// </summary>
     public enum ClientState
     {
@@ -25,7 +26,8 @@ namespace Clients
         Returning,        // told to come back tomorrow
         Completed,        // done (consultation finished or request rejected)
         LeftDissatisfied,  // patience ran out
-        Following // following the player
+        Following, // following the player
+        ResearchDone
     }
 
     /// <summary>
@@ -45,10 +47,17 @@ namespace Clients
         [Header("Patience")]
         [SerializeField] private float maxPatience = 30f;
         [SerializeField] private float currentPatience = 30f;
+        [Header("Entrance")]
+        [SerializeField] private float entranceWait = 0f;
+        [SerializeField] private float entranceTimeLeft = 0f;
+        //true while a screen is open, so entrance timer does not run when player is interacting
+        [NonSerialized] private bool beingGreeted;
         [Header("Assignment")]
-        //TODO: May need to add assignment to ResearcherData object? Not sure for now so leaving as is
         [SerializeField] private int assignedResearcherId = -1;
         [SerializeField] private int assignedMethodologyId = -1;
+        [Header("Research session")]
+        [SerializeField] private float researchDuration = 0f;
+        [SerializeField] private float researchTimeLeft = 0f;
         [Header("State")]
         [SerializeField] private ClientState state = ClientState.InProcess;
 
@@ -58,9 +67,25 @@ namespace Clients
         public Vector3Int Appearance => appearance;
         public float MaxPatience => maxPatience;
         public float Patience => currentPatience;
+        /// <summary>Seconds left before they give up waiting at the entrance and go to the waiting room.</summary>
+        public float EntranceTimeLeft => entranceTimeLeft;
+        /// <summary>True while they stand at the entrance (walked in, not helped, not sent anywhere yet).</summary>
+        public bool IsAtEntrance => state == ClientState.InProcess;
         public int AssignedResearcherId => assignedResearcherId;
         public int AssignedMethodologyId => assignedMethodologyId;
         public ClientState State => state;
+
+        // RESEARCH TIMER (new)
+        /// <summary>Seconds left in the research session (0 when there's no session or it's over).</summary>
+        public float ResearchTimeLeft => researchTimeLeft;
+        /// <summary>Length of the research session, after the researcher's speed was applied.</summary>
+        public float ResearchDuration => researchDuration;
+        /// <summary>0 when the session just started, 1 when it's done. For a progress bar.</summary>
+        public float ResearchProgress => researchDuration <= 0f ? 1f : 1f - researchTimeLeft / researchDuration;
+        /// <summary>True while the client is with a researcher. They can't be clicked or helped by anyone else.</summary>
+        public bool IsInResearch => state == ClientState.Assisted;
+        /// <summary>True when the session is over and the player can collect the result.</summary>
+        public bool IsReadyToCollect => state == ClientState.ResearchDone;
         public string RequestText => request != null ? request.ProblemText : "";
 
         // The client's name comes from the request.
@@ -70,13 +95,29 @@ namespace Clients
         // the game manager can listen to these
         public event Action<ClientData> OnStateChanged;
         public event Action<ClientData> OnLeftDissatisfied;
+        public event Action<ClientData> OnResearchFinished;
+        public event Action<ClientData> OnEntranceWaitOver;
 
         // Replaces the old Update(). The Client component calls this every frame with Time.deltaTime.
         public void Tick(float deltaTime)
         {
-            // patience only drops while the client hasn't been helped yet
-            // (opening the request panel does NOT pause it, per the GDD)
-            if (state == ClientState.InProcess || state == ClientState.Waiting)
+            
+            //client waits at entrance first, so entrance timer goes first
+            if (state == ClientState.InProcess)
+            {
+                if (entranceTimeLeft > 0f && !beingGreeted)
+                {
+                    entranceTimeLeft -= deltaTime;
+                    if (entranceTimeLeft <= 0f)
+                    {
+                        entranceTimeLeft = 0f;
+                        OnEntranceWaitOver?.Invoke(this);
+                    }
+                }
+            }
+            
+            //patience only drops when in the waiting room
+            else if (state == ClientState.Waiting)
             {
                 currentPatience -= deltaTime;
 
@@ -84,6 +125,15 @@ namespace Clients
                 {
                     RunOutOfPatience();
                 }
+            }
+
+            //  the research session counts down only while the client is with the researcher.
+            // Patience doesn't drop during this time (the check above only runs for InProcess / Waiting).
+            else if (state == ClientState.Assisted && researchTimeLeft > 0f)
+            {
+                researchTimeLeft -= deltaTime;
+                if (researchTimeLeft <= 0f)
+                    FinishResearch();
             }
         }
 
@@ -105,6 +155,11 @@ namespace Clients
             currentPatience = patience;
             assignedResearcherId = -1;
             assignedMethodologyId = -1;
+            researchDuration = 0f; 
+            researchTimeLeft = 0f;
+            entranceWait = 0f;  
+            entranceTimeLeft = 0f;
+            beingGreeted = false;
             this.appearance = appearance;
 
             // Always starts at the door, even if the object was reused.
@@ -123,6 +178,22 @@ namespace Clients
             OnLeftDissatisfied?.Invoke(this);
         }
         
+        
+        /// <summary>Starts the entrance timer. FirmController calls this when the client walks in.</summary>
+        public void StartEntranceWait(float seconds)
+        {
+            entranceWait = Mathf.Max(0f, seconds);
+            entranceTimeLeft = entranceWait;
+        }
+
+        /// <summary>
+        /// True while the player has one of this client's screens open (ClientScreen calls it on open and close).
+        /// The entrance timer is paused while it's true, so a client doesn't walk off mid-conversation.
+        /// </summary>
+        public void SetBeingGreeted(bool greeted)
+        {
+            beingGreeted = greeted;
+        }
 
         // for the patience bar UI (0 to 1)
         public float GetPatiencePercent()
@@ -152,6 +223,30 @@ namespace Clients
             assignedMethodologyId = methodologyId;
             SetState(ClientState.Assisted);
         }
+        
+        /// <summary>
+        /// Starts the research session: same as AssignTo, plus a timer of the given length (already shortened
+        /// by the researcher's speed). FirmController.StartResearch calls this when MATCH is pressed.
+        /// </summary>
+        public void StartResearch(int researcherId, int methodologyId, float duration)
+        {
+            researchDuration = Mathf.Max(0f, duration);
+            researchTimeLeft = researchDuration;
+            AssignTo(researcherId, methodologyId);   // state -> Assisted, so Tick starts counting down
+            if (researchTimeLeft <= 0f) FinishResearch();   // a 0 second session finishes straight away
+        }
+        
+        /// <summary>
+        /// Ends the session: the timer ran out, or FirmController ends it early (the day ended).
+        /// The client now waits for the player to collect the result.
+        /// </summary>
+        public void FinishResearch()
+        {
+            if (state != ClientState.Assisted) return;
+            researchTimeLeft = 0f;
+            SetState(ClientState.ResearchDone);
+            OnResearchFinished?.Invoke(this);
+        }
 
         // "Ask them to come back tomorrow"
         public void AskToReturnTomorrow()
@@ -163,8 +258,13 @@ namespace Clients
         public void Reenter()
         {
             currentPatience = maxPatience;
+            entranceWait = 0f; 
+            entranceTimeLeft = 0f;
+            beingGreeted = false;
             assignedResearcherId = -1;
             assignedMethodologyId = -1;
+            researchDuration = 0f;
+            researchTimeLeft = 0f;
             SetState(ClientState.InProcess);
         }
 
@@ -189,6 +289,8 @@ namespace Clients
             ClientData copy = (ClientData)MemberwiseClone();
             copy.OnStateChanged = null;
             copy.OnLeftDissatisfied = null;
+            copy.OnResearchFinished = null;
+            copy.OnEntranceWaitOver = null;
             return copy;
         }
     }

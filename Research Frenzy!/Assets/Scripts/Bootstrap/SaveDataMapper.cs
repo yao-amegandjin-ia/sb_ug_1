@@ -14,6 +14,7 @@ namespace Bootstrap
         public static SaveData FromApiDto(ApiSaveDto api, int seed) => new SaveData
         {
             Seed = seed,
+            IsFromSave = true,
             Player = api.Player == null ? null : new PlayerData
             {
                 CurrentMoney = api.Player.CurrentMoney,
@@ -22,7 +23,8 @@ namespace Bootstrap
                 StudyResults = api.Player.StudyResults ?? new Dictionary<int, int>(),
                 // saves made before approaches were recorded don't have this, so start empty
                 StudyApproaches = api.Player.StudyApproaches ?? new Dictionary<int, int>(),
-                OwnedUpgrades = api.Player.OwnedUpgrades ?? new Dictionary<string, int>()
+                OwnedUpgrades = api.Player.OwnedUpgrades ?? new Dictionary<string, int>(),
+                MidGameQuizTaken = api.Player.MidGameQuizTaken   // SAVE GAME (new)
             },
 
 
@@ -115,7 +117,8 @@ namespace Bootstrap
             CurrentDay = player.CurrentDay,
             StudyResults = player.StudyResults,
             StudyApproaches = player.StudyApproaches,
-            OwnedUpgrades = player.OwnedUpgrades
+            OwnedUpgrades = player.OwnedUpgrades,
+            MidGameQuizTaken = player.MidGameQuizTaken   // SAVE GAME (new)
         };
     }
 }

@@ -35,10 +35,12 @@ namespace Interfaces
         /// <param name="responses">{questionId: response}</param>
         /// <returns></returns>
         public Awaitable SaveQuizData(QuizType quizType, Dictionary<int, int> responses);
-        
 
-        
-
+        /// <summary>
+        /// deletes the player's save, so the start screen has nothing to CONTINUE.
+        /// Called when a new game replaces the save, and when the game is finished. There is only one save at a time.
+        /// </summary>
+        public Awaitable DeleteSave();
 
     }
     public enum QuizType

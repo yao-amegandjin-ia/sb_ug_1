@@ -67,6 +67,36 @@ namespace Researchers
         public bool IsPurchased => position != 0;
         public bool IsAvailable => IsPurchased && currentState == ResearcherState.Available;
 
+        //levels come from XP
+        /// <summary>1 to 4, worked out from Experience (ResearcherLevels: 2 XP = level 2, 5 = 3, 10 = 4).</summary>
+        public int Level => ResearcherLevels.LevelFor(experience);
+
+        /// <summary>True at level 4: no more methodologies to unlock.</summary>
+        public bool IsMaxLevel => Level >= ResearcherLevels.MaxLevel;
+
+        /// <summary>XP needed for the next level (e.g. 5 while at level 2), or -1 at the max level.</summary>
+        public int NextLevelExperience => ResearcherLevels.XpForNextLevel(experience);
+
+        /// <summary>
+        /// How many methodologies can be used: one per level, from the start of KnownMethodologyIds.
+        /// The list's order is the unlock order (index 0 at level 1). Never more than they know.
+        /// </summary>
+        public int UnlockedMethodCount => Mathf.Min(ResearcherLevels.UnlockedMethodsAt(Level), knownMethodologyIds.Count);
+
+        /// <summary>True if this methodology is one they know AND have unlocked.</summary>
+        public bool CanUseMethodology(int methodologyId)
+        {
+            int index = knownMethodologyIds.IndexOf(methodologyId);
+            return index >= 0 && index < UnlockedMethodCount;
+        }
+
+        /// <summary>The methodology a level unlocks (level 2 -> KnownMethodologyIds[1]), or 0 if they don't know that many.</summary>
+        public int MethodologyUnlockedAt(int level)
+        {
+            int index = level - 1;
+            return index >= 0 && index < knownMethodologyIds.Count ? knownMethodologyIds[index] : 0;
+        }
+
         // Events
         public event Action<ResearcherData, int> AssignmentStarted; // (researcher, clientId)
         public event Action<ResearcherData, int> AssignmentFinished; // (researcher, clientId)
@@ -122,6 +152,8 @@ namespace Researchers
         }
 
         // Experience
+        // RESEARCHER XP: this already existed but nothing called it. FinishAssignment (below) calls it now,
+        // with the XP FirmController worked out at MATCH. Levels go up by themselves because Level reads experience
         public void AddExperience(int amount)
         {
             if (amount > 0) experience += amount;
@@ -138,7 +170,8 @@ namespace Researchers
             return true;
         }
 
-        /// <summary>Finishes the current assignment and returns the researcher to Available.</summary>
+        /// <summary>Finishes the current assignment, adds the XP it earned and returns the researcher to Available.</summary>
+        // RESEARCHER XP: the experienceGained parameter was already here. FirmController.CollectResearch now passes it
         public void FinishAssignment(int experienceGained = 0)
         {
             if (currentState != ResearcherState.Busy) return;
