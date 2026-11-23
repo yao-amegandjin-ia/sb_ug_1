@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System;
 using Clients;
 using GameDataObjects;
 using Researchers;
@@ -28,6 +29,15 @@ public class ClientGenerator : MonoBehaviour
     [Tooltip("New clients added for each day after day 1. With 3 and 2: day 1 = 3, day 2 = 5, day 3 = 7...")]
     [SerializeField, Min(0)] private int clientsAddedPerDay = 2;
  
+    // TEMP REPEATS (new): a stopgap while the requests spreadsheet only has 20 rows. Untick (or delete this block,
+    // GenerateRepeats and the TEMP REPEATS lines in FirmController and DataManager) once there are enough requests
+    [Header("TEMPORARY: repeat requests when they run out")]
+    [Tooltip("Ticked: when there aren't enough unanswered requests for a day, answered ones come back, the ones the " +
+             "player got wrong first, and they pay again. Unticked: days just get fewer clients (the old behaviour).")]
+    [SerializeField] private bool repeatRequestsWhenOutOfNew = true;
+
+    /// <summary>True while the temporary repeat rule is on (Inspector).</summary>
+    public bool RepeatRequestsWhenOutOfNew => repeatRequestsWhenOutOfNew;   // TEMP REPEATS (new)
     
     /// <summary>
     /// Seconds added to every new client's patience.
@@ -201,6 +211,43 @@ public class ClientGenerator : MonoBehaviour
         ClientData client = new ClientData();
         client.Init(requestId, request, client.Patience + ExtraPatience, look);   // client ID = request ID (unique, needs no saving)
         return client;
+    }
+    
+    // TEMP REPEATS (new)
+    /// <summary>
+    /// Up to "count" clients for requests that were ALREADY answered, for when GenerateDay ran out of new ones.
+    /// The ones the player got wrong come first (answeredRight says which were right), then the rest, each group
+    /// in deck order. notAllowed = requests already in today's list or coming back tomorrow (a client can't be
+    /// in the list twice). answeredIds = every request that has an answer (DataManager's study results).
+    /// </summary>
+    public List<ClientData> GenerateRepeats(int count, IEnumerable<int> answeredIds, IEnumerable<int> notAllowed,
+        Func<int, bool> answeredRight)
+    {
+        List<ClientData> result = new List<ClientData>();
+        if (count <= 0 || answeredIds == null) return result;
+
+        EnsureDeck();
+        HashSet<int> answered = new HashSet<int>(answeredIds);
+        HashSet<int> skip = notAllowed != null ? new HashSet<int>(notAllowed) : new HashSet<int>();
+
+        // two passes over the deck: wrong answers first, then right ones
+        foreach (bool wantRight in new[] { false, true })
+        {
+            foreach (int requestId in deck)
+            {
+                if (result.Count >= count) return result;
+                if (!answered.Contains(requestId) || skip.Contains(requestId)) continue;
+                bool right = answeredRight != null && answeredRight(requestId);
+                if (right != wantRight) continue;
+
+                result.Add(CreateClientForRequest(requestId));
+                skip.Add(requestId);
+            }
+        }
+
+        if (result.Count < count)
+            Debug.LogWarning($"ClientGenerator: even with repeats there are only {result.Count} more requests (wanted {count}).");
+        return result;
     }
  
     /// <summary>How many requests have not been used yet.</summary>

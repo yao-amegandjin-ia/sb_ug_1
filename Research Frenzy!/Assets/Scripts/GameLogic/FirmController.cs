@@ -222,10 +222,38 @@ namespace GameLogic
                 //Append the returning clients!
                 clients.AddRange(returningClientsRebuilt);
             }
+            
+            //TODO: DELETE THIS BLOCK WHEN ENOUGH REQUESTS
+            // TEMP REPEATS (new): not enough new requests left for today, so answered ones come back (wrong answers first).
+            // Remove this block (and ClientGenerator.GenerateRepeats) once the spreadsheet has enough requests
+            int wanted = clientGenerator.CalculateClientCount(day, upgrades.ExtraDailyClients);
+            int newClients = clients.Count - (returningClients.Count > 0 && day > 1 ? returningClients.Count : 0);
+            if (clientGenerator.RepeatRequestsWhenOutOfNew && newClients < wanted)
+            {
+                List<int> alreadyToday = clients.Where(c => c != null).Select(c => c.RequestId).ToList();
+                List<ClientData> repeats = clientGenerator.GenerateRepeats(wanted - newClients,
+                    dataManager.PlayerData.StudyResults.Keys, alreadyToday, WasAnsweredRight);
+                if (repeats.Count > 0)
+                    Debug.Log($"FirmController: only {newClients} new requests left for day {day}, so {repeats.Count} answered ones come back.");
+                clients.AddRange(repeats);
+            }
+            
             //Update the daily client list for the firm
             dataManager.UpdateDailyClients(clients, true);
         }
 
+        // TEMP REPEATS (new): was the saved answer for this request the right one? Right = the best methodology with the
+        // right approach, or "We can't help" on a request that can't be researched. Used to put wrong answers first
+        private bool WasAnsweredRight(int requestId)
+        {
+            RequestData request = dataManager.GetRequests().FirstOrDefault(r => r.RequestId == requestId);
+            if (request == null || !dataManager.PlayerData.StudyResults.TryGetValue(requestId, out int methodId)) return false;
+            if (!request.IsResearchable) return methodId == MethodLibrary.NoneId;
+            ResearchApproach approach = GetStudyApproach(requestId);
+            return StudyScoring.Grade(request, approach, methodId).Method == StudyOutcome.Best &&
+                   StudyScoring.IsCorrectApproach(request, approach);
+        }
+        
         private void ResolveLabComponents()
         {
             // Inspector references also support components on other lab GameObjects.

@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 
+
+
 /// <summary>
 /// This class handles the creation of data objects on game startup.
 /// </summary>
@@ -48,7 +50,7 @@ public class DataManager
     public bool HasSavedGame { get; private set; }
 
     /// <summary>Where saves go, for the Console and the data log ("browser localStorage", a folder, the API...).</summary>
-    public string SaveLocation => saveSystem is LocalSaveSystem local ? local.Describe() : saveSystem.apiBaseUrl;
+    public string SaveLocation => saveSystem is LocalSaveSystem local ? local.Describe() : saveSystem.apiBaseUrl; 
 
     /// <summary>
     /// Includes request ids of study results and ids of any returning clients!
@@ -90,7 +92,7 @@ public class DataManager
         }
 
         instance.state = saveData;
-        instance.HasSavedGame = saveData.IsFromSave;
+        instance.HasSavedGame = saveData.IsFromSave; 
         instance.BindData();
         return instance;
     }
@@ -165,10 +167,9 @@ public class DataManager
     {
         
         await saveSystem.SaveGame(state);
-        HasSavedGame = true;   // SAVE GAME (new): there's something to CONTINUE now
+        HasSavedGame = true;  
         
     }
-    
 
     /// <summary>
     /// Wipes the game back to a fresh day 1 with a new seed (NEW GAME on the start screen).
@@ -238,7 +239,8 @@ public class DataManager
     /// Saves the player's answer for a request: the methodology (step two) and the approach (step one),
     /// and pays the reward the first time the request is answered.
     /// </summary>
-    public bool TryRecordStudy(int requestId, ResearchApproach approach, int methodologyId, int reward)
+    // TEMP REPEATS : payAgain is new. True = pay even if this request was answered before (a repeat)
+    public bool TryRecordStudy(int requestId, ResearchApproach approach, int methodologyId, int reward, bool payAgain = false)
     {
         if (reward < 0) throw new ArgumentOutOfRangeException(nameof(reward));
         if (methodologyId < 0) throw new ArgumentOutOfRangeException(nameof(methodologyId));
@@ -247,7 +249,7 @@ public class DataManager
         state.Player.StudyApproaches[requestId] = (int)approach;
 
         // -1 is a reserved/unanswered request, not a final answer.
-        if (state.Player.StudyResults.TryGetValue(requestId, out int method) && method != -1)
+        if (!payAgain && state.Player.StudyResults.TryGetValue(requestId, out int method) && method != -1)
         {
             // Keep the latest choice without paying the same request twice.
             state.Player.StudyResults[requestId] = methodologyId;
@@ -302,7 +304,7 @@ public sealed class PlayerDataReadonly
     public int CurrentMoney => player.CurrentMoney;
     public int TotalMoneyEarned => player.TotalMoneyEarned;
     public int CurrentDay => player.CurrentDay;
-    public bool MidGameQuizTaken => player.MidGameQuizTaken;
+    public bool MidGameQuizTaken => player.MidGameQuizTaken;   // SAVE GAME (new)
     public IReadOnlyDictionary<int, int> StudyResults { get; }
     public IReadOnlyDictionary<int, int> StudyApproaches { get; }
     public IReadOnlyDictionary<string, int> OwnedUpgrades { get; }
@@ -315,9 +317,3 @@ public sealed class PlayerDataReadonly
         OwnedUpgrades = new ReadOnlyDictionary<string, int>(player.OwnedUpgrades);
     }
 }
-
-
-
-
-
-
