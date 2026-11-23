@@ -43,6 +43,8 @@ namespace GameDataObjects
         public Dictionary<int, int> StudyApproaches { get; set; } = new();
 
         public Dictionary<string, int> OwnedUpgrades{ get; set; } = new();
+        
+        public bool MidGameQuizTaken { get; set; }
 
         
     }

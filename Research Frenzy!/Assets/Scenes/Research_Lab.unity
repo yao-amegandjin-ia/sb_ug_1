@@ -181,6 +181,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 700046837}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &333089927
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 333089928}
+  m_Layer: 0
+  m_Name: Spot3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &333089928
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 333089927}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -21.47, y: -3.45, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1961961323}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &538360235
 GameObject:
   m_ObjectHideFlags: 0
@@ -60300,6 +60331,12 @@ MonoBehaviour:
   spawnParent: {fileID: 0}
   spawnPoint: {fileID: 1070613317}
   spacing: {x: 1.5, y: 0, z: 0}
+  waitingSeats:
+  - {fileID: 1628068518}
+  - {fileID: 1362138027}
+  - {fileID: 333089928}
+  waitingOverflow: {fileID: 0}
+  walkSpeed: 4
 --- !u!114 &1315803816
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60354,7 +60391,30 @@ MonoBehaviour:
   legCount: 8
   speedRange: {x: 1, y: 3}
   qualityRange: {x: 1, y: 3}
+  useAllConfigMethodologies: 1
   methodologyIds: 0100000002000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d000000i
+  methodologiesPerResearcher: 4
+  startingResearchers:
+  - name: James Fitzgerald
+    speed: 2
+    quality: 1
+    methodologies:
+    - Product R&D
+    - Market Research
+    - Exploratory Research
+    - Randomized Controlled Trial
+    appearance: {x: 0, y: 0, z: 0}
+  - name: Maya Nobel
+    speed: 1
+    quality: 2
+    methodologies:
+    - Field Research
+    - Exploratory Research
+    - Longitudinal Research
+    - Policy Research
+    appearance: {x: 1, y: 1, z: 1}
+  starterExperience: 2
+  unpickedStartersCanBeHired: 1
   firstNames:
   - Jim
   - Stephen
@@ -60388,7 +60448,6 @@ MonoBehaviour:
   - Anderson
   - Gonzalez
   - Garcia
-  researchers: []
 --- !u!114 &1315803819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60422,11 +60481,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30ecf4aad34647c6b30d5e13d1fa1427, type: 3}
   m_Name: 
   m_EditorClassIdentifier: NewAssembly::GameLogic.FirmController
-  bestReward: 100
-  goodReward: 50
-  correctRejectReward: 50
-  unlockedMethods: 2
+  matchRewards:
+    approachRightMethodBest: 100
+    approachRightMethodGood: 50
+    approachRightMethodWrong: 25
+    approachWrongMethodBest: 50
+    approachWrongMethodGood: 25
+    approachWrongMethodWrong: 0
+  correctRejectReward: 2000
+  matchExperience:
+    approachRightMethodBest: 2
+    approachRightMethodGood: 1
+    approachRightMethodWrong: 0
+    approachWrongMethodBest: 1
+    approachWrongMethodGood: 1
+    approachWrongMethodWrong: 0
+  hireCost: 200
+  baseResearchSeconds: 20
+  qualityBonusPerLevel: 0.25
+  baseDayLength: 180
+  totalDays: 7
   baseWaitingSeats: 3
+  secondsBetweenClients: 12
+  entranceWaitSeconds: 15
+  scriptedFirstDay: 1
   clientGenerator: {fileID: 0}
   researcherGenerator: {fileID: 0}
   clientSpawner: {fileID: 0}
@@ -60449,6 +60527,37 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 77dc8a522c3672e44be685ace98c7e59, type: 2}
   - {fileID: 11400000, guid: e32547f795cdf3149af54fb1c50ed443, type: 2}
   owned: []
+--- !u!1 &1362138026
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1362138027}
+  m_Layer: 0
+  m_Name: Spot2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1362138027
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1362138026}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -19.19, y: 0.96, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1961961323}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1585593252
 GameObject:
   m_ObjectHideFlags: 0
@@ -60610,6 +60719,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9d15a755db902754989ae822b4b2e241, type: 3}
+--- !u!1 &1628068517
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1628068518}
+  m_Layer: 0
+  m_Name: Spot1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1628068518
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1628068517}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -25.22, y: -0.61, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1961961323}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1646551550
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -60897,6 +61037,40 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1 &1961961322
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1961961323}
+  m_Layer: 0
+  m_Name: WaitingRoom
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1961961323
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1961961322}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.1223, y: 0.25309, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1628068518}
+  - {fileID: 1362138027}
+  - {fileID: 333089928}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2125432839
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -61171,3 +61345,4 @@ SceneRoots:
   - {fileID: 1315803817}
   - {fileID: 700046837}
   - {fileID: 5108529142426077786}
+  - {fileID: 1961961323}

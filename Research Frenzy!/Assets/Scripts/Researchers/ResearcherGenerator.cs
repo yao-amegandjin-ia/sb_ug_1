@@ -58,6 +58,10 @@ public class ResearcherGenerator : MonoBehaviour
             1, 2, new Vector3Int(1, 1, 1),
             "Field Research", "Exploratory Research", "Longitudinal Research", "Policy Research"),
     };
+    
+    [Tooltip("XP every starting researcher begins with. 2 XP = level 2, so they can use their first TWO methodologies " +
+             "from day 1. 0 = level 1 like everyone else.")]
+    [SerializeField, Min(0)] private int starterExperience = 2;
 
     [Tooltip("Ticked: the starters the player didn't pick show up in the shop's hire tab like everyone else. " +
              "Unticked: they're never offered.")]
@@ -65,6 +69,9 @@ public class ResearcherGenerator : MonoBehaviour
 
     /// <summary>The starters, in Inspector order (= the order of the start screen cards).</summary>
     public IReadOnlyList<StarterResearcher> StartingResearchers => startingResearchers;
+
+    /// <summary>XP the starters begin with (Starter Experience in the Inspector). The start screen cards use it.</summary>
+    public int StarterExperience => starterExperience; 
 
 
 
@@ -143,7 +150,7 @@ public class ResearcherGenerator : MonoBehaviour
             Debug.Log($"ResearcherGenerator: Researcher generated: " + r.Name);
             
         }
-        // STARTER PICK: one researcher per entry in the Starting Researchers list, after the random pool.
+        //  one researcher per entry in the Starting Researchers list, after the random pool.
         // Made after the pool so the pool's random numbers (and so its names, looks and methods) are the same as before
         for (int i = 0; i < startingResearchers.Count; i++)
         {
@@ -154,7 +161,7 @@ public class ResearcherGenerator : MonoBehaviour
             List<int> methods = DrawMethodologies(unused, rng, s.GetMethodologyIds(warn: true));
 
             ResearcherData starter = new ResearcherData();
-            starter.Init(StarterId(i), s.name, s.appearance, 0, s.speed, s.quality, methods);
+            starter.Init(StarterId(i), s.name, s.appearance, starterExperience, s.speed, s.quality, methods);
             researchers.Add(starter);
             Debug.Log($"ResearcherGenerator: starter generated: {s.name} (ID {StarterId(i)})");
         }

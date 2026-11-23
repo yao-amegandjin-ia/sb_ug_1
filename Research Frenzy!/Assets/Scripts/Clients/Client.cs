@@ -43,9 +43,7 @@ public class Client : MonoBehaviour, IPointerClickHandler
     [SerializeField] private Sprite[] headSprites;
     [SerializeField] private Sprite[] torsoSprites;
     [SerializeField] private Sprite[] legSprites;
-
-    // RESEARCH TIMER (new): optional things to show the research session above the client.
-    // All three can be left empty; the session still works, you just don't see it.
+    
     [Header("Research session (optional)")]
     [Tooltip("Shown while the client is with a researcher (e.g. a \"...\" speech bubble). Make it a child of the client prefab.")]
     [SerializeField] private GameObject researchingIcon;
@@ -53,13 +51,12 @@ public class Client : MonoBehaviour, IPointerClickHandler
     [SerializeField] private GameObject readyIcon;
     [Tooltip("A child object whose X scale goes from 0 to 1 as the research progresses (e.g. a thin sprite with its pivot on the left).")]
     [SerializeField] private Transform researchBar;
-    // ICONS (new, Nov 21): the frame behind the bar. Shown and hidden together with the bar
     [Tooltip("Optional. The parent of the research bar (frame + fill). Shown while researching. If empty, only Research Bar is shown/hidden.")]
     [SerializeField] private GameObject researchBarRoot;
 
-    // ICONS (new, Nov 21): patience timer above the client's head, works the same way as the research bar
+
     [Header("Patience timer (optional)")]
-    [Tooltip("The parent of the patience bar (clock + frame + fill). Shown while patience is going down (at the door, in the waiting room).")]
+    [Tooltip("The parent of the patience bar (clock + frame + fill). Shown while patience is going down (in the waiting room).")]
     [SerializeField] private GameObject patienceBarRoot;
     [Tooltip("The fill of the patience bar. Its X scale goes from 1 (full patience) down to 0. Pivot on the left.")]
     [SerializeField] private Transform patienceBar;
@@ -68,8 +65,10 @@ public class Client : MonoBehaviour, IPointerClickHandler
     private SpriteRenderer patienceBarRenderer;   // found once, on the Patience Bar object
     
     Rigidbody2D rb;
-    FirmController firm;   // RESEARCH TIMER (new): found once, the first time it's needed
+    FirmController firm; 
     Transform followTarget;
+    Vector3? walkTarget; 
+    ClientSpawner spawner; 
     
     // true after "We can help with that", until the client leaves. researchers check this when clicked
     public bool IsFollowing => followTarget != null;
@@ -91,7 +90,9 @@ public class Client : MonoBehaviour, IPointerClickHandler
         if (this.clientData != null)   // re-bound to a new client
         {
             this.clientData.OnLeftDissatisfied -= OnLeftDissatisfied;
-            this.clientData.OnResearchFinished -= OnResearchFinished;   // RESEARCH TIMER (new)
+            this.clientData.OnResearchFinished -= OnResearchFinished;   
+            this.clientData.OnEntranceWaitOver -= OnEntranceWaitOver;  
+            this.clientData.OnStateChanged -= OnStateChanged;  
         }
         this.clientData = clientData;
         gameObject.name = $"Client {clientData.Id} - {clientData.Name}";
@@ -99,10 +100,15 @@ public class Client : MonoBehaviour, IPointerClickHandler
         // patience ran out (timer, or no seat in the waiting area). the FirmController decides what that means
         clientData.OnLeftDissatisfied += OnLeftDissatisfied;
 
-        // RESEARCH TIMER (new): the research timer ran out. the FirmController frees the researcher
+        // the research timer ran out. the FirmController frees the researcher
         clientData.OnResearchFinished += OnResearchFinished;
 
-        UpdateResearchVisuals();   // RESEARCH TIMER (new): hide the icons until a session starts
+        //  nobody greeted them at the entrance in time. the FirmController sends them to wait
+        clientData.OnEntranceWaitOver += OnEntranceWaitOver;
+        //  walk to a seat when they're sent to the waiting room, free it when they get up
+        clientData.OnStateChanged += OnStateChanged;
+
+        UpdateResearchVisuals();
     }
     
     void OnDestroy()
@@ -110,11 +116,44 @@ public class Client : MonoBehaviour, IPointerClickHandler
         if (clientData != null)
         {
             clientData.OnLeftDissatisfied -= OnLeftDissatisfied;
-            clientData.OnResearchFinished -= OnResearchFinished;   // RESEARCH TIMER (new)
+            clientData.OnResearchFinished -= OnResearchFinished;  
+            clientData.OnEntranceWaitOver -= OnEntranceWaitOver;  
+            clientData.OnStateChanged -= OnStateChanged;  
         }
     }
 
-    // RESEARCH TIMER (new): finds the game rules once and remembers them (FindAnyObjectByType searches the whole scene)
+
+    ClientSpawner Spawner
+    {
+        get
+        {
+            if (spawner == null) spawner = FindAnyObjectByType<ClientSpawner>();
+            return spawner;
+        }
+    }
+
+    //  same idea as OnResearchFinished, the FirmController decides what happens
+    void OnEntranceWaitOver(ClientData data)
+    {
+        if (Firm) Firm.HandleEntranceWaitOver(this);
+    }
+
+    // sent to the waiting room -> walk to a free seat. Anything else -> the seat is free again
+    void OnStateChanged(ClientData data)
+    {
+        if (Spawner == null) return;
+        if (data.State == ClientState.Waiting)
+        {
+            walkTarget = Spawner.TakeSeat(this);   // null = no seats set up in the scene, so they stay where they are
+        }
+        else
+        {
+            Spawner.FreeSeat(this);
+            walkTarget = null;
+        }
+    }
+
+    //  finds the game rules once and remembers them (FindAnyObjectByType searches the whole scene)
     FirmController Firm
     {
         get
@@ -124,7 +163,7 @@ public class Client : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    // RESEARCH TIMER (new): same idea as OnLeftDissatisfied. The data only knows its timer hit 0,
+    // same idea as OnLeftDissatisfied. The data only knows its timer hit 0,
     // the FirmController decides what that means (the researcher is free again, the log is written)
     void OnResearchFinished(ClientData data)
     {
@@ -167,7 +206,7 @@ public class Client : MonoBehaviour, IPointerClickHandler
         UpdateResearchVisuals();   // RESEARCH TIMER (new)
     }
 
-    // RESEARCH TIMER (new): shows the icons / progress bar for the current state. Does nothing for empty fields.
+    // shows the icons / progress bar for the current state. Does nothing for empty fields.
     void UpdateResearchVisuals()
     {
         bool researching = clientData != null && clientData.IsInResearch;
@@ -184,12 +223,11 @@ public class Client : MonoBehaviour, IPointerClickHandler
         UpdatePatienceVisuals();   // ICONS (new, Nov 21)
     }
 
-    // ICONS (new, Nov 21): the patience bar. Only shown while patience actually goes down (ClientData.Tick):
+    // the patience bar. Only shown while patience actually goes down (ClientData.Tick):
     // waiting at the door (InProcess) or in the waiting room (Waiting)
     void UpdatePatienceVisuals()
     {
-        bool losingPatience = clientData != null &&
-                              (clientData.State == ClientState.InProcess || clientData.State == ClientState.Waiting);
+        bool losingPatience = clientData != null && clientData.State == ClientState.Waiting;
         SetShown(patienceBarRoot ? patienceBarRoot : patienceBar ? patienceBar.gameObject : null, losingPatience);
         if (!patienceBar || !losingPatience) return;
 
@@ -199,8 +237,8 @@ public class Client : MonoBehaviour, IPointerClickHandler
         if (patienceBarRenderer == null) patienceBarRenderer = patienceBar.GetComponent<SpriteRenderer>();
         if (patienceBarRenderer != null && patienceColors != null) patienceBarRenderer.color = patienceColors.Evaluate(percent);
     }
-
-    // ICONS (new, Nov 21): helpers so the bars and icons share the same two lines
+    
+    
     static void SetShown(GameObject target, bool shown)
     {
         // only call SetActive when it changes, so it isn't done every frame for nothing
@@ -213,8 +251,7 @@ public class Client : MonoBehaviour, IPointerClickHandler
         scale.x = amount;
         bar.localScale = scale;
     }
-
-    // ICONS (new, Nov 21): green when patient, yellow halfway, red when about to leave. Editable in the Inspector
+    
     static Gradient DefaultPatienceColors()
     {
         Gradient g = new Gradient();
@@ -234,6 +271,15 @@ public class Client : MonoBehaviour, IPointerClickHandler
     
     void FixedUpdate()
     {
+        if (!followTarget && walkTarget.HasValue)
+        {
+            float speed = Spawner != null ? Spawner.WalkSpeed : followSpeed;
+            Vector2 seat = walkTarget.Value;
+            rb.MovePosition(Vector2.MoveTowards(rb.position, seat, speed * Time.fixedDeltaTime));
+            if (Vector2.Distance(rb.position, seat) < 0.01f) walkTarget = null;   // arrived
+            return;
+        }
+
         if (!followTarget) return;
         // walk toward the player until we're close enough, then wait
         Vector2 toTarget = (Vector2)followTarget.position - rb.position;
@@ -246,14 +292,14 @@ public class Client : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        // RESEARCH TIMER (new): busy with a researcher, so clicking does nothing until the timer is done
+        // busy with a researcher, so clicking does nothing until the timer is done
         if (clientData != null && clientData.IsInResearch)
         {
             Debug.Log($"{clientData.Name} is still with the researcher ({clientData.ResearchTimeLeft:0}s left).");
             return;
         }
 
-        // RESEARCH TIMER (new): the research is done. walk over and collect the result, then they leave
+        //  the research is done. walk over and collect the result, then they leave
         if (clientData != null && clientData.IsReadyToCollect)
         {
             if (player == null) CollectResult();
@@ -286,7 +332,7 @@ public class Client : MonoBehaviour, IPointerClickHandler
         else requestScreen.Open(this);
     }
 
-    // RESEARCH TIMER (new): the money and the client leaving are in FirmController.CollectResearch
+    // the money and the client leaving are in FirmController.CollectResearch
     void CollectResult()
     {
         // the client might be gone (e.g. the day ended) while the player was walking over
@@ -300,6 +346,7 @@ public class Client : MonoBehaviour, IPointerClickHandler
     public void FollowPlayer()
     {
         if (clientData != null) clientData.StartFollowing();
+        walkTarget = null; 
         if (player != null) followTarget = player.transform;
     }
     

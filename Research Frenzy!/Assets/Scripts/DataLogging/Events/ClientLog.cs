@@ -66,7 +66,9 @@ namespace DataLogging
         }
 
         /// <summary>"Please wait". seatFound false means every seat was taken, and the client is about to leave.</summary>
-        public static void SentToWaiting(ClientData client, bool seatFound, int seatsUsed, int seatsTotal)
+        // sent by: ""player" = the player picked "Please wait",
+        // "entrance_timeout" = nobody greeted them at the entrance in time, so they went by themselves
+        public static void SentToWaiting(ClientData client, bool seatFound, int seatsUsed, int seatsTotal, string sentBy = "player")
         {
             GameLog.Safe(() =>
             {
@@ -78,6 +80,7 @@ namespace DataLogging
                 data["seat_found"] = seatFound;
                 data["seats_used"] = seatsUsed;
                 data["seats_total"] = seatsTotal;
+                data["sent_by"] = sentBy;
                 GameLog.Emit("process", "client_sent_to_waiting", data);
             });
         }

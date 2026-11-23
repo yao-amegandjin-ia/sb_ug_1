@@ -27,7 +27,9 @@ namespace UI
         protected void OpenFor(Client client)
         {
             if (!client) return;
+            if (Current && Current != client) Current.Data?.SetBeingGreeted(false); 
             Current = client;
+            Current.Data?.SetBeingGreeted(true);  
             Show();
         }
 
@@ -39,6 +41,7 @@ namespace UI
 
         protected override void OnHidden()
         {
+            if (Current) Current.Data?.SetBeingGreeted(false); 
             Current = null;
         }
 

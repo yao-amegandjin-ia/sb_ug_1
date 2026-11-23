@@ -9,6 +9,8 @@ namespace GameDataObjects
     public class SaveData
     {
         public int Seed { get; set; }
+        
+        public bool IsFromSave { get; set; }
 
         public PlayerData Player { get; set; } = new();
 

@@ -5,6 +5,9 @@
 // spreadsheet). bottom: money and Continue.
 // it keeps its own list of today's clients from FirmController.ClientResolved. that event carries the request,
 // the methodology picked and the outcome, so nothing has to be looked up in the saved study results.
+// the Continue button is now SAVE & CONTINUE, next to a new SAVE & QUIT. Both save first
+// (FirmController.SaveGame). If saving fails the error shows above the buttons, and the continue button turns into
+// CONTINUE WITHOUT SAVING so the player is never stuck.
 
 
 using System;
@@ -20,6 +23,10 @@ public class DaySummary : MonoBehaviour, IGameUIPart
     // fires when the player presses Continue, before the next day starts. the upgrades screen can hook in here
     public event Action<int> Closed;
 
+
+    /// <summary>SAVE & QUIT was pressed and the save worked. UIInitializer goes back to the start screen.</summary>
+    public event Action<int> QuitRequested;
+
     readonly List<ClientResult> today = new List<ClientResult>();
     readonly List<ResearcherLevelUp> levelUpsToday = new List<ResearcherLevelUp>();   // RESEARCHER XP (new)
 
@@ -32,6 +39,13 @@ public class DaySummary : MonoBehaviour, IGameUIPart
     HUD hud;
     FirmController firmRules;
     int shownDay = -1;    // the day on screen, -1 when it's closed
+
+
+    Button continueButton;
+    Button quitButton;
+    Label saveStatus;
+    bool saving;        // true while a save is running, so a double click doesn't save twice
+    bool saveFailed;    // the last save failed: continue without saving is allowed
 
     void Awake()
     {
@@ -47,9 +61,15 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         title = root.Q<Label>("summary-title");
         earnedText = root.Q<Label>("summary-earned");
         totalText = root.Q<Label>("summary-total");
-        Button continueButton = root.Q<Button>("summary-continue");
+        continueButton = root.Q<Button>("summary-continue");
         if (continueButton != null) continueButton.clicked += ContinueClicked;
         else Debug.LogWarning("DaySummary: no Button named 'summary-continue' in the GameUI UXML.");
+        
+        quitButton = root.Q<Button>("summary-save-quit");
+        if (quitButton != null) quitButton.clicked += SaveAndQuitClicked;
+        else Debug.LogWarning("DaySummary: no Button named 'summary-save-quit' in the GameUI UXML.");
+        saveStatus = root.Q<Label>("summary-save-status");
+        ResetSaveButtons();
 
         if (shownDay >= 0) Show(shownDay);   // the UI reloaded while the summary was open
     }
@@ -131,6 +151,7 @@ public class DaySummary : MonoBehaviour, IGameUIPart
 
         GetComponent<CodexPanel>().Close();
         GetComponent<ManageFirmPanel>().Close();
+        ResetSaveButtons();
         panel.RemoveFromClassList("hidden");
     }
 
@@ -329,9 +350,13 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         }
     }
 
-    void ContinueClicked()
+    //  SAVE & CONTINUE. Saves, then does what Continue always did
+    async void ContinueClicked()
     {
-        if (shownDay < 0) return;
+        if (shownDay < 0 || saving) return;
+
+        // the save failed and the player chose to carry on anyway
+        if (!saveFailed && !await Save()) return;
 
         int day = shownDay;
         shownDay = -1; // Consume this Continue action immediately.
@@ -341,5 +366,72 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         levelUpsToday.Clear();
         Closed?.Invoke(day);
 
+    }
+
+    //SAVE & QUIT. Only quits if the save worked, so progress is never lost by quitting
+    async void SaveAndQuitClicked()
+    {
+        if (shownDay < 0 || saving) return;
+        if (!await Save()) return;
+
+        int day = shownDay;
+        shownDay = -1;
+        if (panel != null) panel.AddToClassList("hidden");
+        today.Clear();
+        levelUpsToday.Clear();
+        QuitRequested?.Invoke(day);
+    }
+    
+    // "async" + "await": the function pauses at the await until the save is done, without freezing the game,
+    // then carries on. The buttons are greyed out in between so they can't be pressed twice.
+    async Awaitable<bool> Save()
+    {
+        if (firmRules == null) return true;   // no lab loaded (testing the UI on its own): nothing to save
+
+        saving = true;
+        SetButtonsEnabled(false);
+        SetStatus("Saving...", false);
+
+        bool ok = await firmRules.SaveGame();
+
+        saving = false;
+        SetButtonsEnabled(true);
+        if (ok)
+        {
+            saveFailed = false;
+            SetStatus("", false);
+        }
+        else
+        {
+            saveFailed = true;
+            SetStatus("Couldn't save: " + firmRules.LastSaveError, true);
+            if (continueButton != null) continueButton.text = "CONTINUE WITHOUT SAVING";
+        }
+        return ok;
+    }
+
+    //back to normal each time the summary opens
+    void ResetSaveButtons()
+    {
+        saving = false;
+        saveFailed = false;
+        SetButtonsEnabled(true);
+        SetStatus("", false);
+        if (continueButton != null) continueButton.text = "SAVE & CONTINUE";
+        if (quitButton != null) quitButton.text = "SAVE & QUIT";
+    }
+
+    void SetButtonsEnabled(bool enabled)
+    {
+        continueButton?.SetEnabled(enabled);
+        quitButton?.SetEnabled(enabled);
+    }
+
+    void SetStatus(string text, bool isError)
+    {
+        if (saveStatus == null) return;
+        saveStatus.text = text;
+        saveStatus.EnableInClassList("hidden", string.IsNullOrEmpty(text));
+        saveStatus.EnableInClassList("error", isError);
     }
 }

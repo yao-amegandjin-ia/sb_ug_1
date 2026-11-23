@@ -892,3 +892,37 @@
     background-color: var(--line);
 }
 
+
+/* SAVE GAME: day summary save buttons and status */
+.summary-footer .summary-quit {
+    margin-right: 10px;
+}
+
+.save-status {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: var(--muted);
+    -unity-text-align: middle-right;
+    margin-top: 8px;
+    white-space: normal;
+}
+
+.save-status.error {
+    color: #D64541;
+}
+
+/* SAVE GAME: start screen */
+.continue-info {
+    font-size: 18px;
+    color: var(--muted);
+    margin-top: 12px;
+    -unity-text-align: middle-center;
+}
+
+.new-game-warning {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: #D64541;
+    margin-bottom: 16px;
+    -unity-text-align: middle-center;
+}

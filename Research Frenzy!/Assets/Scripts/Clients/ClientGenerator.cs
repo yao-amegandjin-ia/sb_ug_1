@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Clients;
 using GameDataObjects;
+using Researchers;
 using UnityEngine;
 using Random = System.Random;
 
@@ -118,7 +119,64 @@ public class ClientGenerator : MonoBehaviour
  
         return result;
     }
- 
+    
+    /// <summary>
+    /// Day 1 of a new game, scripted around the starter the player picked:
+    ///   1st client: a request that CAN'T be researched (the right answer is "We can't help")
+    ///   2nd and 3rd: requests whose BEST methodology the starter can already use (they start with 2 XP = 2 methods)
+    ///   anyone after that (more clients from upgrades, or a bigger Starting Clients): the normal deck order.
+    /// Which requests fit is picked in deck order, so it's still random per seed, just from the right kind.
+    /// If there aren't enough of a kind (e.g. the starter's methods aren't anyone's best), it says so in the
+    /// Console and fills the gap from the deck.
+    /// </summary>
+    public List<ClientData> GenerateFirstDay(ResearcherData starter, int upgradeBonus = 0, IEnumerable<int> usedRequestIds = null)
+    {
+        const int answerableWanted = 2;
+
+        EnsureDeck();
+        HashSet<int> used = usedRequestIds != null ? new HashSet<int>(usedRequestIds) : new HashSet<int>();
+        List<int> picked = new List<int>();
+
+        // 1. the one that can't be researched
+        foreach (int requestId in deck)
+        {
+            if (used.Contains(requestId) || requestsById[requestId].IsResearchable) continue;
+            picked.Add(requestId);
+            break;
+        }
+        if (picked.Count == 0)
+            Debug.LogWarning("ClientGenerator: no unresearchable request for the first client of day 1. Check the requests spreadsheet.");
+
+        // 2. two the starter can answer with their best method
+        int answerable = 0;
+        foreach (int requestId in deck)
+        {
+            if (answerable >= answerableWanted) break;
+            RequestData request = requestsById[requestId];
+            if (used.Contains(requestId) || picked.Contains(requestId)) continue;
+            if (!request.IsResearchable || starter == null || !starter.CanUseMethodology(request.BestMethodologyId)) continue;
+            picked.Add(requestId);
+            answerable++;
+        }
+        if (answerable < answerableWanted)
+            Debug.LogWarning($"ClientGenerator: only {answerable} request(s) have {starter?.Name}'s unlocked methods as the best answer " +
+                             $"(wanted {answerableWanted}). The rest of day 1 comes from the normal deck.");
+
+        // 3. the rest, in normal deck order
+        int wanted = Mathf.Max(CalculateClientCount(1, upgradeBonus), picked.Count);
+        foreach (int requestId in deck)
+        {
+            if (picked.Count >= wanted) break;
+            if (used.Contains(requestId) || picked.Contains(requestId)) continue;
+            picked.Add(requestId);
+        }
+
+        List<ClientData> result = new List<ClientData>();
+        foreach (int requestId in picked)
+            result.Add(CreateClientForRequest(requestId));
+        return result;
+    }
+
     /// <summary>
     /// Builds the client for one request. Always the same result for the same seed and request,
     /// whatever the day. Use this to bring back a returning client, or to rebuild any client
