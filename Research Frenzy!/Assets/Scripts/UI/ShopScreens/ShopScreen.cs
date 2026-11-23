@@ -2,8 +2,11 @@
 // one window with a tab button for every ShopTab component on this same GameObject (Upgrades, Hire, ...).
 // it always opens on the first tab. buying or hiring doesn't close it, the tab just rebuilds.
 // the player leaves with the CLOSE button. for now the HUD's Upgrades button opens it.
+// Opens when a day ends (OpenAtDayEnd), before the day summary. Then the close button
+// says "DAY SUMMARY" and closing the shop fires ClosedAtDayEnd, which UIInitializer turns into the day summary.
 
 using GameLogic;
+using System;
 using System.Collections.Generic;
 using Bootstrap;
 using UI.ClientScreens;
@@ -30,6 +33,19 @@ namespace UI
 
         private DataManager dataManager;
         private FirmController firmController;
+        
+        /// <summary>
+        /// The shop that opened at the end of a day was closed (DAY SUMMARY / close). UIInitializer opens the day summary on this.
+        /// Not fired when the shop is opened and closed in the middle of a day.
+        /// </summary>
+        public event Action ClosedAtDayEnd;
+
+        private bool atDayEnd;             // true while the shop is the end-of-day screen
+        private int endedDay;              // the day that just ended: "END OF DAY 2"
+        private Button closeButton;
+        private string closeButtonText;    // whatever the UXML says ("CLOSE"), put back after the end-of-day shop
+        private Label titleText;           // optional "shop-title" label in the UXML
+        private string titleTextDefault;
 
         protected override void Awake()
         {
@@ -76,6 +92,12 @@ namespace UI
             moneyText = Find<Label>("shop-money");
             HookButton("close-button", Close);
             BuildTabButtons();
+            
+            closeButton = Root.Q<Button>("close-button");
+            closeButtonText = closeButton != null ? closeButton.text : "CLOSE";
+            titleText = Root.Q<Label>("shop-title");
+            titleTextDefault = titleText != null ? titleText.text : "";
+            ApplyDayEndText();   // the UI can reload while the end-of-day shop is open
         }
 
         // one button per tab component. the template's own buttons (if any) are cleared first
@@ -100,6 +122,35 @@ namespace UI
 
         /// <summary>Opens on the first tab (Upgrades).</summary>
         public void Open() => Open(0);
+        
+        /// <summary>
+        /// Opens the shop as the first screen after a day ends (before the day summary). It opens on the Upgrades tab,
+        /// the close button says "DAY SUMMARY", and closing it fires ClosedAtDayEnd.
+        /// </summary>
+        public void OpenAtDayEnd(int day)
+        {
+            atDayEnd = true;
+            endedDay = day;
+            ApplyDayEndText();
+            Open<UpgradesTab>();
+        }
+        protected override void OnHidden()
+        {
+            base.OnHidden();
+            if (!atDayEnd) return;
+
+            atDayEnd = false;       // first, so a second Close() can't open the summary twice
+            ApplyDayEndText();
+            ClosedAtDayEnd?.Invoke();
+        }
+        
+        private void ApplyDayEndText()
+        {
+            if (closeButton != null)
+                closeButton.text = atDayEnd ? "DAY SUMMARY" : closeButtonText;
+            if (titleText != null)
+                titleText.text = atDayEnd ? "END OF DAY " + endedDay : titleTextDefault;
+        }
 
         /// <summary>Opens on a tab, counted from 0 in the order the tab components are listed.</summary>
         public void Open(int tabIndex)

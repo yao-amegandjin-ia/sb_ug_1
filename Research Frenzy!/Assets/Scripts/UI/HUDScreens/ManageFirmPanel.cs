@@ -2,6 +2,7 @@
 // hired researchers, upgrades, and stats for this session. it rebuilds every time it opens.
 // upgrades come from the UpgradeController (buying them is in the shop screen, this only shows them).
 
+
 using GameDataObjects;
 using GameLogic.Upgrades;
 using Researchers;
@@ -70,10 +71,12 @@ namespace UI.HUDScreens
                 foreach (ResearcherData r in dataManager.Researchers)
                 {
                     if (!r.IsPurchased) continue;
-                    string detail = "Cubicle " + r.Position + "  ·  Speed " + r.Speed + "  ·  Quality " + r.Quality + "  ·  XP " + r.Experience;
+                    string xp = r.IsMaxLevel ? "XP " + r.Experience + " (MAX)" : "XP " + r.Experience + "/" + r.NextLevelExperience;
+                    string detail = "Level " + r.Level + "  ·  " + xp + "  ·  Cubicle " + r.Position +
+                                    "  ·  Speed " + r.Speed + "  ·  Quality " + r.Quality;
                     if (r.CurrentState == ResearcherState.Busy)
                         detail += "  ·  busy";
-                    AddResearcherCard(r.Name, detail, r.KnownMethodologyIds);
+                    AddResearcherCard(r.Name, detail, r.KnownMethodologyIds, r.UnlockedMethodCount);
                     count++;
                 }
             }
@@ -85,7 +88,7 @@ namespace UI.HUDScreens
             }
         }
 
-        void AddResearcherCard(string name, string detail, System.Collections.Generic.IEnumerable<int> methods)
+        void AddResearcherCard(string name, string detail, System.Collections.Generic.IEnumerable<int> methods, int unlocked = int.MaxValue)
         {
             VisualElement card = new VisualElement();
             card.AddToClassList("firm-card");
@@ -97,12 +100,20 @@ namespace UI.HUDScreens
 
             VisualElement badges = new VisualElement();
             badges.AddToClassList("badge-row");
+            int index = 0;
             foreach (int id in methods)
             {
                 Label badge = new Label(id.ToString());
                 badge.AddToClassList("method-badge");
                 badge.tooltip = MethodLibrary.GetName(id);
+                if (index >= unlocked)
+                {
+                    badge.AddToClassList("locked");
+                    badge.style.opacity = 0.35f;   // so it reads as locked without any USS
+                    badge.tooltip += " (unlocks at level " + (index + 1) + ")";
+                }
                 badges.Add(badge);
+                index++;
             }
 
             card.Add(nameLabel);

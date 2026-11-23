@@ -2,19 +2,18 @@
 // page 1 is the research link (intro), page 2 is picking the starting researcher.
 // when the player hits Start Day 1 the start screen hides and GameStarted fires.
 
+
 using System;
+using System.Collections.Generic;
 using GameDataObjects;
+using Researchers;
 using UI.HUDScreens;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class StartScreen : MonoBehaviour, IGameUIPart
 {
-    // placeholder until the real starting researchers are decided
-    public string[] starterNames = { "Steven", "Maya" };
-    // methodology names from methodologies.csv. Keep these the same as ResearcherGenerator's Starter Method Names
-    public string[] starterMethodNames = { "Product R&D", "Field Research" };
-    public int selectedStarter = 0;
+    public int selectedStarter = 0;   // which card is picked, 0 = the first entry in Starting Researchers
 
     // the HUD (and later the client spawner / day system) listen to this
     public event Action<int> GameStarted;
@@ -23,6 +22,8 @@ public class StartScreen : MonoBehaviour, IGameUIPart
     VisualElement introPage;
     VisualElement pickPage;
     VisualElement[] cards = new VisualElement[0];
+    VisualElement cardRow;               
+    ResearcherGenerator generator;     
     bool started = false;   // so a UI reload in the middle of the game doesn't bring the start screen back
 
     // called by GameUIPanel once the UI has loaded (and again if it reloads)
@@ -37,42 +38,8 @@ public class StartScreen : MonoBehaviour, IGameUIPart
         HookButton(root, "start-button", StartClicked);
 
         // build the researcher cards
-        VisualElement cardRow = root.Q("starter-cards");
-        cardRow.Clear();
-        cards = new VisualElement[starterNames.Length];
-        for (int i = 0; i < starterNames.Length; i++)
-        {
-            int index = i; // copy so each card keeps its own number
-            Button card = new Button(() => SelectStarter(index));
-            card.AddToClassList("starter-card");
-
-            Label name = new Label(starterNames[i]);
-            name.AddToClassList("starter-name");
-            Label level = new Label("Level 1");
-            level.AddToClassList("starter-level");
-
-            int methodId = StarterMethodId(i);
-            VisualElement methodRow = new VisualElement();
-            methodRow.AddToClassList("starter-method");
-            Label badge = new Label(methodId.ToString());
-            badge.AddToClassList("method-badge");
-            Label methodName = new Label(MethodLibrary.GetName(methodId));
-            methodName.AddToClassList("starter-method-name");
-            methodRow.Add(badge);
-            methodRow.Add(methodName);
-
-            Label tag = new Label("SELECTED");
-            tag.AddToClassList("selected-tag");
-
-            card.Add(name);
-            card.Add(level);
-            card.Add(methodRow);
-            card.Add(tag);
-            cardRow.Add(card);
-            cards[i] = card;
-        }
-
-        SelectStarter(selectedStarter);
+        cardRow = root.Q("starter-cards");
+        BuildCards();
 
         if (started)
         {
@@ -93,6 +60,7 @@ public class StartScreen : MonoBehaviour, IGameUIPart
 
     void ContinueClicked()
     {
+        BuildCards();  
         introPage.AddToClassList("hidden");
         pickPage.RemoveFromClassList("hidden");
     }
@@ -114,18 +82,104 @@ public class StartScreen : MonoBehaviour, IGameUIPart
                 cards[i].RemoveFromClassList("selected");
         }
     }
+    
+    IReadOnlyList<StarterResearcher> Starters()
+    {
+        if (generator == null) generator = FindAnyObjectByType<ResearcherGenerator>();
+        return generator != null ? generator.StartingResearchers : Array.Empty<StarterResearcher>();
+    }
+    
+    void BuildCards()
+    {
+        if (cardRow == null) return;
+        cardRow.Clear();
+        IReadOnlyList<StarterResearcher> starters = Starters();
+        cards = new VisualElement[starters.Count];
+        for (int i = 0; i < starters.Count; i++)
+        {
+            int index = i; // copy so each card keeps its own number
+            Button card = new Button(() => SelectStarter(index));
+            card.AddToClassList("starter-card");
+            if (starters[i] != null) BuildCard(card, starters[i]);
+            cardRow.Add(card);
+            cards[i] = card;
+        }
+
+        SelectStarter(Mathf.Clamp(selectedStarter, 0, Mathf.Max(0, starters.Count - 1)));
+    }
+    
+    void BuildCard(VisualElement card, StarterResearcher starter)
+    {
+        List<int> methodIds = starter.GetMethodologyIds();
+        Label name = new Label(starter.name);
+        name.AddToClassList("starter-name");
+        Label level = new Label("Level 1");
+        level.AddToClassList("starter-level");
+        card.Add(name);
+        card.Add(level);
+        
+
+        Label stats = new Label($"SPEED {starter.speed}/3  ·  QUALITY {starter.quality}/3");
+        stats.AddToClassList("starter-stats");
+        card.Add(stats);
+
+        // level 1's method: the one they can use from day 1 (the same row as the old card)
+        card.Add(MethodRow(methodIds.Count > 0 ? methodIds[0] : MethodLibrary.NoneId, null));
+
+        // levels 2-4: greyed out with the level they unlock at. Only the ones typed in the Inspector;
+        // if fewer than 4 are typed, the rest are picked at random when the game starts and aren't shown here
+        for (int i = 1; i < methodIds.Count; i++)
+            card.Add(MethodRow(methodIds[i], "LV " + (i + 1)));
+
+        Label tag = new Label("SELECTED");
+        tag.AddToClassList("selected-tag");
+        card.Add(tag);
+    }
+
+
+    VisualElement MethodRow(int methodId, string lockedLabel)
+    {
+        VisualElement methodRow = new VisualElement();
+        methodRow.AddToClassList("starter-method");
+
+        if (lockedLabel != null)
+        {
+            methodRow.AddToClassList("locked");
+            Label lv = new Label(lockedLabel);
+            lv.AddToClassList("starter-unlock-level");
+            methodRow.Add(lv);
+        }
+
+        Label badge = new Label(methodId.ToString());
+        badge.AddToClassList("method-badge");
+        Label methodName = new Label(MethodLibrary.GetName(methodId));
+        methodName.AddToClassList("starter-method-name");
+        methodRow.Add(badge);
+        methodRow.Add(methodName);
+
+        // greyed out in code too, so it reads as "not yet" even before the USS is added
+        if (lockedLabel != null) methodRow.style.opacity = 0.45f;
+        return methodRow;
+    }
 
     void StartClicked()
     {
-        Debug.Log("Starting day 1 with " + starterNames[selectedStarter]);
+        Debug.Log("Starting day 1 with " + GetStarterName());
         started = true;
         screen.AddToClassList("hidden");
         GameStarted?.Invoke(selectedStarter);
     }
-
+    
     public string GetStarterName()
     {
-        return starterNames[selectedStarter];
+        StarterResearcher starter = StarterAt(selectedStarter);
+        return starter != null ? starter.name : "Unknown";
+    }
+    
+    StarterResearcher StarterAt(int index)
+    {
+        IReadOnlyList<StarterResearcher> starters = Starters();
+        return index >= 0 && index < starters.Count ? starters[index] : null;
     }
 
     public int GetStarterMethod()
@@ -133,11 +187,11 @@ public class StartScreen : MonoBehaviour, IGameUIPart
         return StarterMethodId(selectedStarter);
     }
 
-    // the starter's methodology ID, looked up by name. 0 (no badge, "Unknown") if the name isn't in methodologies.csv
+
     int StarterMethodId(int index)
     {
-        if (index < 0 || index >= starterMethodNames.Length) return MethodLibrary.NoneId;
-        MethodEntry method = MethodLibrary.Find(starterMethodNames[index]);
-        return method != null ? method.id : MethodLibrary.NoneId;
+        StarterResearcher starter = StarterAt(index);
+        List<int> ids = starter != null ? starter.GetMethodologyIds() : null;
+        return ids != null && ids.Count > 0 ? ids[0] : MethodLibrary.NoneId;
     }
 }

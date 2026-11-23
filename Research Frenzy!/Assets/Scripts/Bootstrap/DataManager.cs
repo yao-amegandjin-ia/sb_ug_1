@@ -95,8 +95,6 @@ public class DataManager
             return; //Client already coming back tomorrow
         }
         state.Clients.Add(client);
-
-
     }
 
     /// <summary>

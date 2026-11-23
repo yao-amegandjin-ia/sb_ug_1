@@ -6,6 +6,7 @@
 // it keeps its own list of today's clients from FirmController.ClientResolved. that event carries the request,
 // the methodology picked and the outcome, so nothing has to be looked up in the saved study results.
 
+
 using System;
 using System.Collections.Generic;
 using GameDataObjects;
@@ -20,6 +21,7 @@ public class DaySummary : MonoBehaviour, IGameUIPart
     public event Action<int> Closed;
 
     readonly List<ClientResult> today = new List<ClientResult>();
+    readonly List<ResearcherLevelUp> levelUpsToday = new List<ResearcherLevelUp>();   // RESEARCHER XP (new)
 
     VisualElement panel;
     VisualElement tiles;
@@ -66,14 +68,14 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         firmRules = firm;
         if (firmRules == null) return;
         firmRules.ClientResolved += OnClientResolved;
-        
+        firmRules.ResearcherLeveledUp += OnResearcherLeveledUp;   // RESEARCHER XP (new)
     }
 
     void Disconnect()
     {
         if (firmRules == null) return;
         firmRules.ClientResolved -= OnClientResolved;
-        
+        firmRules.ResearcherLeveledUp -= OnResearcherLeveledUp;   // RESEARCHER XP (new)
         firmRules = null;
     }
 
@@ -86,6 +88,11 @@ public class DaySummary : MonoBehaviour, IGameUIPart
     void OnClientResolved(ClientResult result)
     {
         if (result != null) today.Add(result);
+    }
+    
+    void OnResearcherLeveledUp(ResearcherLevelUp levelUp)
+    {
+        if (levelUp != null) levelUpsToday.Add(levelUp);
     }
 
     // --- the screen ---
@@ -106,6 +113,10 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         AddTile("CLIENTS LOST", Count(ClientOutcome.Lost), "lost");
 
         list.Clear();
+        
+        foreach (ResearcherLevelUp levelUp in levelUpsToday)
+            list.Add(BuildLevelUpCard(levelUp));
+
         if (today.Count == 0)
         {
             Label empty = new Label("No clients today.");
@@ -177,6 +188,14 @@ public class DaySummary : MonoBehaviour, IGameUIPart
         Label reward = new Label("+$" + entry.Reward.ToString("N0"));
         reward.AddToClassList("study-reward");
         tags.Add(reward);
+        if (entry.IsMatch)
+        {
+            Label xp = new Label("+" + entry.ExperienceGained + " XP" +
+                                 (string.IsNullOrEmpty(entry.ResearcherName) ? "" : "  ·  " + entry.ResearcherName));
+            xp.AddToClassList("study-xp");
+            if (entry.ExperienceGained == 0) xp.AddToClassList("none");
+            tags.Add(xp);
+        }
         top.Add(tags);
         card.Add(top);
 
@@ -204,6 +223,30 @@ public class DaySummary : MonoBehaviour, IGameUIPart
             card.Add(why);
         }
 
+        return card;
+    }
+    
+    VisualElement BuildLevelUpCard(ResearcherLevelUp levelUp)
+    {
+        VisualElement card = new VisualElement();
+        card.AddToClassList("study-card");
+        card.AddToClassList("levelup-card");
+
+        VisualElement top = new VisualElement();
+        top.AddToClassList("study-card-top");
+        Label name = new Label(levelUp.Researcher != null ? levelUp.Researcher.Name : "Researcher");
+        name.AddToClassList("study-client");
+        top.Add(name);
+        VisualElement tags = new VisualElement();
+        tags.AddToClassList("study-tags");
+        tags.Add(Tag("LEVEL " + levelUp.NewLevel, "best"));
+        top.Add(tags);
+        card.Add(top);
+
+        string text = levelUp.UnlockedMethodologyId > 0
+            ? "Can now use " + MethodLibrary.GetName(levelUp.UnlockedMethodologyId)
+            : "Reached level " + levelUp.NewLevel;
+        card.Add(AnswerRow("LEVEL UP", text, levelUp.UnlockedMethodologyId));
         return card;
     }
 
@@ -295,6 +338,7 @@ public class DaySummary : MonoBehaviour, IGameUIPart
 
         if (panel != null) panel.AddToClassList("hidden");
         today.Clear();
+        levelUpsToday.Clear();
         Closed?.Invoke(day);
 
     }

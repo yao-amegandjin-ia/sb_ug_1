@@ -5,9 +5,9 @@
 // money and study results live in the DataManager. the HUD and DaySummary hear what happened through the events below.
 // it also owns the day: the timer, which day it is, starting the next one and ending this one.
 // the HUD only shows TimeLeft / CurrentDay, and DaySummary opens on DayEnded and calls NextDay.
-// RESEARCH TIMER: a match is no longer instant. MATCH starts a research session (StartResearch), the researcher
+// MATCH starts a research session (StartResearch), the researcher
 // and client are busy until the timer ends (HandleResearchFinished), then the player clicks the client to collect
-// the money and they leave (CollectResearch). Search for "RESEARCH TIMER" to find every change.
+// the money and they leave (CollectResearch).
 
 
 using System;
@@ -40,10 +40,16 @@ namespace GameLogic
         [Tooltip("\"We can't help\" on a request that can't be researched. Turning away a researchable one pays 0.")]
         [SerializeField] private int correctRejectReward = 50;
 
+        // RESEARCHER XP (changed): "Unlocked Methods" (the same number for everyone) is gone. Each researcher now
+        // unlocks methods by levelling up (ResearcherData.UnlockedMethodCount). This table is how much XP a study gives
         [Header("Researchers")]
-        [Tooltip("How many of a researcher's methods can be used. The match screen's USS greys out buttons three and four, " +
-                 "so this starts at 2. Set it to 4 to allow all of them.")]
-        [SerializeField, Range(1, 4)] private int unlockedMethods = 2;
+        [Tooltip("XP a researcher gets when the player collects a study, by how it was matched. " +
+                 "2 XP = level 2, 5 = level 3, 10 = level 4 (ResearcherLevels.cs).")]
+        [SerializeField] private MatchExperience matchExperience = new MatchExperience();
+
+        // HIRE COST (new)
+        [Tooltip("Money taken when a researcher is hired in the shop. The starting researcher picked on the start screen is free.")]
+        [SerializeField, Min(0)] private int hireCost = 200;
 
         // RESEARCH TIMER (new)
         [Header("Research sessions")]
@@ -87,6 +93,10 @@ namespace GameLogic
         /// DaySummary builds its list of today's clients from this.
         /// </summary>
         public event Action<ClientResult> ClientResolved;
+
+        // RESEARCHER XP (new)
+        /// <summary>A researcher reached a new level (once per level). DaySummary lists these at the end of the day.</summary>
+        public event Action<ResearcherLevelUp> ResearcherLeveledUp;
 
         // RESEARCH TIMER (new): nothing listens to these yet. They're here for a HUD / sound / animation later.
         /// <summary>MATCH was pressed and a research session started.</summary>
@@ -427,16 +437,13 @@ namespace GameLogic
         }
 
         //Method Match Screen
-
-        /// <summary>How many of this researcher's methods can be used. The same for everyone until levels exist.</summary>
+        
+        /// <summary>How many of this researcher's methods can be used: one per level. The match screen greys out the rest.</summary>
         public int UnlockedMethodCount(ResearcherData researcher)
         {
-            return unlockedMethods;
+            return researcher != null ? researcher.UnlockedMethodCount : 0;
         }
-
-        // RESEARCH TIMER (changed): this used to be CompleteStudy, which paid and sent the client away straight away.
-        // Now MATCH only starts the session. The money is worked out here (so the grade is what the player picked)
-        // but paid in CollectResearch, after the timer, when the player clicks the client.
+        
         /// <summary>
         /// MATCH. Grades both steps (the approach, then the methodology), works out the money (matchRewards table,
         /// then the researcher's quality) and starts a research session. The researcher and the client are busy
@@ -446,23 +453,28 @@ namespace GameLogic
         {
             if (!client || !researcher) return new MatchGrade(false, StudyOutcome.Wrong);
 
+            ResearcherData researcherData = researcher.Data;
+            
+            if (!researcherData.CanUseMethodology(methodologyId))
+            {
+                Debug.LogWarning($"{researcherData.Name} hasn't unlocked {MethodLibrary.GetName(methodologyId)} yet (level {researcherData.Level}).");
+                return new MatchGrade(false, StudyOutcome.Wrong);
+            }
+
             RequestData request = client.Data.Request;
             MatchGrade grade = StudyScoring.Grade(request, approach, methodologyId);   // methodology IDs come from the methodologies spreadsheet
             int baseReward = matchRewards.For(grade);
+            int experience = matchExperience.For(grade);  
 
-            // RESEARCH TIMER (new): speed -> how long, quality -> how much. See ResearchSession for the formulas
-            ResearcherData researcherData = researcher.Data;
+ 
             float duration = ResearchSession.DurationFor(researcherData, baseResearchSeconds);
             float qualityMultiplier = ResearchSession.QualityMultiplier(researcherData, qualityBonusPerLevel);   // Nov 21: 1 / 1.25 / 1.5
             int reward = ResearchSession.RewardFor(baseReward, qualityMultiplier);
+            
+            //DATA LOG
+            List<object> possibleResearchers = AnswerLog.FindCorrectResearchers(request, researcherGenerator.GetHiredResearchers());
 
-            // DATA LOG: the list of researchers who could have taken this request is worked out first, while
-            // everyone's availability is still what the player saw (before this researcher becomes Busy)
-            List<object> possibleResearchers = AnswerLog.FindCorrectResearchers(request, researcherGenerator.GetHiredResearchers(), unlockedMethods);
-
-            // RESEARCH TIMER (new): the researcher is now Busy until the player collects the result (CollectResearch).
-            // Researcher.OnPointerClick already ignores clicks on anyone who isn't IsAvailable,
-            // so the player can't bring them a second client
+            // RESEARCH TIMER: the researcher is now Busy until the player collects the result (CollectResearch).
             if (!researcherData.AssignClient(client.Data.Id))
             {
                 Debug.LogWarning($"{researcherData.Name} couldn't take {client.Data.Name} (state: {researcherData.CurrentState}).");
@@ -479,25 +491,27 @@ namespace GameLogic
                 Grade = grade,
                 BaseReward = baseReward,
                 Reward = reward,
-                Duration = duration
+                Duration = duration,
+                Experience = experience   // RESEARCHER XP (new)
             };
             sessions[client.Data] = session;
 
             Debug.Log($"{client.Data.Name} matched with {researcherData.Name}: {approach} / {MethodLibrary.GetName(methodologyId)} ({grade}). " +
-                      $"Research takes {duration:0.#}s, pays ${reward} (base ${baseReward} x {qualityMultiplier:0.##} for quality {researcherData.Quality}).");
+                      $"Research takes {duration:0.#}s, pays ${reward} (base ${baseReward} x {qualityMultiplier:0.##} for quality {researcherData.Quality}), " +
+                      $"+{experience} XP.");
 
             // DATA LOG: match_answered (AnswerLog), then client_matched (ClientLog: greeting stops / researcher starts)
             AnswerLog.MatchAnswered(client.Data, researcherData, approach, methodologyId, grade, reward, possibleResearchers);
             ClientLog.Matched(client.Data, researcherData, grade, reward, duration);
 
-            // RESEARCH TIMER (new): the client stops following and stays by the researcher.
+            // RESEARCH TIMER: the client stops following and stays by the researcher.
             // StopFollowing also frees the "one client at a time" slot, so the player can take on the next client
             StopFollowing(client);
             client.Data.StartResearch(researcherData.Id, methodologyId, duration);   // state -> Assisted, the timer starts
 
             ResearchStarted?.Invoke(session);
 
-            // RESEARCH TIMER (changed): CompleteStudy called SpawnNextClient here, because the client had left.
+            // RESEARCH TIMER: CompleteStudy called SpawnNextClient here, because the client had left.
             // Now the next client still comes in at MATCH (so the player has someone to help during the timer),
             // but only if there is one. When the queue is empty, CollectResearch calls SpawnNextClient instead,
             // so the day doesn't end ("no clients left") while this session is still running.
@@ -506,7 +520,6 @@ namespace GameLogic
             return grade;
         }
 
-        // RESEARCH TIMER (new)
         /// <summary>
         /// The research timer ran out (Client calls this when its data fires OnResearchFinished).
         /// The client waits for the player to collect the result. The researcher stays Busy until then.
@@ -514,9 +527,7 @@ namespace GameLogic
         public void HandleResearchFinished(Client client)
         {
             if (!client || !sessions.TryGetValue(client.Data, out ResearchSession session)) return;
-
-            // RESEARCH TIMER (changed, Nov 21): the researcher used to be freed here. B wants them freed only when
-            // the player collects, so FinishAssignment moved to CollectResearch
+            
             Debug.Log($"{session.ResearcherData.Name} finished with {client.Data.Name}. Click the client to collect.");
 
             // DATA LOG: research_finished (researcher stops / post-research wait starts).
@@ -525,15 +536,13 @@ namespace GameLogic
 
             ResearchFinished?.Invoke(session);
         }
-
-        // RESEARCH TIMER (new)
+        
         /// <summary>True when this client's research is done and the player can collect it.</summary>
         public bool CanCollect(Client client)
         {
             return client && client.Data.IsReadyToCollect && sessions.ContainsKey(client.Data);
         }
-
-        // RESEARCH TIMER (new): what CompleteStudy used to do after grading, moved to when the player collects.
+        
         /// <summary>
         /// The player clicked a client whose research is done: pays the reward worked out at MATCH (0 if the match
         /// was wrong), saves {request ID : methodology ID}, frees the researcher, and the client leaves.
@@ -544,18 +553,15 @@ namespace GameLogic
 
             ResearchSession session = sessions[client.Data];
             sessions.Remove(client.Data);
-
-            // RESEARCH TIMER (changed, Nov 21): moved here from HandleResearchFinished.
-            // The researcher only becomes Available (Busy -> Available) once the player has collected
-            session.ResearcherData.FinishAssignment();
+            
+            GiveExperience(session, client.Data);
             RequestData request = client.Data.Request;
 
             if (request != null)
                 RecordStudy(request.RequestId, session.Approach, session.MethodologyId, session.Reward);
-            Debug.Log($"Collected {client.Data.Name}'s research: +${session.Reward}");
-
-            // DATA LOG: client_reengaged (post-research wait stops / walkout starts), then client_leave.
-            // autoCollected is true when the day ended and EndDay collected it for the player
+            Debug.Log($"Collected {client.Data.Name}'s research: +${session.Reward}, {session.ResearcherData.Name} +{session.Experience} XP " +
+                      $"(now {session.ResearcherData.Experience} XP, level {session.ResearcherData.Level}).");
+            
             ClientLog.Reengaged(client.Data, endingDay || skippingDay);
             ClientLog.StudyCollected(client.Data, session.Grade, session.Reward);
 
@@ -571,7 +577,9 @@ namespace GameLogic
                 ApproachCorrect = session.Grade.ApproachCorrect,
                 MethodologyId = session.MethodologyId,
                 Outcome = ClientResult.FromStudy(session.Grade.Method),
-                Reward = session.Reward
+                Reward = session.Reward,
+                ResearcherName = session.ResearcherData.Name,  
+                ExperienceGained = session.Experience
             });
 
             // RESEARCH TIMER: the queue was empty at MATCH, so this is where "no clients left" can end the day
@@ -579,7 +587,36 @@ namespace GameLogic
                 SpawnNextClient();
         }
 
-        // RESEARCH TIMER (new): used by SkipDay, which has no time to wait for the timer
+        // RESEARCHER XP
+        /// <summary>
+        /// Frees the researcher (Busy -> Available) and gives them the XP worked out at MATCH, in one call:
+        /// ResearcherData.FinishAssignment(xp) already did both, it just never got a number before.
+        /// Then, if the XP pushed them past 2 / 5 / 10, logs and announces each new level.
+        /// </summary>
+        private void GiveExperience(ResearchSession session, ClientData client)
+        {
+            ResearcherData researcher = session.ResearcherData;
+            int levelBefore = researcher.Level;
+
+            researcher.FinishAssignment(session.Experience);
+
+            ResearcherLog.ExperienceGained(researcher, client, session.Experience, levelBefore);   // DATA LOG: researcher_xp
+
+            // a loop, not an if: with bigger XP numbers in the Inspector someone could jump from level 1 to 3 at once
+            for (int level = levelBefore + 1; level <= researcher.Level; level++)
+            {
+                int unlocked = researcher.MethodologyUnlockedAt(level);
+                Debug.Log($"{researcher.Name} reached level {level} and can now use {MethodLibrary.GetName(unlocked)}.");
+                ResearcherLog.LeveledUp(researcher, level, unlocked);   // DATA LOG: researcher_level_up
+                ResearcherLeveledUp?.Invoke(new ResearcherLevelUp
+                {
+                    Researcher = researcher,
+                    NewLevel = level,
+                    UnlockedMethodologyId = unlocked
+                });
+            }
+        }
+
         /// <summary>Starts a session and finishes + collects it straight away (debug only).</summary>
         private void ResearchInstantly(Client client, Researcher researcher, ResearchApproach approach, int methodologyId)
         {
@@ -589,7 +626,7 @@ namespace GameLogic
             CollectResearch(client);         // frees the researcher for the next skipped client
         }
 
-        // RESEARCH TIMER (new)
+        // RESEARCH TIMER
         /// <summary>
         /// Called by EndDay. Any session still running is finished early, and every finished one is collected for
         /// the player, so the money is in today's summary and no researcher stays Busy into the next day.
@@ -606,7 +643,8 @@ namespace GameLogic
                     ResearchSession session = entry.Value;
                     if (!session.Client)   // the body was destroyed some other way. just free the researcher
                     {
-                        session.ResearcherData.FinishAssignment();
+                        // RESEARCHER XP (changed): was FinishAssignment(). The study was still done, so they still get the XP
+                        GiveExperience(session, entry.Key);
                         sessions.Remove(entry.Key);
                         continue;
                     }
@@ -640,14 +678,36 @@ namespace GameLogic
             return false;
         }
 
-        /// <summary>HIRE. Puts the researcher in the first free cubicle.</summary>
-        /// <returns>False if there was no free cubicle.</returns>
+        // HIRE COST
+        /// <summary>What hiring one researcher in the shop costs ($200 by default, "Hire Cost" in the Inspector).</summary>
+        public int HireCost => hireCost;
+        
+        /// <summary>True if the player has at least HireCost. The hire tab greys out HIRE when they don't.</summary>
+        public bool CanAffordHire => dataManager != null && dataManager.PlayerData.CurrentMoney >= hireCost;
+        
+        /// <summary>HIRE in the shop. Checks the money, puts the researcher in the first free cubicle, then takes HireCost.</summary>
+        /// <returns>False (and nothing is paid) if the player can't afford it, there's no free cubicle, or they're already hired.</returns>
         public bool Hire(ResearcherData researcher)
         {
-            return HireResearcher(researcher) != null;
+            if (researcher == null) return false;
+            if (!CanAffordHire)
+            {
+                Debug.Log($"Hiring {researcher.Name} costs ${hireCost}, but there's only ${dataManager.PlayerData.CurrentMoney}.");
+                return false;
+            }
+
+            // place first, pay second: if placing fails (no desk) nothing has been paid, so nothing needs refunding
+            if (HireResearcher(researcher) == null) return false;
+
+            // can't fail: CanAffordHire was checked above and nothing in between spends money.
+            // TrySpend fires MoneySpent, so the HUD and the shop's money label update
+            TrySpend(hireCost);
+            Debug.Log($"Hired {researcher.Name} for ${hireCost} (${dataManager.PlayerData.CurrentMoney} left).");
+            ResearcherLog.Hired(researcher, hireCost, dataManager.PlayerData.CurrentMoney);   // DATA LOG: researcher_hired
+            return true;
         }
 
-        // hires a researcher into the first free cubicle. called by the HIRE buttons on the hire screen
+        // hires a researcher into the first free cubicle, for FREE. Hire (above) is the paid version for the shop.
         public Researcher HireResearcher(ResearcherData data)
         {
 
@@ -737,28 +797,34 @@ namespace GameLogic
             dataManager.IncreaseMoney(amount);
             MoneyEarned?.Invoke(amount);
         }
-
-
-
-        //Do work here on game starting! Note this comes if we not selected a starter yet!
+        
+        /// <summary>
+        /// Start Day 1 was pressed. selectedStarter is the card the player picked (0 = first row of
+        /// ResearcherGenerator's Starting Researchers list), or -1 when a saved game carries on without the pick.
+        /// A new game hires the picked starter for free. A saved game puts its already-hired researchers back instead.
+        /// </summary>
         public void OnGameStarted(int selectedStarter)
         {
-            //Only hire the selected starter if that screen was shown!
-            if (selectedStarter != -1)
+            List<ResearcherData> alreadyHired = researcherGenerator.GetHiredResearchers();
+            bool newGame = selectedStarter >= 0 && alreadyHired.Count == 0;
+
+            ResearcherData starter = null;
+            if (newGame)
             {
-                Hire(researcherGenerator.GetById(9 + selectedStarter));
+                starter = researcherGenerator.GetStarter(selectedStarter);
+                if (starter == null)
+                    Debug.LogError($"FirmController: there's no starter number {selectedStarter}. Check ResearcherGenerator's Starting Researchers list.");
+                else
+                    HireResearcher(starter);   // HIRE COST: the free version, the starter doesn't cost $200
             }
             else
             {
-                var hired = researcherGenerator.GetHiredResearchers();
-                //Hire the selected researcher!
-                researcherSpawner.SpawnHired(hired);
+                //Hire the researchers from the save!
+                researcherSpawner.SpawnHired(alreadyHired);
             }
 
-            // DATA LOG: game_start (selectedStarter is -1 when a saved game carries on)
-            GameLog.GameStarted(selectedStarter != -1,
-                selectedStarter != -1 ? researcherGenerator.GetById(9 + selectedStarter) : null,
-                researcherGenerator.GetHiredResearchers());
+            // DATA LOG: game_start (new_game is false when a saved game carries on)
+            GameLog.GameStarted(newGame, starter, researcherGenerator.GetHiredResearchers());
 
             StartDay();
             SpawnNextClient();
@@ -970,12 +1036,18 @@ namespace GameLogic
 
                             if (request != null && request.IsResearchable)
                             {
+                                //0 StartResearch refuses methods the researcher hasn't unlocked.
+                                // Use the best one if they have it, otherwise their first method (so it still gets researched)
+                                int method = researcher.Data.CanUseMethodology(request.BestMethodologyId)
+                                    ? request.BestMethodologyId
+                                    : researcher.Data.MethodologyUnlockedAt(1);
+
                                 // RESEARCH TIMER (changed): was CompleteStudy. Skipping can't wait for the timer
                                 ResearchInstantly(
                                     client,
                                     researcher,
                                     request.Approach,
-                                    request.BestMethodologyId);
+                                    method);
                             }
                             else
                             {

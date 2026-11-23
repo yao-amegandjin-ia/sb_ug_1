@@ -9,6 +9,10 @@ using Random = System.Random;
 /// <summary>
 /// Generates the starting pool of researchers from the game seed.
 /// This only creates the data object, not game object.
+/// STARTER PICK: the starting researchers are the "Starting Researchers" list in this component's
+/// Inspector (name, description, speed, quality, methodologies in unlock order, look). The start screen shows the same list.
+/// They're added after the random pool, so their IDs are researcherCount + 1, + 2, ...
+/// (9 and 10 with the default 8, the same IDs as before).
 /// </summary>
 public class ResearcherGenerator : MonoBehaviour
 {
@@ -42,12 +46,25 @@ public class ResearcherGenerator : MonoBehaviour
     [Tooltip("How many methodologies each researcher knows. Lowered automatically if there are fewer in the game.")]
     [SerializeField, Min(1)] private int methodologiesPerResearcher = 4;
 
-    [Header("Starting researchers (placeholders)")]
-    [Tooltip("Methodology names from methodologies.csv. Must match StartScreen's Starter Method Names.")]
-    [SerializeField] private string[] starterMethodNames = { "Product R&D", "Field Research" };
-    
-    private ResearcherData startingResearcher0 = new();
-    private ResearcherData startingResearcher1 = new(); 
+    // EDIT THE STARTING RESEARCHERS HERE.
+    [Header("Starting researchers (the start screen shows one card per entry)")]
+    [Tooltip("The researchers the player picks from on the start screen. Add an entry with + to add a card.")]
+    [SerializeField] private List<StarterResearcher> startingResearchers = new List<StarterResearcher>
+    {
+        new StarterResearcher("James Fitzgerald",
+            2, 1, new Vector3Int(0, 0, 0),
+            "Product R&D", "Market Research", "Exploratory Research", "Randomized Controlled Trial"),
+        new StarterResearcher("Maya Nobel",
+            1, 2, new Vector3Int(1, 1, 1),
+            "Field Research", "Exploratory Research", "Longitudinal Research", "Policy Research"),
+    };
+
+    [Tooltip("Ticked: the starters the player didn't pick show up in the shop's hire tab like everyone else. " +
+             "Unticked: they're never offered.")]
+    [SerializeField] private bool unpickedStartersCanBeHired = true;
+
+    /// <summary>The starters, in Inspector order (= the order of the start screen cards).</summary>
+    public IReadOnlyList<StarterResearcher> StartingResearchers => startingResearchers;
 
 
 
@@ -86,13 +103,6 @@ public class ResearcherGenerator : MonoBehaviour
         if (useAllConfigMethodologies)
             methodologyIds = MethodLibrary.GetAllIds();
         if (!ValidateMethodologies()) return null;
-
-        // Placeholder starters. Made here instead of in Start(), because FirmController can call Generate()
-        // before this object's Start() has run, and then the starters would have no name or methods yet.
-        startingResearcher0 = new ResearcherData();
-        startingResearcher1 = new ResearcherData();
-        startingResearcher0.Init(9, "Steven", Vector3Int.zero, 0, 0, 0, StarterMethods(0));
-        startingResearcher1.Init(10, "Maya", Vector3Int.one, 0, 0, 0, StarterMethods(1));
 
         var researchers = new List<ResearcherData>();
 
@@ -133,10 +143,42 @@ public class ResearcherGenerator : MonoBehaviour
             Debug.Log($"ResearcherGenerator: Researcher generated: " + r.Name);
             
         }
-        researchers.Add(startingResearcher0);
-        researchers.Add(startingResearcher1);
-        
+        // STARTER PICK: one researcher per entry in the Starting Researchers list, after the random pool.
+        // Made after the pool so the pool's random numbers (and so its names, looks and methods) are the same as before
+        for (int i = 0; i < startingResearchers.Count; i++)
+        {
+            StarterResearcher s = startingResearchers[i];
+            if (s == null) continue;
+
+            // their Inspector methods first, in unlock order, then random ones if fewer than 4 were listed
+            List<int> methods = DrawMethodologies(unused, rng, s.GetMethodologyIds(warn: true));
+
+            ResearcherData starter = new ResearcherData();
+            starter.Init(StarterId(i), s.name, s.appearance, 0, s.speed, s.quality, methods);
+            researchers.Add(starter);
+            Debug.Log($"ResearcherGenerator: starter generated: {s.name} (ID {StarterId(i)})");
+        }
+
         return researchers;
+    }
+
+    // STARTER PICK
+    // starters come right after the random pool: with 8 researchers, the first starter is 9, the second 10, ...
+    private int StarterId(int starterIndex) => researcherCount + 1 + starterIndex;
+
+    // STARTER PICK
+    /// <summary>The researcher made from a start screen card (0 = the first entry in Starting Researchers), or null.</summary>
+    public ResearcherData GetStarter(int starterIndex)
+    {
+        if (starterIndex < 0 || starterIndex >= startingResearchers.Count) return null;
+        return GetById(StarterId(starterIndex));
+    }
+
+    // STARTER PICK
+    /// <summary>True for researchers made from the Starting Researchers list (their IDs come after the random pool).</summary>
+    public bool IsStarter(ResearcherData researcher)
+    {
+        return researcher != null && researcher.Id > researcherCount;
     }
     
     /// <summary>Finds a researcher by ID (1-10), or null.</summary>
@@ -165,7 +207,11 @@ public class ResearcherGenerator : MonoBehaviour
     {
         List<ResearcherData> result = new List<ResearcherData>();
         foreach (ResearcherData r in researchers)
-            if (!r.IsPurchased) result.Add(r);
+        {
+            if (r.IsPurchased) continue;
+            if (!unpickedStartersCanBeHired && IsStarter(r)) continue;
+            result.Add(r);
+        }
         return result;
     }
     
@@ -192,13 +238,15 @@ public class ResearcherGenerator : MonoBehaviour
     /// Uses the "unused" pool so every methodology is handed out once before any repeats,
     /// giving an even spread across researchers. A researcher never gets the same one twice.
     /// </summary>
-    private List<int> DrawMethodologies(List<int> unused, Random rng)
+    private List<int> DrawMethodologies(List<int> unused, Random rng, IEnumerable<int> alreadyKnown = null)
     {
 
-        List<int> unlocked = new List<int>();
+        List<int> unlocked = alreadyKnown != null ? new List<int>(alreadyKnown) : new List<int>();
 
         // can't know more methods than exist (with 3 methods and 4 wanted, this loop would never end)
         int wanted = Mathf.Min(methodologiesPerResearcher, new HashSet<int>(methodologyIds).Count);
+        // a starter can list more than "Methodologies Per Researcher". Keep them all rather than cut some off
+        if (unlocked.Count > wanted) return unlocked;
 
         while (unlocked.Count < wanted)
         {
@@ -214,6 +262,9 @@ public class ResearcherGenerator : MonoBehaviour
             {
                 RefillPool(unused, rng);
                 index = unused.FindIndex(m => !unlocked.Contains(m));
+                // STARTER PICK (new): a starter's Inspector methods can include IDs that aren't in this pool
+                // (when Use All Config Methodologies is unticked), so the pool can run out. Stop instead of crashing
+                if (index < 0) break;
             }
 
             unlocked.Add(unused[index]);
@@ -267,18 +318,6 @@ public class ResearcherGenerator : MonoBehaviour
             int j = rng.Next(i + 1);
             (list[i], list[j]) = (list[j], list[i]);
         }
-    }
-
-    // the starter's methodology, looked up by name in methodologies.csv
-    private List<int> StarterMethods(int starter)
-    {
-        List<int> ids = new List<int>();
-        if (starterMethodNames == null || starter >= starterMethodNames.Length) return ids;
-
-        MethodEntry method = MethodLibrary.Find(starterMethodNames[starter]);
-        if (method != null) ids.Add(method.id);
-        else Debug.LogWarning($"ResearcherGenerator: starter method \"{starterMethodNames[starter]}\" isn't in methodologies.csv.");
-        return ids;
     }
 
     // checked after the IDs are read from the config, so it's separate from ValidateSettings

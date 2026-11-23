@@ -1,6 +1,9 @@
 // UIInitializer - goes on the UIRoot object in the UI scene.
 // the bootstrap SceneLoader looks for one ISceneInitializable per scene and calls InitializeScene on it,
 // so this is where the UI gets access to the game systems (data manager etc).
+//   day ends -> shop (upgrades + hire) -> DAY SUMMARY button -> day summary -> Continue -> (day 4: mid-game quiz) -> next day.
+// The shop's close button opens the summary (ShopScreen.ClosedAtDayEnd -> OnShopClosedAtDayEnd).
+// After the last day there's no shop: the summary opens straight away, then the final quiz.
 
 using Bootstrap;
 using GameLogic;
@@ -31,6 +34,7 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
     private ShopScreen shop;
     private StartScreen startScreen;
     private GameSystems systems;
+    private int summaryDay = -1;   //: the day whose summary opens when the shop closes, -1 = none
 
     // the persistent systems, once the bootstrap has handed them over. null before that
     public GameSystems Systems => systems;
@@ -70,6 +74,7 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
         connectedFirm.DayEnded += OnDayEnded;
         daySummary.Closed += OnSummaryClosed;
         quiz.Finished += OnQuizFinished;
+        shop.ClosedAtDayEnd += OnShopClosedAtDayEnd; 
     }
     private void OnQuizFinished(QuizType type, List<QuizAnswer> answers)
     {
@@ -121,9 +126,22 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
         manageFirm?.Close();
         quiz?.Cancel();
         
-        // Show this after everything else has closed.
-        daySummary.Show(day);
+        if (connectedFirm == null || connectedFirm.IsLastDay || shop == null)
+        {
+            daySummary.Show(day);   // Show this after everything else has closed.
+            return;
+        }
+        summaryDay = day;
+        shop.OpenAtDayEnd(day);
         
+    }
+    
+    private void OnShopClosedAtDayEnd()
+    {
+        if (summaryDay < 0) return;
+        int day = summaryDay;
+        summaryDay = -1;
+        daySummary.Show(day);
     }
 
     private void DisconnectFirm()
@@ -138,6 +156,9 @@ public class UIInitializer : MonoBehaviour, ISceneInitializable
 
         if (quiz != null)
             quiz.Finished -= OnQuizFinished;
+
+        if (shop != null)
+            shop.ClosedAtDayEnd -= OnShopClosedAtDayEnd;  
 
         connectedFirm.DayEnded -= OnDayEnded;
         connectedFirm = null;
