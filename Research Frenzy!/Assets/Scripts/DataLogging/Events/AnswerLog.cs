@@ -140,8 +140,10 @@ namespace DataLogging
         /// <summary>
         /// Every hired researcher who could correctly take this request: "best" if one of their usable methods is the
         /// request's best methodology, "good" if one is a partial-credit methodology. Empty for unresearchable requests.
+        /// RESEARCHER XP (changed): "usable" used to be the same number of methods for everyone (FirmController's
+        /// Unlocked Methods). Now it's each researcher's own UnlockedMethodCount, which grows with their level.
         /// </summary>
-        public static List<object> FindCorrectResearchers(RequestData request, IEnumerable<ResearcherData> hired, int unlockedMethods)
+        public static List<object> FindCorrectResearchers(RequestData request, IEnumerable<ResearcherData> hired)
         {
             List<object> result = new List<object>();
             if (request == null || !request.IsResearchable || hired == null) return result;
@@ -149,7 +151,7 @@ namespace DataLogging
             foreach (ResearcherData researcher in hired)
             {
                 if (researcher == null) continue;
-                List<int> usable = researcher.KnownMethodologyIds.Take(unlockedMethods).ToList();
+                List<int> usable = researcher.KnownMethodologyIds.Take(researcher.UnlockedMethodCount).ToList();   // RESEARCHER XP (changed)
 
                 string fit = null;
                 int via = 0;
@@ -172,6 +174,7 @@ namespace DataLogging
                     ["fit"] = fit,
                     ["methodology_id"] = via,
                     ["was_available"] = researcher.IsAvailable,
+                    ["level"] = researcher.Level,   // RESEARCHER XP (new)
                 });
             }
             return result;

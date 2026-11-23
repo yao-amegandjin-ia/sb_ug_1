@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System;
 using Clients;
 using GameDataObjects;
+using Researchers;
 using UnityEngine;
 using Random = System.Random;
 
@@ -27,6 +29,15 @@ public class ClientGenerator : MonoBehaviour
     [Tooltip("New clients added for each day after day 1. With 3 and 2: day 1 = 3, day 2 = 5, day 3 = 7...")]
     [SerializeField, Min(0)] private int clientsAddedPerDay = 2;
  
+    // TEMP REPEATS (new): a stopgap while the requests spreadsheet only has 20 rows. Untick (or delete this block,
+    // GenerateRepeats and the TEMP REPEATS lines in FirmController and DataManager) once there are enough requests
+    [Header("TEMPORARY: repeat requests when they run out")]
+    [Tooltip("Ticked: when there aren't enough unanswered requests for a day, answered ones come back, the ones the " +
+             "player got wrong first, and they pay again. Unticked: days just get fewer clients (the old behaviour).")]
+    [SerializeField] private bool repeatRequestsWhenOutOfNew = true;
+
+    /// <summary>True while the temporary repeat rule is on (Inspector).</summary>
+    public bool RepeatRequestsWhenOutOfNew => repeatRequestsWhenOutOfNew;   // TEMP REPEATS (new)
     
     /// <summary>
     /// Seconds added to every new client's patience.
@@ -118,7 +129,64 @@ public class ClientGenerator : MonoBehaviour
  
         return result;
     }
- 
+    
+    /// <summary>
+    /// Day 1 of a new game, scripted around the starter the player picked:
+    ///   1st client: a request that CAN'T be researched (the right answer is "We can't help")
+    ///   2nd and 3rd: requests whose BEST methodology the starter can already use (they start with 2 XP = 2 methods)
+    ///   anyone after that (more clients from upgrades, or a bigger Starting Clients): the normal deck order.
+    /// Which requests fit is picked in deck order, so it's still random per seed, just from the right kind.
+    /// If there aren't enough of a kind (e.g. the starter's methods aren't anyone's best), it says so in the
+    /// Console and fills the gap from the deck.
+    /// </summary>
+    public List<ClientData> GenerateFirstDay(ResearcherData starter, int upgradeBonus = 0, IEnumerable<int> usedRequestIds = null)
+    {
+        const int answerableWanted = 2;
+
+        EnsureDeck();
+        HashSet<int> used = usedRequestIds != null ? new HashSet<int>(usedRequestIds) : new HashSet<int>();
+        List<int> picked = new List<int>();
+
+        // 1. the one that can't be researched
+        foreach (int requestId in deck)
+        {
+            if (used.Contains(requestId) || requestsById[requestId].IsResearchable) continue;
+            picked.Add(requestId);
+            break;
+        }
+        if (picked.Count == 0)
+            Debug.LogWarning("ClientGenerator: no unresearchable request for the first client of day 1. Check the requests spreadsheet.");
+
+        // 2. two the starter can answer with their best method
+        int answerable = 0;
+        foreach (int requestId in deck)
+        {
+            if (answerable >= answerableWanted) break;
+            RequestData request = requestsById[requestId];
+            if (used.Contains(requestId) || picked.Contains(requestId)) continue;
+            if (!request.IsResearchable || starter == null || !starter.CanUseMethodology(request.BestMethodologyId)) continue;
+            picked.Add(requestId);
+            answerable++;
+        }
+        if (answerable < answerableWanted)
+            Debug.LogWarning($"ClientGenerator: only {answerable} request(s) have {starter?.Name}'s unlocked methods as the best answer " +
+                             $"(wanted {answerableWanted}). The rest of day 1 comes from the normal deck.");
+
+        // 3. the rest, in normal deck order
+        int wanted = Mathf.Max(CalculateClientCount(1, upgradeBonus), picked.Count);
+        foreach (int requestId in deck)
+        {
+            if (picked.Count >= wanted) break;
+            if (used.Contains(requestId) || picked.Contains(requestId)) continue;
+            picked.Add(requestId);
+        }
+
+        List<ClientData> result = new List<ClientData>();
+        foreach (int requestId in picked)
+            result.Add(CreateClientForRequest(requestId));
+        return result;
+    }
+
     /// <summary>
     /// Builds the client for one request. Always the same result for the same seed and request,
     /// whatever the day. Use this to bring back a returning client, or to rebuild any client
@@ -143,6 +211,43 @@ public class ClientGenerator : MonoBehaviour
         ClientData client = new ClientData();
         client.Init(requestId, request, client.Patience + ExtraPatience, look);   // client ID = request ID (unique, needs no saving)
         return client;
+    }
+    
+    // TEMP REPEATS (new)
+    /// <summary>
+    /// Up to "count" clients for requests that were ALREADY answered, for when GenerateDay ran out of new ones.
+    /// The ones the player got wrong come first (answeredRight says which were right), then the rest, each group
+    /// in deck order. notAllowed = requests already in today's list or coming back tomorrow (a client can't be
+    /// in the list twice). answeredIds = every request that has an answer (DataManager's study results).
+    /// </summary>
+    public List<ClientData> GenerateRepeats(int count, IEnumerable<int> answeredIds, IEnumerable<int> notAllowed,
+        Func<int, bool> answeredRight)
+    {
+        List<ClientData> result = new List<ClientData>();
+        if (count <= 0 || answeredIds == null) return result;
+
+        EnsureDeck();
+        HashSet<int> answered = new HashSet<int>(answeredIds);
+        HashSet<int> skip = notAllowed != null ? new HashSet<int>(notAllowed) : new HashSet<int>();
+
+        // two passes over the deck: wrong answers first, then right ones
+        foreach (bool wantRight in new[] { false, true })
+        {
+            foreach (int requestId in deck)
+            {
+                if (result.Count >= count) return result;
+                if (!answered.Contains(requestId) || skip.Contains(requestId)) continue;
+                bool right = answeredRight != null && answeredRight(requestId);
+                if (right != wantRight) continue;
+
+                result.Add(CreateClientForRequest(requestId));
+                skip.Add(requestId);
+            }
+        }
+
+        if (result.Count < count)
+            Debug.LogWarning($"ClientGenerator: even with repeats there are only {result.Count} more requests (wanted {count}).");
+        return result;
     }
  
     /// <summary>How many requests have not been used yet.</summary>

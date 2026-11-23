@@ -85,6 +85,8 @@ namespace GameLogic
         public int MethodologyId;
         public ClientOutcome Outcome;
         public int Reward;
+        public string ResearcherName;
+        public int ExperienceGained;
 
         public bool IsMatch => Outcome == ClientOutcome.Best || Outcome == ClientOutcome.Good || Outcome == ClientOutcome.Wrong;
 

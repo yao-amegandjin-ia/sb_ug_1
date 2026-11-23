@@ -829,3 +829,100 @@
     color: var(--muted);
     margin-right: 10px;
 }
+
+/* STARTER PICK: start screen cards */
+.starter-description {
+    font-size: 16px;
+    color: var(--muted);
+    white-space: normal;
+    margin-bottom: 10px;
+}
+
+.starter-stats {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: var(--purple);
+    margin-bottom: 12px;
+}
+
+/* the methods unlocked at levels 2-4 ("LV 2  [1] Exploratory Research") */
+.starter-method.locked {
+    margin-bottom: 6px;
+}
+
+.starter-method.locked .method-badge {
+    background-color: var(--line);
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+}
+
+.starter-method.locked .starter-method-name {
+    font-size: 16px;
+    color: var(--muted);
+}
+
+.starter-unlock-level {
+    width: 40px;
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: var(--muted);
+}
+
+/* RESEARCHER XP: "+2 XP · Maya" on the day summary cards */
+.study-xp {
+    margin-left: 10px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: var(--purple);
+}
+
+.study-xp.none {
+    color: var(--muted);
+}
+
+/* RESEARCHER XP: the "LEVEL UP" card at the top of the day summary */
+.levelup-card {
+    border-width: 3px;
+    border-color: var(--green);
+}
+
+/* RESEARCHER XP: locked method badges in the Manage Firm panel */
+.method-badge.locked {
+    background-color: var(--line);
+}
+
+
+/* SAVE GAME: day summary save buttons and status */
+.summary-footer .summary-quit {
+    margin-right: 10px;
+}
+
+.save-status {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: var(--muted);
+    -unity-text-align: middle-right;
+    margin-top: 8px;
+    white-space: normal;
+}
+
+.save-status.error {
+    color: #D64541;
+}
+
+/* SAVE GAME: start screen */
+.continue-info {
+    font-size: 18px;
+    color: var(--muted);
+    margin-top: 12px;
+    -unity-text-align: middle-center;
+}
+
+.new-game-warning {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: #D64541;
+    margin-bottom: 16px;
+    -unity-text-align: middle-center;
+}

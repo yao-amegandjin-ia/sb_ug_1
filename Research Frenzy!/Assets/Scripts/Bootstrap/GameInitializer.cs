@@ -34,53 +34,29 @@ public class StudyResultList
 
 public class GameInitializer : MonoBehaviour
 {
+    public enum SaveBackend
+    {
+        Local,   // a JSON file in the Editor / desktop, the browser's localStorage in WebGL (LocalSaveSystem)
+        Api      // the save API (SaveSystem). Falls back to Local if it can't be reached
+    }
+
+    [Header("Saving")]
+    [Tooltip("Local: a JSON file (Editor: Assets/LocalSaves/save.json) or, in WebGL, the browser's localStorage. " +
+             "Api: the save server at the URL in this script, falling back to Local if it's not running.")]
+    [SerializeField] private SaveBackend saveBackend = SaveBackend.Local;
+
     public int day = 1;   // placeholder until the day system exists
     
     [Header("Seed")]
     [Tooltip("If ticked, uses the seed below as the game seed. Otherwise a random seed is made at startup.")]
     [SerializeField] private bool overrideSeed = false;
     [SerializeField] private int seedOverride = 12345;
- 
-    /*
-    /// <summary>
-    /// Current money is the current money the player has
-    /// Total money is the total amount earned in the game. THIS DOES NOT GO DOWN.
-    /// Total money is used for scoring
-    /// </summary>
-    [Header("Money")]
     
-    
-    [SerializeField] public int currentMoney = 0;
-    [SerializeField] public int totalMoney = 0;     // everything earned this game, never goes down
- 
-    // study results: request ID -> methodology ID the player matched it with.
-    // a list instead of a Dictionary, because JsonUtility and the Inspector can't handle dictionaries
-    /// <summary>
-    /// Request ID -> Methodology ID
-    /// </summary>
-    [SerializeField] private StudyResultList studyResults = new StudyResultList();
-    public IReadOnlyList<StudyResult> StudyResults => studyResults.Results;
- 
-    // raised after money is added. the HUD listens to this to update its label
-    
-    /// <summary>
-    /// Triggered when money is added. HUD listens to this to update
-    /// </summary>
-    public event Action<int> MoneyEarned;
-    
-    /// <summary>
-    /// Triggered when money is spent.
-    /// </summary>
-    public event Action<int> MoneySpent;
-    */
 
     private GameSystems systems;
-
-    
-
     
     private readonly string _apiUrl = "http://localhost:8080";
-    private string saveSource = "api";   // "offline" when the API couldn't be reached. Only used by the data log
+    private string saveSource = "local";   // "api", or "local" (SAVE GAME: was "offline"). Only used by the data log
     //Going to get overwritten anyway
 
     private void Awake()
@@ -155,20 +131,28 @@ public class GameInitializer : MonoBehaviour
         }
     }
 
-    // Loads the save from the API. If the API can't be reached (for example it isn't running),
-    // it says so and starts a fresh offline game instead, so the scenes still load.
+    // picks the save system from Save Backend. It used to always try the API first and fall back to
+    // JsonFileSaveSystem, which writes files, so it couldn't work in WebGL. LocalSaveSystem works in both.
+    // If there's no save yet, the save system hands back a fresh day 1 and the start screen has no CONTINUE.
     private async Awaitable<DataManager> CreateDataManager(string playerId)
     {
-        try
+        int seed = GameSeed.EnsureInitialized();
+
+        if (saveBackend == SaveBackend.Api)
         {
-            return await DataManager.CreateAsync(new SaveSystem(_apiUrl, playerId, GameSeed.EnsureInitialized()));
+            try
+            {
+                saveSource = "api";
+                return await DataManager.CreateAsync(new SaveSystem(_apiUrl, playerId, seed));
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"GameInitializer: couldn't load the save from {_apiUrl} ({e.Message.Trim()}). " +
+                                 "Saving on this device instead.");
+            }
         }
-        catch (Exception e)
-        {
-            Debug.LogWarning($"GameInitializer: couldn't load the save from {_apiUrl} ({e.Message.Trim()}). " +
-                             "Starting an offline game instead: nothing will be saved. Start the API to play with saves.");
-            string saveFolder = Path.Combine(Application.dataPath, "LocalSaves");
-            return await DataManager.CreateAsync(new JsonFileSaveSystem(GameSeed.EnsureInitialized(), saveFolder));
-        }
+
+        saveSource = "local";
+        return await DataManager.CreateAsync(new LocalSaveSystem(seed, LocalSaveSystem.StorageForThisPlatform()));
     }
 }

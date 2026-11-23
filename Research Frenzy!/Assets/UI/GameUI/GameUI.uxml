@@ -92,6 +92,8 @@
                     <ui:VisualElement name="summary-tiles" class="summary-tiles" />
                     <ui:Label text="TODAY'S CLIENTS" class="section-title" />
                     <ui:ScrollView name="summary-list" class="summary-list" />
+                    <!-- SAVE GAME (new): "Saving..." or why the save failed. DaySummary.cs fills it in -->
+                    <ui:Label name="summary-save-status" class="save-status hidden" />
                     <ui:VisualElement class="summary-footer">
                         <ui:VisualElement class="money-box">
                             <ui:Label text="EARNED TODAY" class="card-label" />
@@ -101,7 +103,9 @@
                             <ui:Label text="CURRENT MONEY" class="card-label" />
                             <ui:Label name="summary-total" text="$0" class="money-value" />
                         </ui:VisualElement>
-                        <ui:Button name="summary-continue" text="CONTINUE" class="big-button primary" />
+                        <!-- SAVE GAME (new): SAVE & QUIT. summary-continue is now SAVE & CONTINUE -->
+                        <ui:Button name="summary-save-quit" text="SAVE &amp; QUIT" class="big-button secondary summary-quit" />
+                        <ui:Button name="summary-continue" text="SAVE &amp; CONTINUE" class="big-button primary" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
@@ -147,10 +151,13 @@
                     <ui:VisualElement class="start-body">
                         <ui:Label text="You run the lab. Figure out what kind of research each client needs." class="start-tagline" />
                         <ui:Label class="start-text" text="Clients walk into your research firm with a problem they need solved. Read each request, decide which research method fits, and send them to a researcher who knows that method.&#10;&#10;You have 7 days. Good matches earn money, which you can spend between days to hire researchers and upgrade the lab. Along the way you'll learn what 13 different kinds of research are used for." />
+                        <!-- SAVE GAME (changed): CONTINUE loads the save (hidden when there isn't one), NEW GAME picks a researcher -->
                         <ui:VisualElement class="button-row">
                             <ui:Button name="leave-button" text="LEAVE" class="big-button secondary" />
-                            <ui:Button name="continue-button" text="CONTINUE" class="big-button primary" />
+                            <ui:Button name="continue-button" text="CONTINUE" class="big-button primary hidden" />
+                            <ui:Button name="new-game-button" text="NEW GAME" class="big-button primary" />
                         </ui:VisualElement>
+                        <ui:Label name="continue-info" text="" class="continue-info hidden" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
@@ -163,6 +170,8 @@
                     <ui:VisualElement class="start-body">
                         <ui:Label text="One is picked for you already. You can hire more between days." class="start-tagline" />
                         <ui:VisualElement name="starter-cards" class="starter-row" />
+                        <!-- SAVE GAME (new): only shown when there's a save -->
+                        <ui:Label name="new-game-warning" text="Starting a new game deletes your saved game." class="new-game-warning hidden" />
                         <ui:VisualElement class="button-row">
                             <ui:Button name="start-button" text="START DAY 1" class="big-button primary" />
                         </ui:VisualElement>

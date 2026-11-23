@@ -10,7 +10,8 @@ namespace UI.ClientScreens
     /// Matching is two steps:
     ///   1. pick an approach (Quantitative / Qualitative / Mixed), then NEXT
     ///   2. pick one of the researcher's methodologies, then MATCH (CHANGE goes back to step 1)
-    /// Grading and money are in FirmController.CompleteStudy. NO MATCH or CLOSE just closes the screen.
+    /// Grading and money are in FirmController.StartResearch. NO MATCH or CLOSE just closes the screen.
+    /// RESEARCH TIMER: MATCH now starts a research session instead of finishing the client straight away.
     /// </summary>
     public class MethodMatchScreen : ClientScreen
     {
@@ -174,11 +175,13 @@ namespace UI.ClientScreens
             matchButton?.SetEnabled(true);
         }
 
-        // grading, money and the client leaving are all in FirmController.CompleteStudy
+        // grading, money and the research session are all in FirmController
         private void MatchClicked()
         {
             if (approach == ResearchApproach.None || selected < 0) return;
-            if (Firm) Firm.CompleteStudy(Current, researcher, approach, tray.GetId(selected));
+            // RESEARCH TIMER (changed): was Firm.CompleteStudy. Same arguments, but the client now stays with the
+            // researcher until the timer ends, and the player collects the money afterwards by clicking the client
+            if (Firm) Firm.StartResearch(Current, researcher, approach, tray.GetId(selected));
             Close();
         }
 

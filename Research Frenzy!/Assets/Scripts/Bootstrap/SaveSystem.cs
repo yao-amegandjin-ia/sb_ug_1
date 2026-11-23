@@ -25,6 +25,12 @@ namespace Bootstrap
 
         public abstract Awaitable SaveGame(SaveData saveData);
         public abstract Awaitable SaveQuizData(QuizType quizType, Dictionary<int, int> responses);
+        
+        public virtual async Awaitable DeleteSave()
+        {
+            Debug.Log($"{GetType().Name}: deleting a save isn't supported here. The next save will replace it.");
+            await Awaitable.NextFrameAsync();
+        }
     }
     /// <summary>
     /// This is the concrete adapter implementation for the SaveSystem. Implement a seperate concrete class and inject the new dependency to switch this out. 
@@ -293,9 +299,5 @@ namespace Bootstrap
 
             }
         }
-
-
-
-
     }
 }

@@ -40,6 +40,11 @@ public class Researcher : MonoBehaviour, IPointerClickHandler
     public MethodMatchScreen matchScreen;
     public PlayerMover player;
     public float talkDistance = 1.2f;   // how close the player has to get before the screen opens
+
+    // RESEARCH TIMER (new): optional icon shown while this researcher is working with a client
+    [Header("Research session (optional)")]
+    [Tooltip("Shown while the researcher is busy with a client (e.g. a \"busy\" bubble). Make it a child of the researcher prefab. Can be left empty.")]
+    [SerializeField] private GameObject busyIcon;
     
     
     void Awake()
@@ -55,6 +60,21 @@ public class Researcher : MonoBehaviour, IPointerClickHandler
         data = researcherData;
         gameObject.name = data.Name;
         ApplyAppearance();
+        UpdateBusyIcon();   // RESEARCH TIMER (new)
+    }
+
+    // RESEARCH TIMER (new): FirmController sets the researcher Busy on MATCH and Available when the timer ends.
+    // This just shows that. Checked every frame because it's one bool, cheaper than wiring up events here.
+    void Update()
+    {
+        UpdateBusyIcon();
+    }
+
+    void UpdateBusyIcon()
+    {
+        if (!busyIcon) return;
+        bool busy = data != null && data.CurrentState == ResearcherState.Busy;
+        if (busyIcon.activeSelf != busy) busyIcon.SetActive(busy);
     }
     
     //This sets the sprites to render for the respective parts.
@@ -82,6 +102,8 @@ public class Researcher : MonoBehaviour, IPointerClickHandler
         
         if (matchScreen == null) { Debug.LogWarning("Researcher: no MethodMatchScreen found. Is MatchUI set up in the UI scene?"); return; }
         if (data == null) { Debug.LogWarning("Researcher: no data. Was it spawned through the ResearcherSpawner?"); return; }
+        // RESEARCH TIMER: this check already existed. Researchers are now Busy during a research session,
+        // so this is what stops the player from bringing a second client to them
         if (!data.IsAvailable) { Debug.Log($"{data.Name} isn't available (hired: {data.IsPurchased}, state: {data.CurrentState})."); return; }
  
         Client client = FindFollowingClient();
@@ -119,7 +141,5 @@ public class Researcher : MonoBehaviour, IPointerClickHandler
             if (c != null && c.IsFollowing) return c;
         return null;
     }
-
-
     
 }
